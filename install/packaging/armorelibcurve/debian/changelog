@@ -1,0 +1,11 @@
+armorelibcurve (1.0.0-1-2) stable; urgency=medium
+
+  * Alpha Release 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Wed, 15 Jul 2015 17:33:38 -0500
+
+armorelibcurve (1.0.0-1-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- armore <armore@packetbricks>  Wed, 10 Jun 2015 14:24:23 -0500

@@ -1,0 +1,14 @@
+{
+	"enabled": true,
+	"logging": 1,
+	"Validation": true,
+	"Interfaces": [
+		"eth4{1",
+		"eth5{2"
+	],
+	"policies": [
+		"pDNP3",
+		"p5",
+		"pNoEnc"
+	]
+}

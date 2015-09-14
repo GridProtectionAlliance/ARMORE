@@ -1,0 +1,6 @@
+The ArmoreProxy requires libpcap, libsodium-dev, libzmq3-dev, armorenetmap, armoreczmq, armorelibcurve, and libpcap.
+
+1. /usr/share/armoreproxy
+
+This package enables armore nodes to talk through to each other using netmap interfaces.
+This package requires the 3.12 Linux Kernel to work.

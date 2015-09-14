@@ -1,0 +1,70 @@
+{
+	"data": [
+		"timestamp": {
+			"12/31/1999 23:59:59": {
+				"online": ,
+				"offline": ,
+				"lastStatusChange": ,
+				"lastPolicyChange": ,
+				"bytesIn": 12345,
+				"bytesOut": 54321,
+				"loadAverage": {
+					"value": "45",
+					"unit": "percent"
+				},
+				"errors": 870012,
+				"alarms": 1,
+				"warnings": 0,
+				"messages": 11111,
+				"ramUtil": {
+					"value": 20,
+					"unit": "Mb"
+				},
+				"storageUtil": {
+					"value": 12,
+					"unit": "Gb"
+				},
+				"temperature": {
+					"value": "32",
+					"unit": "C"
+				}
+			}
+		}
+	]
+}
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

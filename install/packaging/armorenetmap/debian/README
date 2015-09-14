@@ -1,0 +1,14 @@
+The ArmoreNetMap package originally comes from the NetMap Repository from Luigi: 
+http://info.iet.unipi.it/~luigi/netmap/
+
+In our repository we are using the forked NetMap code from fichtner due to enabled forwarding code:
+https://github.com/fichtner/netmap
+
+Upon installing the ArmoreNetMap package the following directories are created by the Debian Control File:
+
+1. /lib/modules/3.12.0-armore/kernel/net/armorenetmap
+2. /usr/share/armorenetmap
+
+The first directory is where the kernel modules live. 
+The second is where the packet-generation tools are located.
+This package requires the 3.12 Linux Kernel to work.

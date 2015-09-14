@@ -1,0 +1,18 @@
+{
+	"version": {
+		"armore": "1.0.199",
+		"bro": "1.4.3",
+		"packetBricks": "98.2.1",
+		"zmq": "2.3.1",
+		"kernel": "4.0.0"
+	},
+	"pointOfContact": "(202) 358-0001",
+	"status": {
+		"bro": "green",
+		"packetBricks": "yellow",
+		"zmq": "yellow",
+		"system": "yellow"
+	},
+	"timestamp": "1/1/3000 00:01:00"
+}
+

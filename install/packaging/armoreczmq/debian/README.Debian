@@ -1,0 +1,5 @@
+The ArmoreCZMQ library originally comes from czmq.zeromq.org
+It has been packaged for the ARMORE Project
+
+This library is required by ARMOREProxy and further requires libsodium-dev, libzmq3-dev, and libpcap.
+This package requires the 3.12 Linux Kernel to work.

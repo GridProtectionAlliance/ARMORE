@@ -1,0 +1,20 @@
+Source: armorelibcurve
+Priority: extra
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 8.0.0), cmake
+Standards-Version: 3.9.3
+Section: libs
+
+#Package: armorelibcurve-dev
+#Section: libdevel
+#Architecture: any
+#Depends: armorelibcurve(= ${binary:Version})
+#Description: <insert up to 60 chars description>
+# <insert long description, indented with spaces>
+
+Package: armorelibcurve
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>

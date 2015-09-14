@@ -1,0 +1,65 @@
+armoreproxy (1.0.0-1-2.9) stable; urgency=medium
+
+  *Routed Environment Changes/Vlans 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Sun, 30 Aug 2015 18:35:19 -0500
+
+armoreproxy (1.0.0-1-2.8) stable; urgency=medium
+
+  * Stability Improved. 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Fri, 24 Jul 2015 15:19:47 -0500
+
+armoreproxy (1.0.0-1-2.7) stable; urgency=medium
+
+  * Threadedness.
+ 
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 21 Jul 2015 15:35:18 -0500
+
+armoreproxy (1.0.0-1-2.6) stable; urgency=medium
+
+  * ZMQ Messaging 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 21 Jul 2015 13:54:02 -0500
+
+armoreproxy (1.0.0-1-2.5) Stable; urgency=medium
+
+  * Fix naming issue
+
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 21 Jul 2015 13:39:08 -0500
+
+armoreproxy (1.0.0-1-2.4) Stable; urgency=medium
+
+  * Race Condition Fix 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 21 Jul 2015 13:30:45 -0500
+
+armoreproxy (1.0.0-1-2.3) Stable; urgency=medium
+
+  * Fix naming issue
+
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 21 Jul 2015 13:20:08 -0500
+
+armoreproxy (1.0.0-1-2.2) Stable; urgency=medium
+
+  * Fix naming issue
+
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 21 Jul 2015 13:05:37 -0500
+
+armoreproxy (1.0.0-1-2.1) Stable; urgency=medium
+
+  * Fixed Locking Issues 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 21 Jul 2015 12:30:31 -0500
+
+armoreproxy (1.0.0-1-2) stable; urgency=medium
+
+  * Alpha Release ArmoreProxy 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Wed, 15 Jul 2015 17:37:22 -0500
+
+armoreproxy (1.0.0-1-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- armore <armore@packetbricks>  Mon, 22 Jun 2015 10:52:54 -0500

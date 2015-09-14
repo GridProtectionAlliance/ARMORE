@@ -1,0 +1,17 @@
+armoreconfig (1.0-1-2.1) stable; urgency=medium
+
+  * Modfied Tools and updated configurations. Alpha 
+
+ -- armore <sgrand2@illinois.edu>  Tue, 18 Aug 2015 14:24:24 -0500
+
+armoreconfig (1.0-1-2) stable; urgency=medium
+
+  * Alpha Release
+
+ -- Steve Granda <sgrand2@illinois.edu>  Wed, 15 Jul 2015 15:54:46 -0500
+
+armoreconfig (1.0-1-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- armore <armore@packetbricks>  Tue, 02 Jun 2015 14:27:12 -0500

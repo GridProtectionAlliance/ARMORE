@@ -1,0 +1,13 @@
+Source: armoreproxy
+Section: misc
+Priority: extra
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+Homepage: http://iti.illinois.edu
+
+Package: armoreproxy
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libsodium-dev, libzmq3-dev, armoreczmq, armorelibcurve, libpcap0.8, libpcap-dev, uuid-dev
+Description: Proxy Client for ARMORE node
+ This will bridge encrypted ARMORE nodes using ZMQ and PCAP

@@ -1,0 +1,30 @@
+{
+	"nodes": [
+		{
+			"5":{
+				"enabled": true,
+				"logging": 9,
+				"email": [
+					"bBird@thestreet.edu",
+					"otgrouch89@thestreet.edu"
+				]
+			},
+			"50":{
+				"enabled": false,
+				"logging": 5,
+				"email": [
+					"cmonster3@thestreet.edu",
+					"ernie@thestreet.edu"
+				]
+			},
+			"49":{
+				"enabled": true,
+				"logging": 0,
+				"email": [
+					"bert@thestreet.edu",
+					"ernie@thestreet.edu"
+				]
+			}
+		}
+	]
+}

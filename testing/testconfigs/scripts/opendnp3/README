@@ -1,0 +1,53 @@
+###############################################################################
+# Running OpenDNP3
+###############################################################################
+#Installing the environment
+#You will need to clone and install the environment https://github.com/gec/dnp3/
+#Once all has been installed generate your test xml files for the dnp3
+
+
+####################################
+#For Master Configuration
+####################################
+
+
+#To Generate Configurations, alternatively you can use the ones provided
+mkdir dnp3_master
+cd dnp3_master
+dnp3testset -G 
+
+#To run the master
+dnp3testset name_of_master_config.xml
+
+
+
+
+####################################
+#For Slave Configuration 
+####################################
+
+
+#To Generate Configurations, alternatively you can use the ones provided
+mkdir dnp3_slave
+cd dnp3_slave
+dnp3testset -G -S
+
+
+#To run the slave
+dnp3testset -S name_of_slave_confi.xml
+
+
+
+###############################################################################
+#Example Commands
+###############################################################################
+#To update a value, in the slave console
+#This will update index 0 with the value of 7 after flushing 
+queue ai 0 7 
+flush
+
+
+#In the master to show the change after the flush
+show
+
+

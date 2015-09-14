@@ -1,0 +1,185 @@
+{
+  "port": 8000,
+  "urls": [
+    {
+      "url":"/admin",
+      "status": 200,
+      "method": "GET",
+      "file":"admin/global.json"
+    },
+    {
+      "url":"/admin/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"admin/5.json"
+    },
+    {
+      "url":"/status",
+      "status": 200,
+      "method": "GET",
+      "file":"status/global.json"
+    },
+    {
+      "url":"/status/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"status/5.json"
+    },
+    {
+      "url":"/dashboard",
+      "status": 200,
+      "method": "GET",
+      "file":"dashboard/global.json"
+    },
+    {
+      "url":"/config",
+      "status": 200,
+      "method": "GET",
+      "file":"config/global.json"
+    },
+    {
+      "url":"/config/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"config/5.json"
+    },
+    {
+      "url":"/config/bro",
+      "status": 200,
+      "method": "GET",
+      "file":"config/bro.json"
+    },
+	{
+      "url":"/config/bro/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"config/bro/5.json"
+    },
+    {
+      "url":"/config/packet_bricks",
+      "status": 200,
+      "method": "GET",
+      "file":"config/packet_bricks.json"
+    },
+	{
+      "url":"/config/packet_bricks/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"config/packet_bricks/5.json"
+    },
+	{
+      "url":"/config/zmq",
+      "status": 200,
+      "method": "GET",
+      "file":"config/zmq.json"
+    },
+    {
+      "url":"/config/zmq/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"config/zmq/5.json"
+    },
+	{
+      "url":"/config/notifications",
+      "status": 200,
+      "method": "GET",
+      "file":"config/notifications.json"
+    },
+    {
+      "url":"/config/notifications/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"config/notifications/5.json"
+    },
+	{
+      "url":"/config/os",
+      "status": 200,
+      "method": "GET",
+      "file":"config/os.json"
+    },
+    {
+      "url":"/config/os/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"config/os/5.json"
+    },
+	{
+      "url":"/config/policy",
+      "status": 200,
+      "method": "GET",
+      "file":"config/policy.json"
+    },
+    {
+      "url":"/config/policy/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"config/policy/5.json"
+    },
+    {
+      "url":"/notifications",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/global.json"
+    },
+    {
+      "url":"/notifications/bro",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/bro.json"
+    },
+    {
+      "url":"/notifications/packet_bricks",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/packet_bricks.json"
+    },
+    {
+      "url":"/notifications/zmq",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/zmq.json"
+    },
+    {
+      "url":"/notifications/os",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/os.json"
+    },
+    {
+      "url":"/notifications/bro/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/bro/5.json"
+    },
+    {
+      "url":"/notifications/packet_bricks/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/packet_bricks/5.json"
+    },
+    {
+      "url":"/notifications/zmq/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/zmq/5.json"
+    },
+    {
+      "url":"/notifications/os/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"notifications/os/5.json"
+    },
+    {
+      "url":"/statistics",
+      "status": 200,
+      "method": "GET",
+      "file":"statistics/global.json"
+    },
+    {
+      "url":"/statistics/{id}",
+      "status": 200,
+      "method": "GET",
+      "file":"statistics/5.json"
+    }
+  ]
+}

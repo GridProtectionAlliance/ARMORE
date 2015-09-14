@@ -1,0 +1,21 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+
+
+#Bring up bridge and any local interfaces. Our management interface will dhcp
+auto lo br0
+iface lo inet loopback
+
+#The bridged ports will be manual
+iface eth0 inet manual
+iface eth1 inet manual
+
+#Configure the bridge for armorenode1
+iface br0 inet static
+    bridge_ports eth0 eth1
+    address 192.168.1.5
+    broadcast 192.168.1.255
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+    up ip route add 192.168.2.0/24 via 192.168.1.1

@@ -1,0 +1,21 @@
+Source: armoreczmq
+Priority: extra
+Maintainer: armore <armore@packetbricks>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.3
+Section: libs
+Homepage: http://code.iti.illinois.edu
+
+#Package: armoreczmq-dev
+#Section: libdevel
+#Architecture: any
+#Depends: armoreczmq(= ${binary:Version})
+#Description: Curve ZMQ
+# C Binding for ZeroMQ
+
+Package: armoreczmq
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Curve ZMQ
+ C Binding for ZeroMQ

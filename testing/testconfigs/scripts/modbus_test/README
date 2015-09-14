@@ -1,0 +1,41 @@
+###############################################################################
+# Running Modbus Test Scripts
+###############################################################################
+
+
+#Installing the environment
+
+sudo apt-get install python-pip
+sudo pip install virtualenv
+
+#Directory where modbus scripts are located
+cd modbus_directory
+
+#Create a virtual environment
+virtualenv venv
+
+#Activate the Virtual Environment
+source venv/bin/activate
+
+#Install python modbus into virtual environment
+sudo pip install -U pymodbus
+
+#For Client
+python modbusclient.py
+
+#For Server
+python modbusserver.py
+
+#To kill virtual environment
+deactivate
+
+
+
+#If you need to run the server/client on Priviliged ports, i.e. Ports under 1024
+#Without running in a virtual environment
+cd modbus_directory
+sudo ./venv/bin/python ./modbusclient.py #For Client
+sudo ./venv/bin/python ./modbusserver.py #For Server 
+
+
+

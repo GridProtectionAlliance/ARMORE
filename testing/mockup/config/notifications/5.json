@@ -1,0 +1,8 @@
+{
+	"enabled": true,
+	"logging": 1,
+	"email": [
+		"bBird@thestreet.edu",
+		"ernie@thestreet.edu"
+	]
+}

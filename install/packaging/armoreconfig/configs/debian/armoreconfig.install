@@ -1,0 +1,4 @@
+tools/* /etc/armore/
+config/local.bro /etc/armore/configs
+plugins /usr/share/bro/
+broscripts/* /usr/share/bro/base/bif/

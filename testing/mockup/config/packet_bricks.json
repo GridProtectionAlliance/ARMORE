@@ -1,0 +1,32 @@
+{
+	"bricks": [
+		{
+			"name": "brick1",
+			"mode": "Duplicator",
+			"pipes": {
+				"eth0": [
+					"eth0{0",
+					"eth0{1",
+					"eth0{2"
+				],
+				"eth01": [
+					"eth1",
+					"eth2"
+				]
+			}
+		},
+		{
+			"name": "brick2",
+			"mode": "Merge",
+			"pipes": {
+				"eth0": [
+					"eth1{0",
+					"eth1{1"
+				],
+				"eth10": [
+					"eth2"
+				]
+			}
+		}
+	]
+}

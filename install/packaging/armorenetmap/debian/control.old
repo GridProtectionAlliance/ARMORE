@@ -1,0 +1,22 @@
+Source: armorenetmap
+Section: unknown
+Priority: extra
+Maintainer: armore <armore@packetbricks>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, bzip2
+Standards-Version: 3.9.3
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Git: git://git.debian.org/collab-maint/armorenetmap.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/armorenetmap.git;a=summary
+
+Package: armorenetmap-utils
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description> <insert long description, indented with spaces>
+
+Package: armorenetmap-source
+Architecture: all
+Depends:  make, bzip2
+Description: source for the armorenetmap driver.
+ This package provides the source code for the armorenetmap kernel modules.
+ The armorenetmap package is also required in order to make use of these
+ modules. Kernel source or headers are required to compile these modules.

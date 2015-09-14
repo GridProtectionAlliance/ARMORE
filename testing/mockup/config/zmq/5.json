@@ -1,0 +1,6 @@
+{
+	"Encryption": True,
+	"Reliability": "Best Effort",
+	"Durability":"Transient Local", 
+}
+

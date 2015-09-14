@@ -1,0 +1,16 @@
+Source: armorenetmap
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Section: misc
+Priority: optional
+Build-Depends: bzip2, make
+Standards-Version: 3.9.3
+Homepage: http://iti.illinois.edu
+
+Package: armorenetmap
+Architecture: amd64
+Depends:  make, bzip2
+Description: Armore Networking.
+ Bundled NetMap Kernel Modules for Armore x64 kernel and utilities.
+ This Package has forwarding options from the fictner github repo.
+ Please download original netmap source for non armore kernel packs
+ https://github.com/fichtner/netmap

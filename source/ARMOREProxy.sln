@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ARMOREProxy", "ARMOREProxy\ARMOREProxy.vcxproj", "{5595051C-29D9-4101-B4F2-ED453B120A8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{3565DC8A-695B-4556-8700-08114B86865E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{5B37C39F-A9F2-48D5-9EBB-25D5CA2A40D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{90808FE3-6FA8-4A09-807A-5B11CFF6996C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5595051C-29D9-4101-B4F2-ED453B120A8D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5595051C-29D9-4101-B4F2-ED453B120A8D}.Debug|Win32.Build.0 = Debug|Win32
+		{5595051C-29D9-4101-B4F2-ED453B120A8D}.Release|Win32.ActiveCfg = Release|Win32
+		{5595051C-29D9-4101-B4F2-ED453B120A8D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5595051C-29D9-4101-B4F2-ED453B120A8D} = {3565DC8A-695B-4556-8700-08114B86865E}
+	EndGlobalSection
+EndGlobal

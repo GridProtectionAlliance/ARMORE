@@ -1,0 +1,22 @@
+<MasterTestSet PhysicalLayer="tcpclient" LogFile="master_testset.log">
+    <Log Filter="LOG_WARNING" />
+    <Master>
+        <Stack>
+            <LinkLayer IsMaster="true" LocalAddress="100" RemoteAddress="1" UseConfirmations="false" AckTimeoutMS="1000" NumRetries="3" />
+            <AppLayer TimeoutMS="10000" MaxFragSize="2048" NumRetries="3" />
+        </Stack>
+        <MasterSettings AllowTimeSync="true" TaskRetryMS="5000" IntegrityPeriodMS="60000" UseNonStandardVtoTransferCode="false" />
+        <ScanList>
+            <ExceptionScan Class1="true" Class2="true" Class3="true" PeriodMS="2000" />
+        </ScanList>
+        <Unsol DoTask="false" Enable="false" Class1="true" Class2="true" Class3="true" />
+        <VtoPorts>
+            <VtoPort PhysicalLayer="vtotunnel" Index="0" StartLocal="true" OpenRetry="5000" />
+        </VtoPorts>
+    </Master>
+    <PhysicalLayerList>
+        <TCPServer Name="vtotunnel" OpenRetryMS="5000" Endpoint="0.0.0.0" Port="20001" />
+        <TCPClient Name="tcpclient" OpenRetryMS="5000" Address="127.0.0.1" Port="20000" />
+        <Serial Name="serial" OpenRetryMS="5000" Device="COM1" BaudRate="9600" Parity="PARITY_NONE" DBits="DATABITS_8" StopBits="STOPBITS_1" FlowControl="FLOW_NONE" />
+    </PhysicalLayerList>
+</MasterTestSet>

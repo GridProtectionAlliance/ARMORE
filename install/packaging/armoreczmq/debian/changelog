@@ -1,0 +1,11 @@
+armoreczmq (3.0.2-1-2) stable; urgency=medium
+
+  * Alpha Release 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Wed, 15 Jul 2015 17:30:35 -0500
+
+armoreczmq (3.0.2-1-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- armore <armore@packetbricks>  Wed, 10 Jun 2015 15:51:46 -0500

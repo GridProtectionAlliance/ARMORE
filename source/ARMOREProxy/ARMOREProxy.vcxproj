@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5595051C-29D9-4101-B4F2-ED453B120A8D}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\ritchie-linux\0004\include\c++\4.8;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\ritchie-linux\0004\include\x86_64-linux-gnu\c++\4.8;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\ritchie-linux\0004\include\c++\4.8\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\ritchie-linux\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\ritchie-linux\0003\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\ritchie-linux\0002\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\ritchie-linux\0004\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\ritchie-linux\0004\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
+    <NMakeOutput>$(ProjectDir)ARMOREProxy-Debug.vgdbsettings</NMakeOutput>
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+    <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeIncludeSearchPath>$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0003\include\c++\4.9;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0003\include\c++\4.9.3;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0003\include\x86_64-linux-gnu\c++\4.9;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0003\include\c++\4.9\backward;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0002\x86_64-linux-gnu\4.9\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0001\include;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0002\x86_64-linux-gnu\4.9\include-fixed;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0003\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0001\include\x86_64-linux-gnu;$(LOCALAPPDATA)\VisualGDB\RemoteSourceCache\armore64-blue\0003\include</NMakeIncludeSearchPath>
+    <NMakeForcedIncludes>$(ProjectDir)\gcc_Release.h;$(VISUALGDB_DIR)\gcc_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
+    <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)" "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
+    <NMakeOutput>$(ProjectDir)ARMOREProxy-Release.vgdbsettings</NMakeOutput>
+    <IncludePath />
+    <ReferencePath />
+    <LibraryPath />
+    <NMakePreprocessorDefinitions>__VisualGDB_CFG_Release;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ARMOREProxy.cpp" />
+    <ClCompile Include="CaptureEngine\DpdkEngine.cpp" />
+    <ClCompile Include="IPAddress.cpp" />
+    <ClCompile Include="MiddlewareEngine\zproxycert.c" />
+    <ClCompile Include="PacketProcessor.cpp" />
+    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="Lock.cpp" />
+    <ClCompile Include="MacAddress.cpp" />
+    <ClCompile Include="SpinLock.cpp" />
+    <ClCompile Include="SynchronizedOperation.cpp" />
+    <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="UUID.cpp" />
+    <ClCompile Include="CaptureEngine\CaptureEngine.cpp" />
+    <ClCompile Include="CaptureEngine\PcapEngine.cpp" />
+    <ClCompile Include="CaptureEngine\NetmapEngine.cpp" />
+    <ClCompile Include="ConsoleLogger\ConsoleLogger.cpp" />
+    <ClCompile Include="ConsoleLogger\StandardLogger.cpp" />
+    <ClCompile Include="ConsoleLogger\ZeroMQLogger.cpp" />
+    <ClCompile Include="MiddlewareEngine\MiddlewareEngine.cpp" />
+    <ClCompile Include="MiddlewareEngine\DdsEngine.cpp" />
+    <ClCompile Include="MiddlewareEngine\ZeroMQEngine.cpp" />
+    <ClCompile Include="TraceFunctions\TraceFunctions.cpp" />
+    <ClCompile Include="MiddlewareEngine\ZeroMQClient.cpp" />
+    <ClCompile Include="MiddlewareEngine\ZeroMQServer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="debug.mak" />
+    <None Include="Makefile" />
+    <None Include="release.mak" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CaptureEngine\DpdkEngine.h" />
+    <ClInclude Include="IPAddress.h" />
+    <ClInclude Include="MiddlewareEngine\zproxycert.h" />
+    <ClInclude Include="PacketProcessor.h" />
+    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="Lock.h" />
+    <ClInclude Include="MacAddress.h" />
+    <ClInclude Include="SpinLock.h" />
+    <ClInclude Include="SynchronizedOperation.h" />
+    <ClInclude Include="Thread.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="UUID.h" />
+    <ClInclude Include="CaptureEngine\CaptureEngine.h" />
+    <ClInclude Include="CaptureEngine\PcapEngine.h" />
+    <ClInclude Include="CaptureEngine\netmap.h" />
+    <ClInclude Include="CaptureEngine\netmap_user.h" />
+    <ClInclude Include="CaptureEngine\NetmapEngine.h" />
+    <ClInclude Include="ConsoleLogger\ConsoleLogger.h" />
+    <ClInclude Include="ConsoleLogger\StandardLogger.h" />
+    <ClInclude Include="ConsoleLogger\ZeroMQLogger.h" />
+    <ClInclude Include="MiddlewareEngine\DdsEngine.h" />
+    <ClInclude Include="MiddlewareEngine\MiddlewareEngine.h" />
+    <ClInclude Include="MiddlewareEngine\ZeroMQEngine.h" />
+    <ClInclude Include="TraceFunctions\TraceFunctions.h" />
+    <ClInclude Include="MiddlewareEngine\ZeroMQClient.h" />
+    <ClInclude Include="MiddlewareEngine\ZeroMQServer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="NOTICE.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
