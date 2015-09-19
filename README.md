@@ -49,4 +49,4 @@ This effort is funded by the Department of Energy Office of Electricity and orga
 
 ## Contact
 
-For more information, contact Tim Yardley (<yardley@illinois.edu>).
+For more information, contact [Tim Yardley](mailto:yardley@illinois.edu) or [J. Ritchie Carroll](mailto:rcarroll@gridprotectionalliance.org).
