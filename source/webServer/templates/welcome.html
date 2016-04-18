@@ -1,0 +1,7 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div class="welcome">
+	<h1>Welcome to ARMORE!</h2>
+	<a href="/dashboard"><font size="5">Sign In </font><span class="fa fa-sign-in fa-2x fa-fw"/></a>
+</div>
+{% endblock %}

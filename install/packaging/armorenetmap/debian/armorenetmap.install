@@ -1,7 +1,8 @@
-igb/*.ko    lib/modules/3.12.0-armore/kernel/net/armorenetmap
-ixgbe/*.ko  lib/modules/3.12.0-armore/kernel/net/armorenetmap
-e1000/*.ko  lib/modules/3.12.0-armore/kernel/net/armorenetmap
-e1000e/*.ko lib/modules/3.12.0-armore/kernel/net/armorenetmap
-*.ko        lib/modules/3.12.0-armore/kernel/net/armorenetmap
+#igb/*.ko    lib/modules/3.18.21-armore/kernel/net/armorenetmap
+#ixgbe/*.ko  lib/modules/3.18.21-armore/kernel/net/armorenetmap
+#e1000/*.ko  lib/modules/3.18.21-armore/kernel/net/armorenetmap
+#e1000e/*.ko lib/modules/3.18.21-armore/kernel/net/armorenetmap
+#*.ko        lib/modules/3.18.21-armore/kernel/net/armorenetmap
+netmap.ko        lib/modules/3.18.21-armore/kernel/net/armorenetmap
 
 build\-apps/* /usr/share/armorenetmap

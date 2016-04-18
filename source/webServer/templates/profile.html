@@ -1,0 +1,48 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif %}
+{% block content %}
+<div id="profile" class="col-md-6 col-xs-12">
+	<div class="box col-md-12 col-xs-12">
+		<div class="box-header">
+			<span>Profile</span><br/>
+		</div>
+		<div class="box-content">
+			<form id="frmUpdPwd" class="form-horizontal" action='/admin/updatePwd/{{ username.name }}' method="post" accept_charset="utf-8" role="form" data-toggle="validator" onsubmit="addDigest()">
+				<table class="table table-hover col-md-12 col-xs-12">
+					<tr>
+						<td class="col-md-3 col-xs-6 col-lg-2">Username:</td>
+						<td colspan=1 class="col-md-9 col-xs-6 col-lg-8"><span id="spUsername">{{ username.name }}</span></td>
+					</tr>
+					<tr>
+						<td class="col-md-3 col-xs-6 col-lg-2">Role:</td>
+						<td colspan=1 class="col-md-9 col-xs-6 col-lg-10"><span id="spRole">{{ username.role }}<sp/></td>
+					</tr>
+					<tr>
+						<td colspan=2 class="col-md-12 col-xs-12 col-lg-12">
+							<div class="row col-md-7 col-xs-7">
+								<input id="inpOldPwd" type="password" class="form-control input-lg" placeholder="Old Password" required/>
+							</div>
+							<div class="help-block with-errors"></div>
+							<div class="row col-md-7 col-xs-7">
+								<input id="inpNewPwd" type="password" class="form-control input-lg" placeholder="New Password" required/>
+							</div>
+							<div class="help-block with-errors"></div>
+							<div class="row col-md-7 col-xs-7">
+								<input id="inpNewPwdCon" type="password" class="form-control input-lg" placeholder="Confirm New Password" data-match="#inpNewPwd" data-match-error="Passwords Don't Match" required/>
+							</div>
+							<div class="help-block with-errors"></div>
+							<div class="row col-md-7 col-xs-7">
+								<button class="btn btn-lg btn-primary btn-block signup-btn" type="submit">
+									Update Password
+								</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<a href="/admin/addUser"><u>Add User</u></a>
+	<br/>
+	<a href="/admin/users"><u>View Users</u></a>
+</div>
+{% endblock %}

@@ -1,17 +1,10 @@
 Source: armoreczmq
 Priority: extra
-Maintainer: armore <armore@packetbricks>
+Maintainer: Steve Granda <sgrand2@illinois.edu>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev
 Standards-Version: 3.9.3
 Section: libs
-Homepage: http://code.iti.illinois.edu
-
-#Package: armoreczmq-dev
-#Section: libdevel
-#Architecture: any
-#Depends: armoreczmq(= ${binary:Version})
-#Description: Curve ZMQ
-# C Binding for ZeroMQ
+Homepage: http://czmq.zeromq.org
 
 Package: armoreczmq
 Section: libs

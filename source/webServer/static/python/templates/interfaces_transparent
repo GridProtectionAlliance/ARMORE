@@ -1,0 +1,24 @@
+# Transparent mode
+auto lo $Management_Interface
+iface lo inet loopback
+
+#Management interface
+allow-hotplug $Management_Interface
+iface $Management_Interface inet static
+address $Management_IP
+netmask $Management_Mask
+up sleep 5;
+
+#Transparent Mode Bridge
+auto br0
+
+iface $Interface_1 inet manual
+iface $Interface_2 inet manual 
+
+iface br0 inet static
+	bridge_ports $Interface_1 $Interface_2
+	address $Bridge_IP
+	broadcast $Broadcast_IP
+	netmask $Bridge_Mask
+	gateway $Bridge_Gateway
+	up ip route add $Bridge_CIDR via $Bridge_Gateway

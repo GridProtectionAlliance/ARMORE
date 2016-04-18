@@ -1,0 +1,13 @@
+Source: libzmq5
+Priority: optional
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 9), autotools-dev
+Standards-Version: 3.9.5
+Section: libs
+Homepage: http://www.zeromq.org
+
+Package: libzmq5
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: lightweight messaging kernel (shared library)
+ ZMQ is a library extending socket interfaces with features from middleware products

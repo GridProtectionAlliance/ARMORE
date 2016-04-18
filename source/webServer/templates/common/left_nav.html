@@ -1,0 +1,66 @@
+<div class="left-nav">
+	{% if common.page != "initialUserSetup" %}
+	<ul class="menu">
+		<li {% if common.page == "dashboard" %}class="active"{% endif %}>
+			<a href="/dashboard">
+				<span class="fa fa-th fa-2x fa-fw"></span>
+				<span class="option-text">Dashboard</span>
+			</a>
+		</li>
+		<li {% if common.page == "settings" %}class="active"{% endif %}>
+			<a href="/settings">
+				<span class="fa fa-wrench fa-2x fa-fw"></span>
+				<span class="option-text">Settings</span>
+			</a>
+		</li>
+		<li {% if common.page == "security" %}class="active"{% endif %}>
+			<a href="/security">
+				<span class="fa fa-lock fa-2x fa-fw"></span>
+				<span class="option-text">Security</span>
+			</a>
+		</li>
+		<li {% if common.page == "policy" %}class="active"{% endif %}>
+			<a href="/policy">
+				<span class="fa fa-gavel fa-2x fa-fw"></span>
+				<span class="option-text">Policy</span>
+			</a>
+		</li>
+		<li {% if common.page == "statistics" %}class="active"{% endif %}>
+			<a href="/statistics">
+				<span class="fa fa-bar-chart fa-2x fa-fw"></span>
+				<span class="option-text">Statistics</span>
+			</a>
+		</li>
+		<li {% if common.page == "visualization" %}class="active"{% endif %}>
+			<a href="/visualization">
+				<span class="fa fa-area-chart fa-2x fa-fw"></span>
+				<span class="option-text">Visualization</span>
+			</a>
+		</li>
+		<li {% if common.page == "logs" %}class="active"{% endif %}>
+			<a href="/logs">
+				<span class="fa fa-book fa-2x fa-fw"></span>
+				<span class="option-text">Logs <span class="num" id="log_count"></span></span>
+			</a>
+		</li>
+		<li {% if common.page == "network" %}class="active"{% endif %}>
+			<a href="/network">
+				<span class="fa fa-signal fa-2x fa-fw"></span>
+				<span class="option-text">Network</span>
+			</a>
+		</li>
+		<li {% if common.page == "processes" %}class="active"{% endif %}>
+			<a href="/processes">
+				<span class="fa fa-cog fa-2x fa-fw"></span>
+				<span class="option-text">Processes</span>
+			</a>
+		</li>
+		<li {% if common.page == "admin" %}class="active"{% endif %} style="display:{% if session.role != "admin" %}none{% else %}initial{% endif %}" >
+			<a href="/admin">
+				<span class="fa fa-briefcase fa-2x fa-fw"></span>
+				<span class="option-text">Admin</span>
+			</a>
+		</li>
+	</ul>
+	{% endif %}
+</div>

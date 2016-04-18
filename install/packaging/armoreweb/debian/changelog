@@ -1,0 +1,17 @@
+armoreweb (1.0.0-1-1.2) stable; urgency=medium
+
+  * upstream updates and modified core configuration path
+
+ -- sgrand2 <sgrand2@illinois.edu>  Wed, 16 Mar 2016 17:15:47 -0500
+
+armoreweb (1.0.0-1-1.1) stable; urgency=medium
+
+  * Upstream fixes on visualization from static and templates
+
+ -- sgrand2 <sgrand2@illinois.edu>  Tue, 02 Feb 2016 14:24:06 -0600
+
+armoreweb (1.0.0-1-1) stable; urgency=low
+
+  * Initial Packaged Release
+
+ -- Steve Granda <sgrand2@illinois.edu>  Thu, 21 Jan 2016 13:14:10 -0600

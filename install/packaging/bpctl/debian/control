@@ -1,0 +1,13 @@
+Source: bpctl
+Section: misc
+Priority: optional
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: http://iti.illinois.edu
+
+Package: bpctl
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, linux-image-3.18.21-armore
+Description: Bypass Driver 
+ Installs Silicom Intel I350 Bypass Driver

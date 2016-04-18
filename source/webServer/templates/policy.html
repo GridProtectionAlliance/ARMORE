@@ -1,0 +1,24 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="policy">
+	<h1>Policy</h1>
+	<div class="box col-md-2 col-xs-4">
+		<table>
+			<tr>
+				<td>
+					<a href="policy">Current Policies*</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="policy">Add Policy*</a>
+				</td>
+			</tr>
+			<tr><td><br/></td></tr>
+			<tr>
+				<td>* Links not currently active</td>
+			</tr>
+		</table>
+	</div>
+</div>
+{% endblock %}

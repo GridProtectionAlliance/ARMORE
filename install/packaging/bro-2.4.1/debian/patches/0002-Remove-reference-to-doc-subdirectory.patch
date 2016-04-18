@@ -1,0 +1,20 @@
+From: Hilko Bengen <bengen@debian.org>
+Date: Sun, 28 Jun 2015 16:25:16 +0200
+Subject: Remove reference to doc/ subdirectory
+
+---
+ CMakeLists.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5e9d09d..3739925 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -193,7 +193,6 @@ endif ()
+ 
+ add_subdirectory(src)
+ add_subdirectory(scripts)
+-add_subdirectory(doc)
+ add_subdirectory(man)
+ 
+ include(CheckOptionalBuildSources)

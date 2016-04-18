@@ -1,0 +1,22 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="dashboard">
+	<h1>Dashboard</h1>
+	<div class="box col-md-6 col-xs-12">
+		<div class="box-header">
+			<span>ARMORE Status</span>
+		</div>
+		<ul class="states">
+			{% for sys in systems %}
+			<div class="row-fluid">
+				<li class="{{ sys.status }} col-md-12 col-xs-12">
+					<span class="pull-left">
+						{{ sys.name }} is {{ sys.state }} - cpu @ {{'%2.f' % sys.cpuPercent }}%
+					</span>
+				</li>
+			</div>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+{% endblock %}

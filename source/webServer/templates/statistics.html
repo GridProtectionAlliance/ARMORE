@@ -1,0 +1,16 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="statistics">
+	<h1>Statistics</h1>
+	<div class="box col-md-6 col-xs-12">
+		<div class="box-header">
+			<span>
+				This page shows archived statistics from local historian
+			</span>
+		</div>
+		<ul class="states">
+			<li class="error">Error: Local historian archive is currently not active.</li>
+		</ul>
+	</div>
+</div>
+{% endblock %}

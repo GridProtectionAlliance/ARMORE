@@ -1,5 +1,0 @@
-scout_realtime
-https://github.com/scoutapp/scout_realtime
-
-sudo apt-get install ruby
-sudo gem install scout_realtime

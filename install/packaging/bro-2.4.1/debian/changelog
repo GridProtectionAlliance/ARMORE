@@ -1,0 +1,36 @@
+bro (2.4.1+dfsg-1) unstable; urgency=medium
+
+  * New upstream version
+
+ -- Hilko Bengen <bengen@debian.org>  Thu, 29 Oct 2015 19:01:12 +0100
+
+bro (2.4+dfsg-1) unstable; urgency=medium
+
+  * New upstream version
+  * Rebased patch queue
+  * Deleted our manpage since there is now one in the upstream sources
+
+ -- Hilko Bengen <bengen@debian.org>  Sun, 28 Jun 2015 16:37:10 +0200
+
+bro (2.3.2+dfsg-1) unstable; urgency=medium
+
+  * New upstream version
+  * Add missing entry to debian/copyright
+  * Drop bro-doc package. The documentation can't be packaged in main
+    because of license issues (CC BY-NC 3.0)
+  * Add script for stripping the doc/ directory from the original tarball
+  * Adjust binpac build-dependency
+
+ -- Hilko Bengen <bengen@debian.org>  Tue, 03 Feb 2015 21:14:50 +0100
+
+bro (2.3.1-2) unstable; urgency=medium
+
+  * Fix FTBFS when building architecture-dependent package only
+
+ -- Hilko Bengen <bengen@debian.org>  Sat, 13 Dec 2014 15:47:12 +0100
+
+bro (2.3.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #752546)
+
+ -- Hilko Bengen <bengen@debian.org>  Fri, 05 Dec 2014 22:14:18 +0100

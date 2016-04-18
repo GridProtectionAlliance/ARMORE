@@ -1,0 +1,20 @@
+# Passive Mode
+auto lo eth0
+iface lo inet loopback
+
+#Management interface
+allow-hotplug $Management_Interface
+iface $Management_Interface inet static
+address $Management_IP
+netmask $Management_Mask
+up sleep 5;
+
+#Passive Mode Configuration
+auto $Monitored_Interface
+
+#Span interface
+allow-hotplug $Monitored_Interface
+iface $Monitored_Interface inet static
+address $Monitored_IP
+netmask $Monitored_Mask
+up sleep 5; $Monitored_Interface promisc

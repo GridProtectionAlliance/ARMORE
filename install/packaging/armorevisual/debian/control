@@ -1,0 +1,13 @@
+Source: armorevisual
+Section: misc
+Priority: optional
+Maintainer: sgrand2 <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 8)
+Standards-Version: 3.9.5
+Homepage: https://iti.illinois.edu
+
+Package: armorevisual
+Architecture: any
+Depends: armorenode, graphite-web, graphite-carbon, sqlite3, npm, nodejs, apache2, libapache2-mod-wsgi, statsd, python3, python3-dev, python3-pip
+Description: ARMORE Webservice
+ ARMORE Webservices

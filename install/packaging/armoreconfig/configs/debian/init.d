@@ -2,26 +2,27 @@
 #This Script manages the services needed for an ARMOREnode
 ### BEGIN INIT INFO
 # Provides:          armoreconfig
-# Required-Start:    $network $local_fs
+# Required-Start:    $network $local_fs $syslog
 # Required-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: ARMOREnode service
-# Description:       Enables ARMOREnode services
+# Short-Description: ARMORE service
+# Description:       ARMORE service manager
 ### END INIT INFO
 
 # Author: Steve Granda <sgrand2@illinois.edu>
 
-PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=armoreconfig #Introduce a short description here
-NAME=ARMOREProxy # Introduce the short server's name here
-DAEMON=/usr/share/armoreproxy/ARMOREProxy #Introduce the server's location here
-DAEMON_ARGS=""             # Arguments to run the daemon with
-PROXYPIDFILE=/var/run/$NAME.pid
-SCRIPTNAME=/etc/init.d/$NAME
+###############################################################################
+#Initialization Vars
+###############################################################################
 
-# Read configuration variable file if it is present
-[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC=ARMORE 				#Introduce a short description here
+NAME=ARMOREProxy 			#Introduce the short server's name here
+DAEMON=/usr/bin/ARMOREProxy 		#Introduce the server's location here
+DAEMON_ARGS=""             		#Arguments to run the daemon with
+#PROXYPIDFILE=/var/run/$NAME.pid #REMOVE_TEST
+SCRIPTNAME=/etc/init.d/$NAME
 
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
@@ -29,167 +30,204 @@ SCRIPTNAME=/etc/init.d/$NAME
 # Define LSB log_* functions.
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
-. /etc/armore/armore-utils.sh
+##. /etc/armore/armore-utils.sh
 
-#
-#Check Kernel Version. Without correct version, software will not work
-#
-KERNPACK="$(uname -ra | grep -ci 3.12.0)"
+#Check Kernel Version.
+KERNPACK="$(uname -ra | grep -ci 3.18.21-armore)"
 
+#Check Kernel is loaded
 if [ $KERNPACK -ne "1" ];
 then
-    log_failure_msg "Wrong Kernel Version ArmoreNode not running. If you just installed ARMORENode please restart" 
-    exit 0
+    log_failure_msg "ArmoreKernel not running. If you just installed ARMORENode please restart" 
+    exit 0 
 fi
 
-#
-# Function that starts the daemon/service
-#
+#Read configuration and set variables
+  APROXYCFG="/etc/armore/armoreconfig"
+
+    if [ -e "$APROXYCFG" ]
+      then
+
+	Operation="$(cat $APROXYCFG | grep Operation\ = | sed 's/Operation\ =//' | sed 's/ //')"
+	Roletype="$(cat $APROXYCFG | grep Roletype\ = | sed 's/Roletype\ =//' | sed 's/ //')"
+	Interface="$(cat $APROXYCFG | grep Interface\ = | sed 's/Interface\ =//' | sed 's/ //')"
+	Encryption="$(cat $APROXYCFG | grep Encryption\ = | sed 's/Encryption\ =//' | sed 's/ //')"
+	Bind="$(cat $APROXYCFG | grep Bind\ = | sed 's/Bind\ =//' | sed 's/ //')"
+	Port="$(cat $APROXYCFG | grep Port\ = | sed 's/Port\ =//' | sed 's/ //')"
+	Capture="$(cat $APROXYCFG | grep Capture\ = | sed 's/Capture\ =//' | sed 's/ //')"
+
+#Flag variables for daemon to run with
+	Roleflag=""
+	Encryptionflag=""
+	Captureflag=""
+	fi
+
+
+###############################################################################
+# Latch
+##############################################################################
+do_latch()
+{
+  log_success_msg "Enabling Hardware Bypass Mode"
+}
+###############################################################################
+# Start Monitoring
+##############################################################################
+do_monitor()
+{
+#Start/Check for Bro instance
+  BROSTAT="$(pgrep -c bro)"
+    if [ $BROSTAT -eq "0" ];
+  then
+    log_success_msg "Starting Bro"
+    broctl start
+    else
+      log_warning_msg "Bro already running"
+	fi
+}
+###############################################################################
+# Start Proxy
+##############################################################################
+do_proxy()
+{
+  if [ "$Capture" == "NetMap" ];
+  then
+
+#Check NetMap kmod is loaded
+
+    NETMAPCHECK="$(lsmod | grep -ci netmap)"
+    if [ "$NETMAPCHECK" -lt "1" ];
+  then 
+    log_warning_msg "Loading NetMap Module"
+    insmod /lib/modules/3.18.21-armore/kernel/net/armorenetmap/netmap.ko
+    fi
+
+    Captureflag="-c netmap"
+    fi
+
+#Specify Pcap as capture method
+
+    if [ "$Capture" == "Pcap" ];
+  then
+    Captureflag="-c pcap"
+    fi
+
+#Now we check to see if we're running a server
+    if [ "$Roletype" == "Server" ];
+  then
+    Roleflag="-s"
+    else
+      Roleflag=""
+	fi
+
+
+#Check if encryption is enabled
+	if [ "$Encryption" == "Enabled" ];
+  then
+    if [ -d "/etc/armore/.curve" ];
+  then
+    Encryptionflag="-e"
+    else
+      log_failure_msg "Certificates could not be found in /etc/armore. ARMORE running unencrypted!"
+	Encryptionflag=""
+	fi
+
+	else
+	  Encryptionflag=""
+	    fi
+
+}
+###############################################################################
+# Start Services
+##############################################################################
 do_start()
 {
-  #Make system do ip_forwarding
-  log_success_msg "Enabling IPv4 forwarding"
-  sysctl -w net.ipv4.ip_forward=1
 
 
-  #Check to see if netmap modules are loaded 
-  if checkmodules -ne "1" ;
+	if [ "$Operation" == "Proxy" ];
   then
-    log_failure_msg "NetMap module could not be loaded. ARMORENode not running"
-    exit 
-  fi
+    do_proxy
 
-  #Read in proxy configuration
-  APROXYCFG="/etc/armore/proxycfg"
+    log_success_msg "Starting ARMORE Proxy on $Interface $Bind:$Port"
+    DAEMON_ARGS="$Roleflag $Encryptionflag $Interface $Bind:$Port"
+    start-stop-daemon --start --chdir /etc/armore/ --background --quiet --name $NAME --exec $DAEMON -- $DAEMON_ARGS
 
-  if [ -e "$APROXYCFG" ]
+#Begin Monitoring Services
+    do_monitor
+
+    fi
+
+    if [ "$Operation" == "Passive" ];
   then
-
-    PORT="$(cat $APROXYCFG | grep Port\ = | sed 's/Port\ =//' | sed 's/ //')"
-    Roletype="$(cat $APROXYCFG | grep Roletype\ = | sed 's/Roletype\ =//' | sed 's/ //')"
-    Interface="$(cat $APROXYCFG | grep Interface\ = | sed 's/Interface\ =//' | sed 's/ //')"
-    Bind="$(cat $APROXYCFG | grep Bind\ = | sed 's/Bind\ =//' | sed 's/ //')"
-    Connect="$(cat $APROXYCFG | grep Connect\ = | sed 's/Connect\ =//' | sed 's/ //')"
-    Operation="$(cat $APROXYCFG | grep Operation\ = | sed 's/Operation\ =//' | sed 's/ //')"
-    Capture="$(cat $APROXYCFG | grep Capture\ = | sed 's/Capture\ =//' | sed 's/ //')"
-    Log="$(cat $APROXYCFG | grep Log\ = | sed 's/Log\ =//' | sed 's/ //')"
-    PROMSET="$(ifconfig $Interface promisc)"
-    DAEMON_ARGS=""
-
-
-    if [ "$Roletype" == "Server" ];
-    then
-      DAEMON_ARGS="-s "
-    fi
-    
-    if [ "$Capture" == "Pcap" ];
-    then
-      DAEMON_ARGS="$DAEMON_ARGS -c pcap $Interface "
-    else
-      DAEMON_ARGS="$DAEMON_ARGS $Interface "
+    do_monitor
     fi
 
-    if [ "$BIND" == "" ] && [ "$Roletype" == "Server" ];
-    then 
-      DAEMON_ARGS="$DAEMON_ARGS *:$PORT"
-    else
-      DAEMON_ARGS="$DAEMON_ARGS $BIND;$Connect:$PORT"
+    if [ "$Operation" == "Transparent" ];
+  then
+    do_monitor
     fi
-    
-    #DAEMON_ARGS="-s -i 0 -c pcap -m zeromq $LIFACE *:$PORT"
-    #echo $PORT $Roletype $Interface $Bind $Connect $Operation $Capture $Log
-    #echo "---------------------cut here-----------------"
-    #echo "$DAEMON_ARGS"
-
-
-
-    NODE_ARGS="/usr/share/statsd/stats.js /etc/statsd/localConfig.js"
-    NODENAME="node"
-    NODEDAEMON="/usr/bin/node"
-
-    #Start ARMOREProxy with settings from APROXYCFG in /etc/armore/proxycfg
-    log_success_msg "Starting ARMORE Proxy on $LIFACE $PORT"
-    start-stop-daemon --start --background --quiet --name $NAME --exec $DAEMON -- $DAEMON_ARGS > $Log
-
-
-  else
-    log_failure_msg "ARMOREProxy configuration not found. ARMORENode not running"
-
-  fi
-
-  #Start Carbon Service to begin collecting statsd metrics
-  log_success_msg "Starting Carbon"
-  carbon-cache --config=/etc/carbon/carbon.conf start
-
-  #Start NodeJS to begin collecting StatsD via Bro-StatsD-Plugin
-  log_success_msg "Starting Node"
-  start-stop-daemon --start --background --quiet --name $NODENAME --exec /usr/bin/node -- $NODE_ARGS > $Log 
-
-  log_success_msg "Starting Bro"
-  broctl start
 
 }
-
-#
-# Function that stops the daemon/service
-#
+###############################################################################
+# Stop Service
+###############################################################################
 do_stop()
 {
-    
-  log_success_msg "Stopping ARMORE Proxy"
-  start-stop-daemon --stop --quiet --signal QUIT --name $NAME
-  
-  log_success_msg "Stopping Bro"
-  broctl stop
-  
-  log_success_msg "Stopping Node Daemon"
-  start-stop-daemon --stop --quiet -x /usr/bin/node
-  
-  log_success_msg "Stopping Carbon"
-  carbon-cache --config=/etc/carbon/carbon.conf stop 
-  
-  log_success_msg "Disabling IPv4 forwarding"
-  sysctl -w net.ipv4.ip_forward=0
+  if [ "$Operation" == "Proxy" ];
+  then
+    APROXYCFG="/etc/armore/armoreconfig"
+    log_success_msg "Stopping ARMORE Proxy"
+    start-stop-daemon --stop --quiet --signal QUIT --name $NAME
+    fi
+
+    BROSTAT="$(pgrep -c bro)"
+    if [ $BROSTAT -ne "0" ];
+  then
+    log_success_msg "Stopping Bro"
+    broctl stop
+    else
+      log_warning_msg "Bro already stopped"
+	fi
 }
 
-#
+###############################################################################
 # Function that sends a SIGHUP to the daemon/service
-#
+###############################################################################
 do_reload() {
 
   log_success_msg "Reloading Bro"
-  broctl restart
+    broctl install
+    broctl restart
+
+    do_stop
+    do_start
+
 }
 
-do_check() {
-
-  #Check if ARMOREProxy is running
-  status_of_proc "$DAEMON" "$NAME" #&& exit 0 || exit $?
-
-  CARBONSTAT="$(carbon-cache --config=/etc/carbon/carbon.conf status | grep -ci pid)"
-  STATSD="$(netstat -tuplv | grep -ci localConfig)"
-  BROSTAT="$(ps awux | grep -ci local.bro)"
-
-  
-  #Check if Carbon and StatsD are running. We also need Apache2
-
-  if [ $CARBONSTAT -ge "1" ] && [ $STATSD -ge "1" ];
+###############################################################################
+#Check status
+###############################################################################
+do_check() 
+{
+  if [ "$Operation" == "Proxy" ];
   then
-    log_success_msg "Visual Stats are being collected" 
-  else
-    log_failure_msg "Visual Stats are NOT being collected" 
-  fi
+    status_of_proc "$DAEMON" "$NAME" #$$ exit 0 || exit $?
+    fi
 
-  #Check that an instance of Bro is running
+    BROSTAT="$(pgrep -c bro)"
 
-  if [ $BROSTAT -ge "1" ];
+    if [ $BROSTAT -ne "0" ];
   then
     log_success_msg "Bro is running"
-  else  
-    log_failure_msg "Bro is not running"
-  fi
+    else
+      log_failure_msg "Bro is not running"
+	fi
 
 }
+
+###############################################################################
+#Service Definitions
+###############################################################################
 
 case "$1" in
   start)

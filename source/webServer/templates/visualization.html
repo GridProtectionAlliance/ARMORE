@@ -1,0 +1,10 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="visualization" class="col-md-12 col-xs-12">
+	<div class="box">
+		<div id="divVisContent">
+		</div>
+	</div>
+	<script src="/static/js/visualization.js"></script>
+</div>
+{% endblock %}

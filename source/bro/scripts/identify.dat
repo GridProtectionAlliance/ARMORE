@@ -1,3 +1,0 @@
-#fields	indicator	indicator_type	meta.source	meta.desc
-MODBUS_WRITE_SINGLE_COIL_REQUEST_WRITE_SINGLE_COIL_RESPONSE	Intel::FUNCTION_PAIR	identify	Alice;Bob
-DNP3_READ_RESPONSE	Intel::FUNCTION_PAIR	identify	Charlie;Dave

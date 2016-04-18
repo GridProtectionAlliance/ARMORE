@@ -1,0 +1,546 @@
+                 Release Notes
+       Silicom Linux Bypass-SD Control Utility
+		Version 5.1.5
+		   06/08/2015
+v5.1.5
+- Fixed sleep for KVM.
+
+v5.1.4
+- Added support for KVM.
+
+v5.1.3
+- Fixed output message for switch "all".
+- Changed bpctl_util return code.
+
+v5.1.2
+- Added KVM passthrough support for 82599.
+
+v5.1.1
+- Added reboot notifier.
+
+v5.0.66
+- Moved to BSD license.
+
+v5.0.65.1v2
+- Fixed some warnings.
+
+v5.0.65.1v
+- Latch delay free version.
+
+v5.0.65
+- Fixed problem with event notifier
+(kernel 3.13 problem) 
+
+
+v5.0.64.1
+- Fixed problem with pci alloc failed 
+devices
+                   
+v5.0.64
+- Added support for 
+PEG2BPFI6-FLXM-SD-RB2
+
+
+v5.0.63
+- Added support for
+PE2G2BPFi35A-SD-RB2
+PE2G2BPFi35A-LX-SD-RB2
+PE2G4BPi35LA-SD-RB2
+PE2G4BPFi35A-SD-RB2
+PE2G4BPFi35A-LX-SD-RB2
+PE10G2DBi-SR-SD-RB2
+PE10G2DBi-LR-SD-RB2
+PE310G4DBi9-SR-SD-RB2
+PE310G4DBi9-LR-SD-RB2
+PE310G4DBi9-T-SD-RB2
+
+
+v5.0.62                   
+- Added support for 
+M1E210G2BPi9-SRD-SD-JP
+M1E210G2BPi9-SRDSD-JP1
+M1E210G2BPi9-LRD-SD-JP
+M1E210G2BPi9-LRDSD-JP1
+
+
+
+v5.0.61                   
+- Added support for PE310G4BPi9SRD, PE310G4BPi9LRD.
+
+v5.0.60
+- Fixed support for kernel 3.8.
+
+v5.0.59
+- Added support for kernel 3.10.
+
+v5.0.58
+- Fixed BP_PROC_SUPPORT flag.
+
+v5.0.57
+- Added support for PE210G2BPI9LRD, PE210G2BPI9SRD.
+
+v5.0.56
+- Added support for PE210G2BPi40.
+
+v5.0.55
+- Added support for PE2G4BPFi35-SD-CS.
+
+v5.0.54
+- Changed to BSD license
+
+v5.0.53
+- Fixed delay routine.
+
+v5.0.52
+- Added support for 3.8.0.
+
+v5.0.51
+- Fixed bypass_caps for 82599 group.
+- Added workaround for abnormal delay issue.
+- Fixed tpl clean routine.
+
+v5.0.50
+- Fixed bypass_caps for sc fiber group.
+
+v5.0.49
+- Added
+M1E2G4BPi35JP,
+M1E2G4BPi35JP1,
+PE310G4DBi9T
+- Changed to BSD license
+
+v5.0.48
+- Added
+M1E2G4BPi35,
+M1E2G4BPFi35,
+M1E2G4BPFi35LX,
+M1E2G4BPFi35ZX,
+
+v5.0.47                   
+- Fixed PEG2BI5SC6 support.
+
+
+v5.0.46                   
+- Fixed bypass_caps for fiber5 group.
+
+
+v5.0.44                   
+- Fixed event notifier.
+
+v5.0.43                   
+- Removed support for M1E10G2BPI9T
+
+v5.0.42                   
+- Added support for M1E210G2BPi40-T
+                   
+v5.0.41
+- Added support for PEG4BPFI6CS.
+
+v5.0.40.39.1
+- Some changes for PE2G6BPI6CS & PE2G6BPi35CX.
+
+v5.0.40.39
+- Added support for PE2G6BPI6-SD. 
+- Fixed compilation warnings.
+- Fixed version printout.                  
+
+v5.0.40.38
+- Added support for PE2G6BPI6CS-SD.
+
+v5.0.40.36
+- if_scan_init changes.
+
+v5.0.40.35
+- Added missed device id for i80, i35, 98, 99 series.
+
+
+v5.0.40.34
+- Added support for M6E310G4BPi9SR, M6E310G4BPi9LR.
+
+v5.0.40.33
+- Set_tx fixes.
+
+v5.0.40.32
+- Added PAC1200BPi35,  PE210G2BPI40.
+- Fixed set_tx for DBI6.
+
+
+v5.0.40.29
+- Added device ID for some 99..
+
+v5.0.40.28
+- Added PE310G4BPi9T 
+        PE310G4BPi9SR
+        PE310G4BPi9LR  
+
+v5.0.40.27
+- Added PE2G6BPi35
+
+v5.0.40.26
+- Some fixes in if_scan_init 
+(problem with bridge).
+
+ 
+v5.0.40.25.7
+- Fixed compilation flags.
+- Added support for
+PE2G6BPFi35, PE2G6BPFi35CX.
+
+
+v5.0.40.25.4
+- Removed default compilation of DBI-specific command
+- Removed DBI-specific command for DBI9
+
+v5.0.40.25.3
+- Issue with RH6 + proc 
+(crash with load/unload network driver)
+
+v5.0.40.25.2
+- Fixed EXTRA_CFLAGS entries.
+- Removed DBI9-RB cards 
+(the same ID'S as for non-RB)
+
+
+v5.0.40.25.1
+- Added DBIspecific commands.
+
+
+v5.0.40.25
+- Added support for
+
+PE2G2BPFi35, 
+PE2G2BPFi35LX,
+PE2G2BPFi35ZX,
+PE2G4BPFi35,
+PE2G4BPFi35LX,
+PE2G4BPFi35ZX,
+PE2G2BPi35,
+PE2G4BPi35L,
+PE2G4BPi35,
+M6E2G8BPi80A. 
+
+
+v5.0.40.24
+- Added support for kernel 3.0.
+
+v5.0.40.23
+- Added support for 
+PE210G2DBi9SR,  
+PE210G2DBi9SRRB,
+PE210G2DBi9LR,  
+PE210G2DBi9LRRB,
+PE310G4DBi940SR.
+
+v5.0.40.22
+- Fixed if_scan_init.
+
+v5.0.40.21
+- Removed kernel lock.
+
+v5.0.40.20
+- Removed unnecessary printout
+
+v5.0.40.19
+- Added PROC interface
+- Added refreshing network interface list on NETDEV event.
+
+
+v5.0.40.18
+- Changes in if_scan_init
+
+
+v5.0.40.17
+- Added support for PE2G2BPi80-series adapters.
+- Added if_scan (refresh network interface list) command.
+
+v5.0.40.16
+- Changes in get_dev_idx (compatibility with 3.xx.xx Intel drivers).
+
+
+v5.0.40.15
+- Changes in lock (get_bypass_caps).
+
+
+v5.0.40.14
+- Changes in lock.
+- Changed in get_expired_time.
+
+v5.0.40.11
+- Fixed TX_CTL for i80.
+
+
+v5.0.40.10
+- Added support for M6E2G8BPi80. 
+
+v5.0.40.8
+- Added support for 2.6.36. 
+
+v5.0.40.7
+- Added support for hw TX_CTL (copper i80)... 
+
+v5.0.40.6
+- Fixed get_status for i80 series.
+
+
+v5.0.40.5
+- Changed CLK to port 1 for Intel 82599.
+
+v5.0.40.2
+- Changed interface for Intel 82599.
+
+v5.0.40.1
+- BP_LINK_FAIL compilation switch is ON by default.
+		 
+v5.0.40
+- Added Bypass Link Fail notifier.
+  Under BP_LINK_FAIL compilation switch.
+  Prints bypass/disc (if ON) and WDT expired status on Link Down event.
+
+v5.0.39.9
+- Fixed get_bypass_slave for i80
+- Changed M1E2 names to MxE2.
+
+v5.0.39.8
+-Added support for M1E2G4BPFi80-SD
+M1E2G4BPFi80-LX-SD
+M1E2G4BPFi80-ZX-SD
+
+
+v5.0.39.6                  
+- Added support for M1E2G4BPi80.
+
+v5.0.39.5
+- Added support for PEG2BPFI6FLXM.
+
+v5.0.39.4
+- Added support for user-space driver.
+
+v5.0.38.4
+- Changed 82599 handling.
+- Updated MxE-series name.
+
+v5.0.38.3
+- Fixed adapter name for PEG2BI5SC6.
+                 
+v5.0.38.2
+- Added support tx_on/off for 82575 copper.
+- Added supprt for following adapters:
+    M1E10G2BPI9CX4, 
+    M1E10G2BPI9SR, 
+    M1E10G2BPI9LR, 
+    M1E10G2BPI9T,
+    PE210G2BPI9CX4,
+    PE210G2BPI9SR,
+    PE210G2BPI9LR,
+    PE210G2BPI9T,
+    M2EG2BPFI6,
+    M2EG2BPFI6LX,
+    M2EG2BPFI6ZX,
+    M2EG4BPI6,
+    M2EG4BPFI6,
+    M2EG4BPFI6LX,
+    M2EG4BPFI6ZX,
+    M2EG6BPI6,
+    PEG2DBI6,   
+    PEG2DBFI6,  
+    PEG2DBFI6LX,
+    PEG2DBFI6ZX,
+    MEG2BPI6,   
+    XEG2BPI6.
+    
+v5.0.37
+- Added support for 2.6.32. 
+ 
+v5.0.36 
+- Added support for M1EG2BPi6-SD, M1EG2BPFi6-SD, M1EG2BPFi6-LX-SD
+M1EG2BPFi6-ZX-SD, M1EG4BPi6-SD, M1EG4BPFi6-SD, M1EG4BPFi6-LX-SD
+M1EG4BPFi6-ZX-SD, M1E2G6BPi6-SD.
+
+v5.0.34d
+- Added support for 82599 Bypass..
+
+v5.0.33
+- Changes in HW handling for 82575/6 fiber.
+
+v5.0.32
+- Added support for PE10G2DBILR. 
+                  
+v5.0.31
+- Added support for PXEG4BPFI.
+
+v5.0.30
+- Added support for PEG2BPFI5, PEG2BPFI5LX.
+		  
+v5.0.29
+- Added support get/set_hw_reset.		  
+                  
+v5.0.28
+- Fixed memory leak problem in wd_reset_timer.
+
+v5.0.27 
+- Added support for PEG4BPFI6, PEG4BPFI6LX,  
+PEG4BPFI6ZX, PEG2BPI6, PEG2BPFI6, PEG2BPFI6LX, PEG2BPFI6ZX, 
+PEG4BPI6FC, PEG4BPFI6FC, PEG4BPFI6FCLX, PEG4BPFI6FCZX,
+PEG6BPI6,  MEG2BPI6, XEG2BPI6, MEG4BPI6.
+ 
+v5.0.26.1 
+- Added support for PEG4BPI6.
+                 
+v5.0.26
+- Added support for PE10G2BPTLR, PE10G2BPTSR.
+
+v5.0.25.3
+- Added support for PE10G2BPTCX4.
+- PEG6BPI changed to PEG6BPI5.
+- PE10GDBISR changed to PE10G2DBISR.
+
+
+v5.0.24
+- Added support for PEG6BPIFC,
+- PEG2BPID changed to PEG2BPI5
+                  
+v5.0.23
+- Fixed issue (from 5.0.20 ver) with PEG4BPII0 and 82571 based 
+    adapters recognizing.    
+
+v5.0.22
+- Added support for PEG2BISC6.
+
+v5.0.21
+- Added support for XE10G2BPIXR,  PE10GDBISR.
+
+v5.0.20
+- Added support for PEG4BPIIO.
+- Fixed bpctl_stop problem (with different 
+PCI device sequence).
+
+
+v5.0.19
+- Added support for PEG4BPFI5LX, MEG2BPFILXLN, PEG2BPIX1, 
+        MEG2BPFILXNX, XE10G2BPIT, XE10G2BPICX4, XE10G2BPISR,
+        XE10G2BPILR.
+- Fixed  PEG4BPFI5 PID.       
+
+v5.0.18.5
+- Fixed media type settings (82575 problem).
+
+v5.0.18.4
+- Added support for PEG2BPID, PEG4BPFI5, PEG6BPI.
+
+v5.0.18.3
+- Fixed CFLAGS problem.
+
+v5.0.18.1
+- Added support for 2.6.24.
+
+v5.0.17
+- Fixed ID's for MHIO8AD.
+
+v5.0.16
+- Added support for PE10G2BPICX4, MHIO8AD.
+
+v5.0.15
+- Added support for PEG2BPFIDLX.
+
+v5.0.14.2
+- Added support for PE10G2BPISR/LR.
+
+v5.0.7
+- Added support for MEG2BPFILN, MEG2BPFINX,
+  PEG4BPFILX.
+  
+v5.0.6
+- Added support for PEG2BPFID.
+- Added support for PEG4BPIL.
+- Fixed get_disc command.
+- Added support for 2.6.23 kernel.
+
+v5.0.5 
+- Added support for GET_BST/SET_BST commands.
+- Fixed get_master_port function. 
+
+
+v5.0.2
+- Added support for GET/SET_TPL commands and TPL_CAP
+Note: SET_TX is not supported when TPL is enabled
+- Getting bypass/tap status w/o serial access
+- Changed GET_BYPASS_CHANGE/GET_TAP_CHANGE commands
+- Added support for WAIT_AT_PWUP, HW_RESET commands (with PMC_FIX_FLAG) 
+- Added spin_lock_irqsave (with BP_SYNC_FLAG)
+- Added support for PXG2TBI, PXG4BPFID, PEG4BPFI, PEG4BPIPT,
+  PXG6BPI, PEG4BPIL, PMCX2BPIN2, PMCX4BPIN2, PMCX2BPI. 
+
+v4.0.1
+- Added support for PEG2TBFI.
+- Added support for Disconnect commands.
+
+v3.0.14.1
+- Changed output message for get/set_wd_autoreset command.
+
+v3.0.14
+- Added support for PXG2BISC1 adapter.
+- Fixed PMC adapters output product name.
+
+v3.0.13.2
+- Fixed specific compilation problem for Nokia kernel
+
+v3.0.13.1
+- Added support for PEG4BPII, PEG4BPFII.
+- Added support for PXG4BPFILX.
+- Added write flush.
+
+v3.0.10
+- Added support for kernel 2.6.18.
+		  
+v3.0.9
+- Fixed get_dev_idx function.
+		  
+v3.0.8
+- Adapters names were changed (from PEG4BPI to PEXG4BPI, from PEG4BPIN to PEG4BPI).
+- Fixed get_tap_all command (bpctl_util).
+- Fixed get_bypass_info command.
+- Fixed TX_CTL_CAP (bpctl_mod).
+- Fixed output messages (bpctl_util), modinfo (bpctl_mod).
+
+v3.0.6
+- Added support for SET/GET_BYPASS_PWROFF commands.
+
+v3.0.3
+- Added support for GET_BYPASS_INFO command (for Bypass Kernel Level Library).
+- Added support for 2.4.x kernels (intermodule communication).
+- Added support for A7 firmware version (timing, bypass_pwoff command).
+- Fixed get_wd_set_caps command.
+- Fixed get_bypass_caps command (bpctl_util).
+
+v3.0.1
+- Added support for Bypass Kernel Level Library.
+
+v2.0.2
+- Fixed get_wd_expired_time command.
+- Added support for bypass_info command. 
+- Added support for A6 firmware version (timing).
+- Added support for PMCXG2BPFI, PMCXG2BPFIN.
+
+v2.0.1
+- Fixed get_wd_expired_time command.
+- Access from several process is permitted for now. 
+                      
+v2.0.0
+- Added support for PEG2BPI, PEG4BPIN, PEG2BPFI.
+- Added support for SET/GET_WD_AUTORESET command.
+
+v1.0.6
+- Added support for PEG4BPI.
+
+v1.0.5
+- Added support for kernel 2.6.10.
+- Added support for PXG2BPFILLX.
+- Fixed set_dis_bypass command.
+
+v1.0.4
+- First release of the utility.
+
+
+
+
+

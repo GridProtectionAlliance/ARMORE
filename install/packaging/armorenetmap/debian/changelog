@@ -1,3 +1,15 @@
+armorenetmap (1.0-1-1.5) stable; urgency=medium
+
+  * updated python bindings, build, apps, vale, monitor, and install
+
+ -- Steve Granda <sgrand2@illinois.net>  Tue, 29 Sep 2015 20:43:46 -0500
+
+armorenetmap (1.0-1-1.4) stable; urgency=medium
+
+  * enabled monitor mode and updated codebase 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Mon, 21 Sep 2015 16:09:02 -0500
+
 armorenetmap (1.0-1-1.3) stable; urgency=medium
 
   * Enable Vale and Pipes 

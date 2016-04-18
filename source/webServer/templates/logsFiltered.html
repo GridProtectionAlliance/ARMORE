@@ -1,0 +1,28 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="logs">
+	<h1>Logs</h1>
+	{% for log in logs %}
+		<div class="box col-md-12 col-xs-12">
+			<div class="box-header">
+				<span>{{ log.headerName }}</span>
+			</div>
+			<table id={{ log.name }} class="table">
+				{% for l in log.logList %}
+				<tr>
+					<td>
+						<a href="{{ url_for(".view_log", filename=l.path) }}">
+							{{ l.path }}
+						</a>
+					</td>
+					<td>{{ l.size|filesizeformat }}</td>
+					<td>{{ l.atime }}</td>
+					<td>{{ l.mtime }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

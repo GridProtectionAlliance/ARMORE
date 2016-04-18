@@ -29,6 +29,7 @@
 #include <sstream>
 #include <iomanip>
 
+// TODO: When updating to czmq v3.0.3, remove include and remove zcertproxy files from solution
 #include "zproxycert.h"
 #include "../ConsoleLogger/ConsoleLogger.h"
 
@@ -90,6 +91,9 @@ void ZeroMQServer::Initialize(const string endPoint, const string /*instanceName
     // Create actor to proxy data from TCP "server" host socket to inter-thread transport socket
     // Note that this is a custom zactor for this project which allows certificate to be applied
     // to frontend proxy, see zproxycert.c
+
+    // TODO: When updating to czmq v3.0.3, change zactor constructor to use zproxy instead of zproxycert
+    //m_proxy = zactor_new(zproxy, nullptr);
     m_proxy = zactor_new(zproxycert, m_localCertificate);
     
     if (m_proxy == nullptr)
@@ -110,6 +114,10 @@ void ZeroMQServer::Initialize(const string endPoint, const string /*instanceName
             zsock_wait(m_monitor);
         }
     }
+
+    // TODO: When updating to czmq v3.0.3, uncomment the following command
+    //zstr_sendx(m_proxy, "CURVE", "FRONTEND", zcert_public_txt (m_localCertificate), zcert_secret_txt (m_localCertificate), nullptr);
+    //zsock_wait(m_proxy);    
     
     // Establish proxy socket bindings
     zstr_sendx(m_proxy, "FRONTEND", "ROUTER", ("tcp://" + endPoint).c_str(), nullptr);

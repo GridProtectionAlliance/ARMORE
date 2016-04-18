@@ -1,0 +1,20 @@
+Source: bpctl
+Section: unknown
+Priority: optional
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.9.5
+
+Package: bpctl-modules-_KVERS_
+Architecture: any
+Provides: bpctl-modules
+Description: bpctl modules for Linux (kernel _KVERS_).
+ This package contains the set of loadable kernel modules for the
+ <description>.
+ .
+ This package contains the compiled kernel modules for _KVERS_
+ .
+ If you have compiled your own kernel, you will most likely need to build
+ your own bpctl-modules. The bpctl-source package has been
+ provided for use with the Debian's module-assistant or kernel-package
+ utilities to produce a version of bpctl-modules for your kernel.

@@ -1,0 +1,23 @@
+#!/bin/sh
+drv_name="bpctl_mod"
+dev_node="bpctl"
+if grep '^staff:' /etc/group > /dev/null; then
+    group="staff"
+else
+    group="wheel"
+fi
+
+# remove old device node
+rm -f /dev/${dev_node}? 
+
+# load the driver
+modprobe ${drv_name}
+
+# extract major number for device 
+major=`cat /proc/devices | awk "\\$2==\"$dev_node\" {print \\$1}"`
+
+# make new node
+mknod /dev/${dev_node}0 c $major 0
+ln -sf /dev/${dev_node}0  /dev/${dev_node}
+chgrp $group /dev/${dev_node}0
+chmod 644  /dev/${dev_node}0

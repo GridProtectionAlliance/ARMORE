@@ -1,0 +1,23 @@
+             
+            Silicom Bypass Control Utility.
+                
+             Host driver installation.
+             
+1. Compiling, installing and loading the software.
+              
+   Compiling and installing the software in the system directory:
+	# make CFLAGS_EXTRA="-DBPVM_KVM" install
+	
+2. Software loading:
+	# bpctl_start 
+	      
+3. Using the software.
+
+After driver loading, virtual interface bpvm0 with MAC address 00:e0:ed:18:75:8a  will be appear.
+Please add this virtual network adapter to the Guest OS. This adapter will be Management Interface
+for the Bypass operations.
+
+Install library libbpvm and control utility bpvmctl in the Guest OS. For more details please see
+readme.txt in these packages.  
+
+ 

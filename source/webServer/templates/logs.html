@@ -1,0 +1,19 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="logs">
+	<h1>Logs</h1>
+	<div class="box col-md-2 col-xs-4">
+		<table>
+			<tr>
+				<td><a href="/logs/system">System</a></td>
+			</tr>
+			<tr>
+				<td><a href="/logs/bro">Bro</a></td>
+			</tr>
+			<tr>
+				<td><a href="/logs/proxy">Proxy</a></td>
+			</tr>
+		</table>
+	</div>
+</div>
+{% endblock %}

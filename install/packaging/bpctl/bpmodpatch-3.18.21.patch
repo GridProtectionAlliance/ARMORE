@@ -1,0 +1,21 @@
+--- bp_mod.c.old	2015-10-16 13:27:37.278078955 -0500
++++ bp_mod.c	2015-10-16 14:50:50.450118163 -0500
+@@ -5936,7 +5936,8 @@
+ 
+ void bpvm_set_ethtool_ops(struct net_device *netdev)
+ {
+-    SET_ETHTOOL_OPS(netdev, &bpvm_ethtool_ops);
++    //SET_ETHTOOL_OPS(netdev, &bpvm_ethtool_ops);
++    netdev->ethtool_ops=&bpvm_ethtool_ops;
+ }  
+ 
+ int bpvm_probe(void)
+@@ -5947,7 +5948,7 @@
+     err =  -EIO;
+ 
+     sprintf(dev_name,"bpvm0");
+-    netdev = alloc_netdev(sizeof(struct bpvm_priv), dev_name, bpvm_setup);
++    netdev = alloc_netdev(sizeof(struct bpvm_priv), dev_name,NET_NAME_UNKNOWN, bpvm_setup);
+     /* netdev = alloc_etherdev(sizeof(struct bpvm_priv)); */
+ 
+     if (!netdev)

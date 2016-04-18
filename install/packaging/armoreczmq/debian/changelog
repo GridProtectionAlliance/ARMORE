@@ -1,3 +1,21 @@
+armoreczmq (3.0.3+nmu1) stable; urgency=medium
+
+  * Upstream update 
+
+ -- sgrand2 <sgrand2@armorebuild>  Thu, 25 Feb 2016 23:01:20 -0600
+
+armoreczmq (3.0.3) stable; urgency=medium
+
+  * Updated Source
+
+ -- sgrand2 <sgrand2@illinois.edu>  Tue, 12 Jan 2016 03:26:58 -0600
+
+armoreczmq (3.0.2-1-2.1) stable; urgency=medium
+
+  * Updated Source
+
+ -- Steve Granda <sgrand2@illinois.edu>  Wed, 30 Sep 2015 13:50:15 -0500
+
 armoreczmq (3.0.2-1-2) stable; urgency=medium
 
   * Alpha Release 
@@ -6,6 +24,6 @@ armoreczmq (3.0.2-1-2) stable; urgency=medium
 
 armoreczmq (3.0.2-1-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial Package Release
 
- -- armore <armore@packetbricks>  Wed, 10 Jun 2015 15:51:46 -0500
+ -- Steve Granda <sgrand2@illinois.edu>  Wed, 10 Jun 2015 15:51:46 -0500

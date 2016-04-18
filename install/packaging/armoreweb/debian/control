@@ -1,0 +1,13 @@
+Source: armoreweb
+Section: misc
+Priority: optional
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: http://iti.illinois.edu
+
+Package: armoreweb
+Architecture: any
+Depends: ${misc:Depends}, python3, python3-pip, supervisor, python3-flask, python-flask-httpauth, python3-flask-sqlalchemy, python3-itsdangerous, python3-jinja2, python3-markupsafe, python3-netifaces, python3-psutil, python3-Werkzeug, python3-wheel
+Description: ARMORE Webserver
+ Web interface for ARMORE configuration

@@ -1,0 +1,36 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="security">
+	<h1>Security</h1>
+	<div class="box col-md-6 col-xs-12">
+		<div class="box-header">
+			<span>
+				Example Alarms
+			</span>
+		</div>
+		<ul class="states">
+			<li class="warning">Warning: Transporter offline</li>
+			<li class="error">Error: Warp core overloading</li>
+			<li class="error">Error: Warp core ejection system malfunctioning</li>
+		</ul>
+	</div>
+	<div class="box col-md-6 col-xs-12">
+		<div class="box-header">
+			<span>
+				Status
+			</span>
+		</div>
+		<ul class="states">
+			{% for sys in systems %}
+			<div class="row-fluid">
+				<li class="{{ sys.status }} col-md-12 col-xs-12">
+					<span class="pull-left">
+						{{ sys.name }} is {{ sys.state }}
+					</span>
+				</li>
+			</div>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+{% endblock %}

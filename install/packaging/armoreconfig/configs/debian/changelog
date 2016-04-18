@@ -1,3 +1,27 @@
+armoreconfig (1.0-1-2.5) stable; urgency=medium
+  
+  * Updating statistics scripts for bro and renaming armoreconfiguration files
+
+ -- sgrand2 <sgrand2@illinois.edu>  Wed, 16 Mar 2016 16:20:51 -0500
+
+armoreconfig (1.0-1-2.4) stable; urgency=medium
+
+  * Passive Mode and tool update
+
+ -- sgrand2 <sgrand2@illinois.edu>  Mon, 25 Jan 2016 17:01:20 -0600
+
+armoreconfig (1.0-1-2.3) stable; urgency=medium
+
+  *Passive and Transparent mode update.
+
+ -- sgrand2 <sgrand2@illinois.edu>  Tue, 12 Jan 2016 02:55:35 -0600
+
+armoreconfig (1.0-1-2.2) stable; urgency=medium
+
+  * Bug Fix in detecting running bro instances. Disabled Broken Plugins
+
+ -- sgrand2 <sgrand2@illinois.edu>  Wed, 04 Nov 2015 12:23:12 -0600
+
 armoreconfig (1.0-1-2.1) stable; urgency=medium
 
   * Modfied Tools and updated configurations. Alpha 

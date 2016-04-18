@@ -1,6 +1,41 @@
-The ArmoreProxy requires libpcap, libsodium-dev, libzmq3-dev, armorenetmap, armoreczmq, armorelibcurve, and libpcap.
+The ArmoreProxy requires libpcap, libsodium-dev, libzmq3-dev, armorenetmap, 
+armoreczmq, armorelibcurve, and libpcap.
 
-1. /usr/share/armoreproxy
+1. /usr/bin/ARMOREProxy
 
-This package enables armore nodes to talk through to each other using netmap interfaces.
-This package requires the 3.12 Linux Kernel to work.
+This package enables armore nodes to talk through to each other using netmap 
+interfaces. This package requires netmap with (=>3.12) Linux Kernel to work.
+
+ARMORE is open source and intended to create an easy path to adoption. One of 
+the key ways this is accomplished is by architecting ARMORE such that it 
+supports multiple modes of deployment. These modes can be summarized in two 
+high-level categories, passive and active.
+
+
+Passive
+Span port configuration that allows the system to inspect traffic, but not 
+modify. This could include limited policy support with alarming as the only 
+(initially) available action.
+
+Active
+Active mode involves placing the ARMORE node inline of communications.
+Under active mode, there are two primary modes of operation, transparent 
+and proxied.
+
+Transparent
+ARMORE operates as a transparent bridge, not manipulating the traffic
+flowing through it in any way except to optionally enforce policy. In 
+this mode, ARMORE can also do everything that passive mode can do, but
+gains actual enforcement capabilities.
+
+Proxied
+ARMORE operates as an encapsulating bridge, taking the raw unmodified 
+packets and packaging them into a middleware communication to be safely 
+transferred to their destination before being de-encapsulated and put 
+back onto the wire.
+
+This allows the middleware layer to encrypt these communications, 
+provide resilient communications, or add additional metadata around 
+those communications. In this mode, ARMORE can do everything 
+transparent mode can, but adds the security layer of encrypted 
+communications and added resiliency.

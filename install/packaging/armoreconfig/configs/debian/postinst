@@ -20,7 +20,7 @@ set -e
 
 case "$1" in
     configure)
-        bash /etc/armore/armorenetworkcfg.sh
+        #bash /etc/armore/armorenetworkcfg.sh
         bash /etc/armore/armoreproxycfg.sh
 
         #overwrite and enable dnp3 modbus broconfig with default config
@@ -29,9 +29,9 @@ case "$1" in
 
        
         ##Replace Bro Interface in BroConfig
-        BROINTERFACE="$(cat /etc/armore/proxycfg | grep Interface\ = | sed 's/Interface\ =//' | sed 's/ //')"
-        echo $BROINTERFACE
-        sed -i s/eth0/$BROINTERFACE/ /etc/bro/node.cfg
+        #BROINTERFACE="$(cat /etc/armore/proxycfg | grep Interface\ = | sed 's/Interface\ =//' | sed 's/ //')"
+        #echo $BROINTERFACE
+        #sed -i s/eth0/$BROINTERFACE/ /etc/bro/node.cfg
         
         broctl install
 

@@ -1,3 +1,21 @@
+armoreproxy (1.0.0-1-2.12) stable; urgency=medium
+
+  * Dependency and Build Update
+
+ -- sgrand2 <sgrand2@illinois.edu>  Thu, 25 Feb 2016 22:09:07 -0600
+
+armoreproxy (1.0.0-1-2.11) stable; urgency=medium
+
+  * Build Update and Licensing Update.
+
+ -- Steve Granda <sgrand2@illinois.edu>  Wed, 30 Sep 2015 11:42:20 -0500
+
+armoreproxy (1.0.0-1-2.10) stable; urgency=medium
+
+  * Encryption testing. 
+
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 15 Sep 2015 13:11:47 -0500
+
 armoreproxy (1.0.0-1-2.9) stable; urgency=medium
 
   *Routed Environment Changes/Vlans 
@@ -60,6 +78,6 @@ armoreproxy (1.0.0-1-2) stable; urgency=medium
 
 armoreproxy (1.0.0-1-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release
 
- -- armore <armore@packetbricks>  Mon, 22 Jun 2015 10:52:54 -0500
+ -- Steve Granda <sgrand2@illinois.edu>  Mon, 22 Jun 2015 10:52:54 -0500

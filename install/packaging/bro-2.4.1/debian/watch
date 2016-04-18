@@ -1,0 +1,4 @@
+version=3
+opts=pgpsigurlmangle=s/$/.asc/,dversionmangle=s/\+dfsg\d*$// \
+    https://www.bro.org/downloads/release/ bro-(\d.*)-minimal\.tar\.gz \
+    debian debian/edit-orig-tar.sh

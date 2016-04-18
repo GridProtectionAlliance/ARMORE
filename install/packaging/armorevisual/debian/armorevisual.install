@@ -1,0 +1,3 @@
+configs/graphite.db /var/lib/graphite/
+configs/apache2-graphite.conf /etc/apache2/sites-available/
+webServer /var/www/

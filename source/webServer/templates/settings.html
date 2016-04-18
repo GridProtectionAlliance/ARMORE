@@ -1,0 +1,229 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="settings">
+	<h1>Settings</h1>
+	<form id="frmArmore" action="/settings/armore" method="POST" onchange="opModeChanged()">
+		<div class="box col-md-7 col-xs-12">
+			<div class="box-header">
+				<span>ARMORE</span>
+			</div>
+			<ul class="states">
+				<li class="{{ armore.status }} col-md-12 col-xs-12">
+					<span class="pull-left">
+						{{ armore.state.capitalize() }}
+					</span>
+				</li>
+			</ul>
+			<table class="table col-md-12 col-xs-12">
+				<tr>
+					<th>Operation Mode:</th>
+					<td {% if armoreCfg["Operation"] == 'Proxy' %}class="success"{% endif %}><label for="radProxy" style="font-weight: normal">Proxy (Default)</label> <input id="radProxy" type="radio" name="operationMode" value="Proxy" {% if armoreCfg["Operation"] == 'Proxy' %}checked{% endif %}></td>
+					<td {% if armoreCfg["Operation"] == "Passive" %}class="success"{% endif %}><label for="radPassive" style="font-weight: normal">Passive</label> <input id="radPassive" type="radio" name="operationMode" value="Passive" {% if armoreCfg["Operation"] == 'Passive' %}checked{% endif %}></td>
+					<td {% if armoreCfg["Operation"] == "Transparent" %}class="success"{% endif %}><label for="radTransparent" style="font-weight: normal">Transparent</label> <input id="radTransparent" type="radio" name="operationMode" value="Transparent" {% if armoreCfg["Operation"] == 'Transparent' %}checked{% endif %}></td>
+				</tr>
+				<tr>
+					<th>*Management Interface:</th>
+					<td>
+						<select name="mgtInt">
+						{% for i in interfaces %}
+							<option value={{ i }} {% if armoreCfg["Management_Interface"] == i %}selected{% endif %}>{% if armoreCfg["Management_Interface"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
+							{% endfor %}
+						</select>
+					</td>
+					<td>
+						<input id="inpMgtIp" type="text" name="mgtIp" placeholder="IP Address" value="{{ armoreCfg["Management_IP"] }}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+					</td>
+					<td>
+						<input id="inpMgtMsk" type="text" name="mgtMsk" placeholder="Netmask" value="{{ armoreCfg["Management_Mask"] }}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+					</td>
+				</tr>
+				<tr>
+					<th>External Interface:</th>
+					<td>
+						<select name="extInt">
+						{% for i in interfaces %}
+						<option value={{ i }} {% if armoreCfg["External_Interface"] == i %}selected{% endif %}>{% if armoreCfg["External_Interface"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
+							{% endfor %}
+						</select>
+					</td>
+					<td>
+						<input id="inpExtIp" type="text" name="extIp" placeholder="IP Address" value="{{ armoreCfg["External_IP"] }}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+					</td>
+					<td>
+						<input id="inpExtMsk" type="text" name="extMsk" placeholder="Netmask" value="{{ armoreCfg["External_Mask"] }}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+					</td>
+				</tr>
+				<tr>
+					<th>Monitored Interface:</th>
+					<td>
+						<select name="intInt">
+						{% for i in interfaces %}
+						<option value={{ i }} {% if armoreCfg["Internal_Interface"] == i %}selected{% endif %}>{% if armoreCfg["Internal_Interface"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
+							{% endfor %}
+						</select>
+					</td>
+					<td>
+						<input id="inpIntIp" type="text" name="intIp" placeholder="IP Address" value="{{ armoreCfg["Internal_IP"] }}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+					</td>
+					<td>
+						<input id="inpIntMsk" type="text" name="intMsk" placeholder="Netmask" value="{{ armoreCfg["Internal_Mask"] }}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4">
+						<button name="submit">Submit</button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						* Upon change, user will be logged out</br>
+						** Current interface
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="boxProxy" class="box col-md-7 col-xs-12">
+			<div class="box-header">
+				<span>Proxy Mode</span>
+			</div>
+			<div class="box-content">
+				<table class="table col-md-12 col-xs-12">
+					<tr>
+						<th>Network Role:</th>
+						<td {% if proxyCfg["Roletype"] == "Server" %}class="success"{% endif %}><label for="radServer" style="font-weight: normal">Server</label> <input id="radServer" type="radio" name="networkRole" value="Server" onchange="netRoleChanged()" {% if proxyCfg["Roletype"] == 'Server' %}checked{% endif %}></td>
+						<td colspan=2 {% if proxyCfg["Roletype"] == "Client" %}class="success"{% endif %}><label for="radClient" style="font-weight: normal">Client</label> <input id="radClient" type="radio" name="networkRole" value="Client" onchange="netRoleChanged()" {% if proxyCfg["Roletype"] == 'Client' %}checked{% endif %}></td>
+						<td/>
+					</tr>
+					<tr>
+						<th>Encryption:</th>
+						<td {% if proxyCfg["Encryption"] == 'Enabled' %}class="success"{% endif %}><label for="radEnabled" style="font-weight: normal">Enabled</label> <input id="radEnabled" type="radio" name="encryption" value="Enabled" {% if proxyCfg["Encryption"]== 'Enabled' %}checked{% endif %}></td>
+						<td colspan=2 {% if proxyCfg["Encryption"] == 'Disabled' %}class="success"{% endif %}><label for="radDisabled" style="font-weight: normal">Disabled</label> <input id="radDisabled" type="radio" name="encryption" value="Disabled" {% if proxyCfg["Encryption"] == 'Disabled' %}checked{% endif %}></td>
+						<td/>
+					</tr>
+					<tr>
+						<th>Target Address:</th>
+						<td id="tdTargetIp"><input id="radTargetIp" type="text" name="targetIp" placeholder="IP Address" value="{{ proxyCfg["Bind"] }}"></td>
+						<td colspan=2 id="tdTargetPort"><input id="radTargetPort" type="text" name="targetPort" placeholder="Port" value="{{ proxyCfg["Port"] }}"></td>
+						<td/>
+					</tr>
+					<tr>
+						<th>Capture Mode:</th>
+						<td {% if proxyCfg["Capture"] == "NetMap" %}class="success"{% endif %}><label for="radNetmap" style="font-weight: normal">Netmap</label> <input id="radNetmap" type="radio" name="captureMode" value="NetMap" {% if proxyCfg["Capture"] == 'NetMap' %}checked{% endif %}></td>
+						<td colspan=2 {% if proxyCfg["Capture"] == "Pcap" %}class="success"{% endif %}><label for="radPcap" style="font-weight: normal">PCAP</label> <input id="radPcap" type="radio" name="captureMode" value="Pcap" {% if proxyCfg["Capture"] == 'Pcap' %}checked{% endif %}></td>
+						<td/>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<button name="submit">Submit</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div id="boxPassive" class="box col-md-6 col-xs-12">
+			<div class="box-header">
+				<span>Passive Mode</span>
+			</div>
+			<div class="box-content">
+				<table class="table col-md-12 col-xs-12">
+					<tr>
+						<th>Monitored Interface:</th>
+						<td>
+							<select name="monIntPsv">
+							{% for i in interfaces %}
+							<option value={{ i }} {% if passvCfg["Monitored_Interface"] == i %}selected{% endif %}>{% if passvCfg["Monitored_Interface"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
+								{% endfor %}
+							</select>
+						</td>
+						<td colspan=2 />
+					</tr>
+					<tr>
+						<td colspan="4">
+							<button name="submit">Submit</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div id="boxTransparent" class="box col-md-7 col-xs-12">
+			<div class="box-header">
+				<span>Transparent Mode</span>
+			</div>
+			<div class="box-content">
+				<table class="table col-md-12 col-xs-12">
+					<tr>
+						<th>Interfaces</th>
+						<td>
+							<select name="brdgInt1">
+							{% for i in interfaces %}
+								<option value={{ i }} {% if transCfg["Interface1"] == i %}selected{% endif %}>{% if transCfg["Interface_1"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
+							{% endfor %}
+							</select>
+						</td>
+						<td>
+							<select name="brdgInt2">
+							{% for i in interfaces %}
+								<option value={{ i }} {% if transCfg["Interface2"] == i %}selected{% endif %}>{% if transCfg["Interface_2"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
+							{% endfor %}
+							</select>
+						</td>
+						<td/>
+					</tr>
+					<tr>
+						<th>Bridge IP:</th>
+						<td id="tdBridgeIp">
+							<input id="radBridgeIp" type="text" name="bridgeIp" value="{{ transCfg["BridgeIp"] }}" placeholder="xxx.xxx.xxx.xxx" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+						</td>
+						<td/>
+					</tr>
+					<tr>
+						<th>Broadcast IP:</th>
+						<td id="tdBroadcastIp">
+							<input id="radBroadcastIp" type="text" name="broadcastIp" value="{{ transCfg["BroadcastIp"] }}" placeholder="xxx.xxx.xxx.xxx" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+						</td>
+						<td/>
+					</tr>
+					<tr>
+						<th>Netmask:</th>
+						<td id="tdNetmask">
+							<input id="radNetmask" type="text" name="netmask" value="{{ transCfg["Netmask"] }}" placeholder="xxx.xxx.xxx.xxx" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+						</td>
+						<td/>
+					</tr>
+					<tr>
+						<th>Gateway:</th>
+						<td id="tdGateway">
+							<input id="radGateway" type="text" name="gateway" value="{{ transCfg["Gateway"] }}" placeholder="xxx.xxx.xxx.xxx" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
+						</td>
+						<td/>
+					</tr>
+					<tr>
+						<th>Route:</th>
+						<td id="tdRoute">
+							<input id="radRoute" type="text" name="route" value="{{ transCfg["Route"] }}" placeholder="xxx.xxx.xxx.xxx/xx" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])$">
+						</td>
+						<td/>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<button name="submit">Submit</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div id="boxBro" class="box col-md-7 col-xs-12">
+			<div class="box-header">
+				<span>Bro</span>
+			</div>
+			<ul class="states">
+				<li class="{{ bro.status }} col-md-12 col-xs-12">
+					<span class="pull-left">
+						{{ bro.state.capitalize() }}
+					</span>
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+{% endblock %}

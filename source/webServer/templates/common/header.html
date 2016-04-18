@@ -1,0 +1,64 @@
+<div class="header">
+	<div class="logo">
+		<a href="/index.html">
+			<span class="app-name">ARMORE <small>v0.1</small></span>
+		</a>
+	</div>
+	<div class="top-nav">
+		<div class="host-info">
+			<div class="name">
+				<span class="hostname">{{ common.hostname }}</span>
+			</div>
+			<div class="info">
+				Debian GNU/Linux, uptime: {{ common.uptime }}
+				{% block info %}
+				{% endblock %}
+			</div>
+		</div>
+		<div class="profile-box">
+			<div class="imagemark"></div>
+			<a href="https://www.gridprotectionalliance.org/products.asp#ARMORE" target="_blank"><div class="armore-logo"></div></a>
+			<!--<span class="profile">-->
+				<!--<a href="#" class="section">
+					<img class="image" src="static/img/user.png" alt="image description" width="26" height="26" />
+					<span class="text-box">
+						Welcome
+						<strong class="name">{{ common.currUser.username|truncate(16) }}</strong>
+					</span>
+					</a>-->
+				<div class="btn-group">
+					<button class="btn btn-default dropdown-toggle" type="button" id="btnLogin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<table width=100%>
+							<tr>
+								<td align="left">
+									{% if common.currUser.username  %}
+										<strong class="name">{{ common.currUser.username|truncate(18) }}</strong>
+									{% else %}
+										Welcome
+									{% endif %}
+								</td>
+								<td align="right">
+									<span class="caret"></span>
+								</td>
+							</tr>
+						</table>
+					</button>
+					<ul class="dropdown-menu dropdown-menu-right">
+						{% if session.username is defined %}
+							<li>
+								<a href="/signout">Sign Out <span class="fa fa-sign-out fa-fw"/></a>
+							</li>
+						{% else %}
+							<li>
+								<a href="/dashboard">Sign In <span class="fa fa-sign-in fa-fw"/></a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+				<!--</span>-->
+			<a href="javascript:confirm('Initiate ARMORE reboot?')" class="fa fa-power-off btn-on">
+			</a>
+			{% include "common/signin.html" %}
+		</div>
+	</div>
+</div>

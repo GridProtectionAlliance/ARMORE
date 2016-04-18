@@ -1,0 +1,31 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif %}
+{% block content %}
+<div id="users" class="col-md-6 col-xs-12">
+	<div class="box col-md-12 col-xs-12">
+		<div class="box-header">
+			<span>Users</span><br/>
+		</div>
+		<div class="box-content">
+			<table class="table table-hover col-md-12 col-xs-12">
+				<thead>
+					<tr>
+						<th class="col-md-2 col-xs-4">Username</th>
+						<th class="col-md-2 col-xs-4">Role</th>
+					</tr>
+				</thead>
+				<tr>
+					<td>
+					</td>
+				</tr>
+				{% for user in users %}
+				<tr>
+					<td class="col-md-2 col-xs-4"><a href="/admin/profile/{{ user.username }}">{{ user.username }}</a></td>
+					<td class="col-md-2 col-xs-4">{{ user.role }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+	<a href="/admin/addUser"><u>Add User</u></a>
+</div>
+{% endblock %}

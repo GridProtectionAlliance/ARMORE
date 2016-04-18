@@ -1,0 +1,55 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="addUser">
+	<h1>Add New User</h1>
+	{% if isInitial %}
+		No users are currently available on this ARMORE Node.
+		Please create an admin user for future logins.
+	{% endif %}
+	<div class="row">
+		<div class="box col-md-6 col-xs-6">
+			<form id="frmAddUser" class="form-horizontal" action={% if isInitial == True %}'initialUserSetup'{% else %}'addUser' {% endif %} method="post" accept_charset="utf-8" role="form" data-toggle="validator" onsubmit="addDigest()">
+				<div class="form-group">
+					<div class="col-md-12 col-xs-12">
+						<input id="inpAddUserEmail" type="text" name="email" class="form-control input-lg" placeholder="Username" data-error="Invalid Email" onblur="checkUsername()" required>
+					</div>
+					<div id="divAddUserEmail" class="help-block with-errors"></div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-12 col-xs-12">
+						<input id="inpAddUserPwd" type="password" class="form-control input-lg" placeholder="Password" required/>
+					</div>
+					<div class="help-block with-errors"></div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-12 col-xs-12">
+						<input id="inpAddUserConPwd" type="password" class="form-control input-lg" placeholder="Confirm Password" data-match="#inpAddUserPwd" data-match-error="Passwords Don't Match" required/>
+					</div>
+					<div class="help-block with-errors"></div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-6 col-cs-12">
+						<select class="form-control" name="role">
+							{% for r in roles %}
+							<option value="{{ r.value }}">{{ r.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-12 col-xs-12">
+						<button class="btn btn-lg btn-primary btn-block signup-btn" type="submit">
+							Add User
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	{% if not isInitial %}
+	<div class="row clearfix">
+		<a href="/admin/users">View Users</a>
+	</div>
+	{% endif %}
+</div>
+{% endblock %}

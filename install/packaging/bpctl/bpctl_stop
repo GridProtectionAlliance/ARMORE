@@ -1,0 +1,7 @@
+#!/bin/sh
+
+/sbin/rmmod bpctl_mod $* || exit 1
+
+rm -f /dev/bpctl0 /dev/bpctl
+
+exit 0
