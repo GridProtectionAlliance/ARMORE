@@ -1,7 +1,7 @@
 # Applied Resiliency for More Trustworthy Grid Operation (ARMORE)
 
 
-*BETA released April 18, 2016*
+*Testing released January 18, 2017*
 
 ## ARMORE
 
