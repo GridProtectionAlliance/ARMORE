@@ -1,4 +1,4 @@
-{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif %}
 {% block content %}
 <div id="addUser">
 	<h1>Add New User</h1>
@@ -11,7 +11,7 @@
 			<form id="frmAddUser" class="form-horizontal" action={% if isInitial == True %}'initialUserSetup'{% else %}'addUser' {% endif %} method="post" accept_charset="utf-8" role="form" data-toggle="validator" onsubmit="addDigest()">
 				<div class="form-group">
 					<div class="col-md-12 col-xs-12">
-						<input id="inpAddUserEmail" type="text" name="email" class="form-control input-lg" placeholder="Username" data-error="Invalid Email" onblur="checkUsername()" required>
+						<input id="inpAddUserEmail" type="text" name="email" class="form-control input-lg" placeholder="Username" data-error="Invalid Email" {% if not isInitial %} onblur="checkUsername()" {% endif %} required>
 					</div>
 					<div id="divAddUserEmail" class="help-block with-errors"></div>
 				</div>

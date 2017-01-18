@@ -505,3 +505,12 @@ a:hover {
 	color:#3f5a04;
 	background:#dfedc0 url(../img/sprite.png) no-repeat 15px -841px;
 }
+
+.rrdTblOpt {
+	padding: 1px;
+	border-collapse: collapse;
+	border-spacing: 10px 10px;
+	margin: 0;
+}
+
+

@@ -2,21 +2,60 @@
 {% block content %}
 <div id="dashboard">
 	<h1>Dashboard</h1>
-	<div class="box col-md-6 col-xs-12">
+	<div class="box col-md-8 col-xs-12">
 		<div class="box-header">
 			<span>ARMORE Status</span>
 		</div>
 		<ul class="states">
 			{% for sys in systems %}
 			<div class="row-fluid">
-				<li class="{{ sys.status }} col-md-12 col-xs-12">
+				<li class="{{ sys.status }} col-md-12 col-xs-12 col-lg-12">
 					<span class="pull-left">
-						{{ sys.name }} is {{ sys.state }} - cpu @ {{'%2.f' % sys.cpuPercent }}%
+						{{ sys.name }} {% if sys.name != "Bro" %}Mode {% if sys.name == "Proxy" %}- cpu @ {{'%2.f' % sys.cpuPercent }}%{% endif %} {% else %} is {{ sys.state }}{% endif %}
 					</span>
 				</li>
 			</div>
 			{% endfor %}
 		</ul>
+	</div>
+	<div class="box col-lg-8 col-md-10 col-xs-12">
+	    <div class="box-header">
+		<span>
+			Alerts
+		</span>
+	    </div>
+	    </br>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th style="width: 30%">
+						Timestamp
+					</th>
+					<th style="width: 40%">
+						Flags
+					</th>
+					<th style="width: 10%">
+						Policy
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for l in logs %}
+				<tr class="bg-{% if l.severity.lower() == 'warning' %}warning{% elif l.severity.lower() == 'alert' %}danger{% endif %}">
+					<td>{{ l.timestamp }}</td>
+					<td>
+						{% for e in l.entry %}
+							{{ e }}
+							{% if loop.index < l.entry|length - 1 %}<br/>{% endif %}
+						{% endfor %}
+					</td>
+					<td>
+						<a href="/policy/edit/{{ l.polName }}">{{ l.polName }}</a>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 	</div>
 </div>
 {% endblock %}

@@ -23,6 +23,7 @@ case "$1" in
         pip3 install python-iptables
         pip3 install Flask-Cors
         pip3 install Flask-HTTPAuth
+        pip3 install jsondiff
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

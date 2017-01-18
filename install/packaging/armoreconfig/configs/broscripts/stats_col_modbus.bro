@@ -125,8 +125,8 @@ event modbus_read_coils_request(c: connection, headers: ModbusHeaders, start_add
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Coil", start_address, quantity);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Coil", start_address, quantity);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -158,7 +158,7 @@ event modbus_read_coils_response(c: connection, headers: ModbusHeaders, coils: M
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -191,8 +191,8 @@ event modbus_read_discrete_inputs_request(c: connection, headers: ModbusHeaders,
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Discrete_Input", start_address, quantity);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Discrete_Input", start_address, quantity);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -224,7 +224,7 @@ event modbus_read_discrete_inputs_response(c: connection, headers: ModbusHeaders
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -246,7 +246,7 @@ event modbus_read_discrete_inputs_response(c: connection, headers: ModbusHeaders
     }
 }
 
-event modbus_read_holdinmodbus_registers_request(c: connection, headers: ModbusHeaders, start_address: count, quantity: count)
+event modbus_read_holding_registers_request(c: connection, headers: ModbusHeaders, start_address: count, quantity: count)
 {
     if (col_levels == 6)
     {
@@ -256,8 +256,8 @@ event modbus_read_holdinmodbus_registers_request(c: connection, headers: ModbusH
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Holdinmodbus_Register", start_address, quantity);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Holding_Register", start_address, quantity);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -279,7 +279,7 @@ event modbus_read_holdinmodbus_registers_request(c: connection, headers: ModbusH
     }
 }
 
-event modbus_read_holdinmodbus_registers_response(c: connection, headers: ModbusHeaders, registers: ModbusRegisters)
+event modbus_read_holding_registers_response(c: connection, headers: ModbusHeaders, registers: ModbusRegisters)
 {
     if (col_levels == 6)
     {
@@ -289,7 +289,7 @@ event modbus_read_holdinmodbus_registers_response(c: connection, headers: Modbus
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -321,8 +321,8 @@ event modbus_read_input_registers_request(c: connection, headers: ModbusHeaders,
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Input_Register", start_address, quantity);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Input_Register", start_address, quantity);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -354,7 +354,7 @@ event modbus_read_input_registers_response(c: connection, headers: ModbusHeaders
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -386,8 +386,8 @@ event modbus_write_single_coil_request(c: connection, headers: ModbusHeaders, ad
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Coil", address, 1);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Coil", address, 1);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -419,7 +419,7 @@ event modbus_write_single_coil_response(c: connection, headers: ModbusHeaders, a
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -451,8 +451,8 @@ event modbus_write_single_register_request(c: connection, headers: ModbusHeaders
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Holdinmodbus_Register", address, 1);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Holdinmodbus_Register", address, 1);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -484,7 +484,7 @@ event modbus_write_single_register_response(c: connection, headers: ModbusHeader
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -516,8 +516,8 @@ event modbus_write_multiple_coils_request(c: connection, headers: ModbusHeaders,
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Coil", start_address, |coils|);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Coil", start_address, |coils|);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -549,7 +549,7 @@ event modbus_write_multiple_coils_response(c: connection, headers: ModbusHeaders
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -581,8 +581,8 @@ event modbus_write_multiple_registers_request(c: connection, headers: ModbusHead
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Holdinmodbus_Register", start_address, |registers|);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Holding_Register", start_address, |registers|);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -614,7 +614,7 @@ event modbus_write_multiple_registers_response(c: connection, headers: ModbusHea
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -646,9 +646,9 @@ event modbus_file_record_request(c: connection, ref_tpe: count, file_num: count,
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("File_Number", file_num, 1);
-        g_tgt = cat(g_tgt, " ", target_gen("Record_Number", record_num, record_len));
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("File_Number", file_num, 1);
+        g_tgt_table[g_conn$uid] = cat(g_tgt_table[g_conn$uid], " ", target_gen("Record_Number", record_num, record_len));
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -680,7 +680,7 @@ event modbus_file_record_response(c: connection, file_len: count, ref_type: coun
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -712,9 +712,9 @@ event modbus_reference_with_data(c: connection, ref_type: count, file_num: count
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("File_Number", file_num, 1);
-        g_tgt = cat(g_tgt, " ", target_gen("Record_Number", record_num, word_count));
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("File_Number", file_num, 1);
+        g_tgt_table[g_conn$uid] = cat(g_tgt_table[g_conn$uid], " ", target_gen("Record_Number", record_num, word_count));
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -746,7 +746,7 @@ event modbus_write_file_record_response(c: connection, headers: ModbusHeaders)
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -778,8 +778,8 @@ event modbus_mask_write_register_request(c: connection, headers: ModbusHeaders, 
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Holdinmodbus_Register", address, 1);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Holdinmodbus_Register", address, 1);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -811,7 +811,7 @@ event modbus_mask_write_register_response(c: connection, headers: ModbusHeaders,
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -843,9 +843,9 @@ event modbus_read_write_multiple_registers_request(c: connection, headers: Modbu
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("Write_Holdinmodbus_Register", write_start_address, |write_registers|);
-        g_tgt = cat(g_tgt, " ", target_gen("Read_Holdinmodbus_Register", read_start_address, read_quantity));
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("Write_Holdinmodbus_Register", write_start_address, |write_registers|);
+        g_tgt_table[g_conn$uid] = cat(g_tgt_table[g_conn$uid], " ", target_gen("Read_Holdinmodbus_Register", read_start_address, read_quantity));
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -877,7 +877,7 @@ event modbus_read_write_multiple_registers_response(c: connection, headers: Modb
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -909,8 +909,8 @@ event modbus_read_fifo_queue_request(c: connection, headers: ModbusHeaders, star
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_tgt = target_gen("FIFO_Queue", start_address, 1);
-        g_info$target = g_tgt;
+        g_tgt_table[g_conn$uid] = target_gen("FIFO_Queue", start_address, 1);
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();
@@ -942,7 +942,7 @@ event modbus_read_fifo_queue_response(c: connection, headers: ModbusHeaders, fif
             g_packet_30 += g_time_30 - g_time_22;
         }
         g_wait = F;
-        g_info$target = g_tgt;
+        g_info$target = g_tgt_table[g_conn$uid];
         if (measure)
         {
             g_time_31 = current_time();

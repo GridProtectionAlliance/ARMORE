@@ -41,17 +41,13 @@
 #
 # # # # #
 import sys
-sys.path.append("./static/python")
-sys.path.append("./static/python/lib")
-
 from flask import Blueprint, render_template, redirect, session, request, url_for, flash, Response
 from flask.ext.cors import CORS, cross_origin
-from .lib.common import secure
-import domains.lib.common as dComLib
-import common as comLib
-import system as sysLib
-import network as netLib
-import config as confLib
+from domains.support.lib.common import *
+import domains.support.lib.common as comLib
+import domains.support.system as sysLib
+import domains.support.network as netLib
+import domains.support.config as confLib
 import time
 import re
 
@@ -83,6 +79,7 @@ def settings():
             if session['flash']:
                 flash(session['flash'])
 
+    confLib.synchConfigs()
     if 'Operation' not in config:
         config['Operation'] = None
     if 'Roletype' not in config:
@@ -100,7 +97,8 @@ def settings():
 
     proxyState = sysLib.getProcessDict("ARMOREProxy")
     broState = sysLib.getProcessDict("bro")
-    armoreState = sysLib.getArmoreState(proxyState, broState)
+    armoreState = sysLib.getArmoreStatus()
+    #armoreState = sysLib.getArmoreState(proxyState, broState)
 
     return render_template("settings.html", 
         common          = sysLib.getCommonInfo({"username": session['username']}, "settings"),
@@ -126,52 +124,8 @@ def redirectTo(ip):
 def postArmoreSettings():
     config = {}
     err = ""
-    restartFlask = False
-    #try:
-    config['Operation'] = request.form.get('operationMode')
-    config['Management_Interface'] = request.form.get('mgtInt')
-    config['Management_IP'] = request.form.get('mgtIp')
-    config['Management_Mask'] = request.form.get('mgtMsk')
-    config['Internal_Interface'] = request.form.get('intInt')
-    config['Internal_IP'] = request.form.get('intIp')
-    config['Internal_Mask'] = request.form.get('intMsk')
-    config['External_Interface'] = request.form.get('extInt')
-    config['External_IP'] = request.form.get('extIp')
-    config['External_Mask'] = request.form.get('extMsk')
-    restartFlask = confLib.writeConfig(config, 'armore')
-    mode = ""
-    if config['Operation'] == 'Proxy':
-        config['Interface'] = request.form.get('monIntProxy')
-        config['Roletype'] = request.form.get('networkRole')
-        config['Encryption'] = request.form.get('encryption')
-        config['Capture'] = request.form.get('captureMode')
-        config['Bind'] = request.form.get('targetIp')
-        config['Port'] = request.form.get('targetPort')
-        mode = 'proxy'
-    if config['Operation'] == 'Passive':
-        newKeys = comLib.getKeysByValue(config, request.form.get('monIntPsv'))
-        newKey = newKeys[0].split('_')[0]
-        config['Monitored_Interface'] = request.form.get('monIntPsv')
-        config['Monitored_IP'] = config[newKey + "_IP"]
-        config['Monitored_Mask'] = config[newKey + "_Mask"]
-        mode = 'passive'
-    if config['Operation'] == 'Transparent':
-        config['Interface_1'] = request.form.get('brdgInt1')
-        config['Interface_2'] = request.form.get('brdgInt2')
-        config['Bridge_IP'] = request.form.get('bridgeIp')
-        config['Broadcast_IP'] = request.form.get('broadcastIp')
-        config['Bridge_Mask'] = request.form.get('netmask')
-        config['Bridge_Gateway'] = request.form.get('gateway')
-        config['Bridge_CIDR'] = request.form.get('route')
-        mode = 'transparent'
-    confLib.writeInterfacesFile(config, mode)
-    #confLib.updateIpAddrs(config)
-    #except:
-    #    err = "Unable to get current config"
-    #    print("Error writing config:", sys.exc_info()[0])
-
-    dComLib.addToFlash(err)
-    
+    restartFlask = confLib.updateConfig(request.form, "mode", enforce=True)
+            
     if restartFlask:
         return redirect(url_for("settings.redirectTo", ip=config["Management_IP"]))
     else:
@@ -203,7 +157,7 @@ def postProxySettings():
     #    err = "Unable to set Proxy config"
     #    print("Error writing config:", sys.exc_info()[0])
 
-    dComLib.addToFlash(err)
+    addToFlash(err)
     
     return redirect(url_for("settings.settings"))
 
@@ -220,7 +174,7 @@ def postPassiveSettings():
     except:
         err = "Unable to set Passive Mode settings"
 
-    dComLib.addToFlash(err)
+    addToFlash(err)
 
     return redirect(url_for("settings.settings"))
 
@@ -243,7 +197,7 @@ def postTransparentSettings():
     except:
         err = "Unable to set Transparent Mode settings"
 
-    dComLib.addToFlash(err)
+    addToFlash(err)
 
     return redirect(url_for("settings.settings"))
 

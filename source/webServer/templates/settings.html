@@ -10,7 +10,7 @@
 			<ul class="states">
 				<li class="{{ armore.status }} col-md-12 col-xs-12">
 					<span class="pull-left">
-						{{ armore.state.capitalize() }}
+						{{ armore.name }} Mode<br/>
 					</span>
 				</li>
 			</ul>
@@ -20,6 +20,13 @@
 					<td {% if armoreCfg["Operation"] == 'Proxy' %}class="success"{% endif %}><label for="radProxy" style="font-weight: normal">Proxy (Default)</label> <input id="radProxy" type="radio" name="operationMode" value="Proxy" {% if armoreCfg["Operation"] == 'Proxy' %}checked{% endif %}></td>
 					<td {% if armoreCfg["Operation"] == "Passive" %}class="success"{% endif %}><label for="radPassive" style="font-weight: normal">Passive</label> <input id="radPassive" type="radio" name="operationMode" value="Passive" {% if armoreCfg["Operation"] == 'Passive' %}checked{% endif %}></td>
 					<td {% if armoreCfg["Operation"] == "Transparent" %}class="success"{% endif %}><label for="radTransparent" style="font-weight: normal">Transparent</label> <input id="radTransparent" type="radio" name="operationMode" value="Transparent" {% if armoreCfg["Operation"] == 'Transparent' %}checked{% endif %}></td>
+				</tr>
+				{% if session.role == "admin" %}
+				<tr>
+					<th class="text-center"></td>
+					<th class="text-center"><b>Interface</b></td>
+					<th class="text-center"><b>IP Address</b></td>
+					<th class="text-center"><b>Subnet Mask</b></td>
 				</tr>
 				<tr>
 					<th>*Management Interface:</th>
@@ -37,6 +44,7 @@
 						<input id="inpMgtMsk" type="text" name="mgtMsk" placeholder="Netmask" value="{{ armoreCfg["Management_Mask"] }}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$">
 					</td>
 				</tr>
+				{% endif %}
 				<tr>
 					<th>External Interface:</th>
 					<td>
@@ -113,6 +121,12 @@
 						<td/>
 					</tr>
 					<tr>
+						<th>Firewall:</th>
+						<td {% if proxyCfg["Firewall"] == 'Enabled' %}class="success"{% endif %}><label for="radEnabled" style="font-weight: normal">Enabled</label> <input id="radEnabled" type="radio" name="firewall" value="Enabled" {% if proxyCfg["Firewall"]== 'Enabled' %}checked{% endif %}></td>
+						<td colspan=2 {% if proxyCfg["Firewall"] == 'Disabled' %}class="success"{% endif %}><label for="radDisabled" style="font-weight: normal">Disabled</label> <input id="radDisabled" type="radio" name="firewall" value="Disabled" {% if proxyCfg["Firewall"] == 'Disabled' %}checked{% endif %}></td>
+						<td/>
+					</tr>
+					<tr>
 						<td colspan="4">
 							<button name="submit">Submit</button>
 						</td>
@@ -120,7 +134,7 @@
 				</table>
 			</div>
 		</div>
-		<div id="boxPassive" class="box col-md-6 col-xs-12">
+		<div id="boxPassive" class="box col-md-7 col-xs-12">
 			<div class="box-header">
 				<span>Passive Mode</span>
 			</div>
@@ -156,14 +170,14 @@
 						<td>
 							<select name="brdgInt1">
 							{% for i in interfaces %}
-								<option value={{ i }} {% if transCfg["Interface1"] == i %}selected{% endif %}>{% if transCfg["Interface_1"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
+								<option value={{ i }} {% if transCfg["Interface1"] == i %}selected{% endif %}>{% if transCfg["Interface1"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
 							{% endfor %}
 							</select>
 						</td>
 						<td>
 							<select name="brdgInt2">
 							{% for i in interfaces %}
-								<option value={{ i }} {% if transCfg["Interface2"] == i %}selected{% endif %}>{% if transCfg["Interface_2"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
+								<option value={{ i }} {% if transCfg["Interface2"] == i %}selected{% endif %}>{% if transCfg["Interface2"] == i %}**{% endif %}{{ i }} ({{ interfaces[i] }})</option>
 							{% endfor %}
 							</select>
 						</td>

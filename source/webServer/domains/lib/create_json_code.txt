@@ -1,0 +1,360 @@
+import json
+import random
+import os
+import sys
+import getopt
+import traceback
+import locale
+import time
+import datetime
+from pymongo import MongoClient
+from collections import defaultdict, OrderedDict
+#from socket import inet_aton, inet_pton
+import socket
+import struct
+
+locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+
+STATS_COL_FILENAME = 'stats_col.log'
+STATS_COUNT_FILENAME = 'stats_count.log'
+
+# Database global variables
+DB_NAME = 'armore'
+COLLECTION_NAME = 'stats_jlogs'
+dbclient = None
+
+# Column headers for stats_col file
+[TS_L, LEN_CNT_L, SENDER_L, RECEIVER_L, PROTO_L, UID_L, FUNC_L, TARGET_L, IS_RESP_L] = range(9)
+
+# Column headers for stats_count file
+[PERIOD_ID, TS, INTV1, SENDER, RECEIVER, PROTO, UID, FUNC, TARGET, NUM, BYTES, IS_REQ, INTV2,  NUM_RESP, AVG_DELAY] = range(15)
+
+def connect_to_db():
+    dbclient = MongoClient("mongodb://localhost")
+    db = dbclient[DB_NAME]
+    collection = db[COLLECTION_NAME]
+    return db, collection
+
+def reset_db():
+    '''
+    Remove all json dara stored
+    '''
+    # Delete collection
+    try:
+        print('Connecting to mongoDB...')
+        db, stats_collection = connect_to_db()
+        db.drop_collection(COLLECTION_NAME)
+#         print(db.collection_names())
+    except Exception as e:
+        print("ERROR> Resetting stats_logs collection. "+str(e))
+        return False
+
+def add_to_db(jdic):
+    if not jdic:
+        return False
+    try:
+        print('Connecting to mongoDB...')
+        db, stats_collection = connect_to_db()
+
+        creation_time = jdic['created_at']
+        if creation_time in get_times():
+            print("ERROR> Document already exist. Keeping existing for date "+creation_time)
+            return False
+        print('Storing json dict in database')
+        return stats_collection.insert(jdic)
+    except Exception as e:
+        print("ERROR> Storing json dict to database. "+str(e))
+        return False
+
+def get_documents():
+
+    try:
+        print('Connecting to mongoDB...')
+        db, stats_collection = connect_to_db()
+        docs = stats_collection.find()
+        for doc in docs:
+            print(doc.keys())
+        return docs
+    except Exception as e:
+        print("ERROR> Getting documents "+str(e))
+        return False
+
+def get_times():
+    '''
+    Retrieve list of creation times of all documents
+    '''
+    times = []
+    try:
+        print('Connecting to mongoDB...')
+        db, stats_collection = connect_to_db()
+        docs = stats_collection.find()
+        for doc in docs:
+            times.append(doc['created_at'])
+        return times
+    except Exception as e:
+        print("ERROR> Getting document times "+str(e))
+        return False
+
+def protocol_filter(proto):
+    """ filter only modbus/dnp3 traffic
+    """
+    PROTO_FILTER = ["modbus", "dnp3"]
+    return proto.lower() in PROTO_FILTER
+
+def get_ip(ip):
+    """ IP address
+    """
+    print("address: "+ip)
+    try:
+        return socket.inet_aton(ip)
+    except Exception as e:
+        #return socket.inet_pton(socket.AF_INET6,ip)
+        print("IPv6 address")
+
+
+def process_stats_count_log(in_path=STATS_COUNT_FILENAME):
+
+    links_missing_proto = 0
+    print("Starting computing - "+STATS_COUNT_FILENAME+" at "+datetime.datetime.now().time().isoformat())
+    root = {}
+    trees = []
+    timestamp_to_senders = defaultdict(list)
+    sender_to_receivers = defaultdict(dict)
+    with open(in_path) as infile:
+        lines = infile.readlines()
+        print(str(len(lines))+' lines in input file ' + in_path)
+        dsender = dreceiver = dproto = dfun = dtarget = ts_tree = None
+        timestamps = []
+        for line in lines:
+            line = line.strip().replace('\t',' ')
+            if line.startswith("#") or not line.strip():
+                continue
+            data = line.split(' ')
+            #print(data)
+            period_id=data[PERIOD_ID]
+            ts = data[TS]
+            proto = data[PROTO]
+            if proto == '-':
+                links_missing_proto += 1
+                continue
+            src = data[SENDER]
+            dst = data[RECEIVER]
+            func = data[FUNC]
+            target = data[TARGET]
+            formatted_time = time.strftime("%b %d %Y %H:%M:%S", time.gmtime(float(ts)))
+
+            # Build dictionary, with values as they are encountered
+            if formatted_time not in root.keys():
+                root[formatted_time] = {}
+                timestamps.append(formatted_time)
+            if src and src != '-' and src not in root[formatted_time].keys():
+                root[formatted_time][src] = {}
+            if dst and dst != '-' and dst not in root[formatted_time][src].keys():
+                root[formatted_time][src][dst] = {}
+            if proto  != "-":
+                if proto not in root[formatted_time][src][dst]:
+                    root[formatted_time][src][dst][proto] = {}
+            if func  != "-":
+                if func not in root[formatted_time][src][dst][proto]:
+                    root[formatted_time][src][dst][proto][func] = []
+            if target  != "-":
+                if target not in root[formatted_time][src][dst][proto][func]:
+                    root[formatted_time][src][dst][proto][func].append(target)
+
+        # Now that all have been extracted, sort them out and build ordered json dict
+        for ts, sdrd in root.items():
+            ts_tree = {"name":ts, "type":"timestamp_root", "children":[]}
+            trees.append(ts_tree)
+            for sdr in sorted(sdrd.keys(), key=lambda ip: struct.unpack("!L", get_ip(ip))[0]):
+                rcvrd = sdrd[sdr]
+                dsender = {"name":sdr, "type":"sender", "children":[]}
+                ts_tree["children"].append(dsender)
+                for rcvr in sorted(rcvrd.keys(), key=lambda ip: struct.unpack("!L", get_ip(ip))[0]):
+                    protod = rcvrd[rcvr]
+                    dreceiver = {"name":rcvr, "type":"receiver", "children":[]}
+                    dsender["children"].append(dreceiver)
+                    for proto, funcd in protod.items():
+                        dproto = {"name":proto, "type":"proto", "children":[]}
+                        dreceiver["children"].append(dproto)
+                        for func, trgts in funcd.items():
+                            dfunc = {"name":func, "type":"func", "children":[]}
+                            dproto["children"].append(dfunc)
+                            for trgt in trgts:
+                                dtrgt = {"name":trgt, "type":"target", "children":[]}
+                                dproto["children"].append(dtrgt)
+
+    jtree = {}
+    if trees:
+        jtree = {"name":"root","children":trees}
+        print("Processed "
+              + locale.format('%d',len(lines), grouping=True)
+              + " lines excluding "
+              + locale.format('%d',links_missing_proto, grouping=True)
+              + " missing protocol")
+
+    return jtree
+
+def process_stats_col_log(in_path=STATS_COL_FILENAME):
+    nodes = set()
+    links = set()
+
+    nodes_spec = {}
+    links_spec = {}
+
+    protocols = []
+
+    """ generate json data file for graph visualization
+
+    :in_path: path/to/stats_col.log
+    :out_path: path/to/json/output
+    :returns: nothing
+
+    """
+    if not os.path.exists(in_path):
+        return
+    print("Starting computing - "+STATS_COL_FILENAME+" at "+datetime.datetime.now().time().isoformat())
+    links_missing_proto = 0
+    with open(in_path) as f:
+        lines = f.readlines()
+        for line in lines:
+            if line.startswith("#"): continue
+            data = line.split()
+            if data[PROTO_L] == '-':
+                links_missing_proto += 1
+                continue
+            send, recv = data[SENDER_L], data[RECEIVER_L]
+            nodes.add(send)
+            nodes.add(recv)
+
+            links.add((send, recv))
+
+        nodes = list(nodes)
+        links = list(links)
+
+        for node in nodes:
+            nodes_spec[node] = {}
+            nodes_spec[node]["s_cnt"] = 0
+            nodes_spec[node]["r_cnt"] = 0
+        for link in links:
+            links_spec[link] = {}
+            links_spec[link]["cnt"] = 0
+            links_spec[link]["proto"] = set()
+            links_spec[link]["func"] = set()
+            links_spec[link]["target"] = set()
+
+        for line in lines:
+            if line.startswith("#"): continue
+            data = line.split()
+            send, recv, proto, uid, func, target = data[SENDER_L:TARGET_L+1]
+
+            if not protocol_filter(proto): continue
+            nodes_spec[send]["s_cnt"] += 1
+            nodes_spec[recv]["r_cnt"] += 1
+            links_spec[(send, recv)]["cnt"] += 1
+            if proto != '-':
+                links_spec[(send, recv)]["proto"].add(proto)
+                if proto not in protocols:
+                    protocols.append(proto)
+            if func != '-':
+                links_spec[(send, recv)]["func"].add(func)
+            if target != '-':
+                links_spec[(send, recv)]["target"].add(target)
+
+    j_nodes = []
+    j_links = []
+
+    i = 0
+    for node in nodes:
+        j_nodes.append({
+            "id": i,
+            "name": node,
+            "group": 1,
+            "size": nodes_spec[node]["s_cnt"] + nodes_spec[node]["r_cnt"]
+        })
+        i += 1
+
+    j = 0
+    for link in links:
+        j_links.append({
+            "id": j,
+            "source": nodes.index(link[0]),
+            "target": nodes.index(link[1]),
+            "value": links_spec[link]["cnt"],
+            "PROTOCOL": [ {"name": proto} for proto in links_spec[link]["proto"] ],
+            "FUNCTION": [ {"name": func} for func in links_spec[link]["func"] ],
+            "TARGET": [ {"name": target} for target in links_spec[link]["target"] ],
+        })
+        j += 1
+
+    print("Processed "
+          + locale.format('%d',len(lines), grouping=True)
+          + " lines excluding "
+          + locale.format('%d',links_missing_proto, grouping=True)
+          + " missing protocol")
+
+    jgraph = {}
+    if j_nodes and j_links:
+        jgraph = {"nodes": j_nodes,
+                       "links": j_links,
+                       "globals": {"protocols":protocols}}
+    return jgraph
+
+def process_stats_logs(stats_dir):
+    '''
+    Convert stats log files to json dictionaries and store in
+    mongoDB
+    @param stats_dir: directory containing stats logs
+    @return true on success, false otherwise
+    '''
+    colf = os.path.join(stats_dir,STATS_COL_FILENAME)
+    countf = os.path.join(stats_dir,STATS_COUNT_FILENAME)
+
+    if not os.path.isdir(stats_dir):
+        print('ERROR> Invalid input directory')
+        return False
+    elif not os.path.isfile(countf):
+        print('ERROR> '+STATS_COUNT_FILENAME+' is missing')
+        return False
+    elif not os.path.isfile(colf):
+        print('ERROR> '+STATS_COL_FILENAME+' is missing')
+        return False
+
+    # Produce json dictionaries
+    jcount_dict = process_stats_count_log(countf)
+    jcol_dict = process_stats_col_log(colf)
+
+    if not jcount_dict:
+        print('ERROR> Failed to produce stats_count.json')
+        return False
+    if not jcol_dict:
+        print('ERROR> Failed to produce stats_col.json')
+        return False
+
+    json_dict = {'created_at' : stats_dir,
+                 'count_log' : jcount_dict,
+                 'col_log' : jcol_dict}
+
+    # Store in database
+    return add_to_db(json_dict)
+
+def main(argv):
+    inputfile = None
+
+    try:
+        opts, args = getopt.getopt(argv, "hi:", ["idir="])
+        for opt, arg in opts:
+            if opt == '-h':
+                print('create_json_graph.py -i <stats_log_dir>')
+                return
+            elif opt in ("-i", "--idir"):
+                inputfile = arg
+        if inputfile:
+            # Process input directory and store produced json dict in mongoDB
+            process_stats_logs(inputfile)
+    except getopt.GetoptError:
+        print('create_json_graph.py -i <stats_log_dir>')
+    except:
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

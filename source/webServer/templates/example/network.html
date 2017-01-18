@@ -106,7 +106,7 @@
                             </td>
                             <td>
                                 {% if c.pid %}
-                                    <a href="{{ url_for(".processes", pid=c.pid, section="connections") }}">{{ c.pid }}</a>
+                                    <a href="{{ url_for("processes.processes", pid=c.pid, section="connections") }}">{{ c.pid }}</a>
                                 {% else %}
                                     -
                                 {% endif %}

@@ -1,0 +1,13 @@
+Source: armoreconfig-passive
+Section: misc
+Priority: extra
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+Homepage: http://iti.illinois.edu
+
+Package: armoreconfig-passive
+Architecture: any
+Depends: apparmor, apparmor-profiles, apparmor-utils, etckeeper, armoreweb
+Description: Armore Configuration
+ Bundled tools and default configurations for an ARMORENode.

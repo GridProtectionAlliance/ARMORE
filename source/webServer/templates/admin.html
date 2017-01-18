@@ -2,31 +2,46 @@
 {% block content %}
 <div id="admin">
 	<h1>Admin</h1>
-	<div class="box col-md-2 col-xs-4">
-		<div class="box-header">
-			<span class="fa fa-user fa-lg"></span>
+	<div class="grid">
+		<div class="row">
+			<div class="box col-md-2 col-xs-4">
+				<div class="box-header">
+					<span class="fa fa-user fa-lg"> User Management</span>
+				</div>
+				<br/>
+				<a href="/admin/addUser">
+					<span class="option-text">Add New User</span>
+				</a>
+				<br/>
+				<a href="/admin/users">
+					<span class="option-text">View Users</span>
+				</a>
+			</div>
 		</div>
-		<br/>
-		<a href="/admin/addUser">
-			<span class="option-text">Add New User</span>
-		</a>
-		<br/>
-		<a href="/admin/users">
-			<span class="option-text">View Users</span>
-		</a>
-	</div>
-	<div class="box col-md-2 col-xs-4">
-		<div class="box-header">
-			<span class="fa fa-power-off fa-lg"></span>
+		<div class="row">
+			<div class="box col-md-2 col-xs-4">
+				<div class="box-header">
+					<span class="fa fa-power-off fa-lg"> Power Cycling</span>
+				</div>
+				<br/>
+				<form action="/settings/restart" method="post">
+					<button type="submit" name="restart" value="ARMORE Proxy">Restart ARMORE Proxy</button>
+				</form>
+				<br/>
+				<form action="/settings/restart" method="post">
+					<button type="submit" name="restart" value="Bro">Restart Bro</button>
+				</form>
+			</div>
 		</div>
-		<br/>
-		<form action="/settings/restart" method="post">
-			<button type="submit" name="restart" value="ARMORE Proxy">Restart ARMORE Proxy</button>
-		</form>
-		<br/>
-		<form action="/settings/restart" method="post">
-			<button type="submit" name="restart" value="Bro">Restart Bro</button>
-		</form>
+		<div class="row">
+			<div class="box col-md-2 col-xs-4">
+				<div class="box-header">
+					<span class="fa fa-key fa-lg"> Key Management</span>
+				</div>
+				<br/>
+				<a href="/admin/keys">View Keys</a>
+			</div>
+		</div>
 	</div>
 </div>
 {% endblock %}

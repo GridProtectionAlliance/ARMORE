@@ -1,0 +1,59 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif %}
+{% block content %}
+<script src="/static/js/javascriptrrd.wlibs.js"></script>
+<script src="/static/js/armoreRrd.js"></script>
+<div id="divTest">
+    <h1>Statistics</h1>
+    <br/>
+    {% if rrdFilesNew|length > 0 %}
+    <form>
+        <table class="rrdTblOpt">
+            <tr>
+                <td style="text-align: center"><b>Source</b></td>
+                <td style="text-align: center"><b>Destination</b></td>
+                <td style="text-align: center"><b>Function</b></td>
+            </tr>
+            <tr>
+                <td>
+                    <select id="selSource" name="rrdSource" onchange="rrdOptions(); fname_update()" size=5>
+                        {% for src in  rrdFilesNew|sort %}
+                        <option value = {{ src }} {% if loop.index == 1 %}selected{% endif %}>{{ src }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    {% for src in rrdFilesNew|sort %}
+                    <select id="selDest_{{ src }}" name="rrdDest" onchange="rrdOptions(); fname_update()" style="display: none" size=5>
+                        {% for dest in  rrdFilesNew[src]|sort %}
+                        <option value = {{ dest }} {% if loop.index == 1 %}selected{% endif %}>{{ dest }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for src in rrdFilesNew %}
+                        {% for dest in rrdFilesNew[src] %}
+                        <select id="selFunc_{{ src }}_{{ dest }}" name="rrdFunc" style="display: none" onchange="rrdOptions(); fname_update()" size=5>
+                            {% for func in rrdFilesNew[src][dest]|sort %}
+                        <option value = "{{ '__'.join([src.replace('.', '_'), dest.replace('.', '_')]) }}/{{ func }}" {% if loop.index == 1 %}selected{% endif %}>{{ func.lstrip('func_latency-').rstrip('.rrd') }}</option>
+                            {% endfor %}
+                    </select>
+                        {% endfor %}
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+    </form>
+    <br>
+    <button onclick="fname_update()">Update</button>
+
+    <table id="infotable" border=1 style="display: none">
+        <tr><td><b>RRD file</b></td><td id="fname" colspan="5">None</td></tr>
+    </table>
+    {% else %}
+    No data available
+    {% endif %}
+
+<div id="mygraph"></div>
+
+{% endblock %}

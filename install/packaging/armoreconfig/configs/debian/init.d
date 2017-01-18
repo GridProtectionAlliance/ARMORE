@@ -33,7 +33,7 @@ SCRIPTNAME=/etc/init.d/$NAME
 ##. /etc/armore/armore-utils.sh
 
 #Check Kernel Version.
-KERNPACK="$(uname -ra | grep -ci 3.18.21-armore)"
+KERNPACK="$(uname -ra | grep -ci 4.4.19-armore)"
 
 #Check Kernel is loaded
 if [ $KERNPACK -ne "1" ];
@@ -55,11 +55,14 @@ fi
 	Bind="$(cat $APROXYCFG | grep Bind\ = | sed 's/Bind\ =//' | sed 's/ //')"
 	Port="$(cat $APROXYCFG | grep Port\ = | sed 's/Port\ =//' | sed 's/ //')"
 	Capture="$(cat $APROXYCFG | grep Capture\ = | sed 's/Capture\ =//' | sed 's/ //')"
+	Firewall="$(cat $APROXYCFG | grep Firewall\ = | sed 's/Firewall\ =//' | sed 's/ //')"
 
 #Flag variables for daemon to run with
 	Roleflag=""
 	Encryptionflag=""
 	Captureflag=""
+	IPFWinterface="vl1"
+	KIPFWinterface="valea:p0 valeb:p0"
 	fi
 
 
@@ -99,7 +102,7 @@ do_proxy()
     if [ "$NETMAPCHECK" -lt "1" ];
   then 
     log_warning_msg "Loading NetMap Module"
-    insmod /lib/modules/3.18.21-armore/kernel/net/armorenetmap/netmap.ko
+    insmod /lib/modules/4.4.19-armore/kernel/net/armorenetmap/netmap.ko
     fi
 
     Captureflag="-c netmap"
@@ -136,6 +139,26 @@ do_proxy()
 	  Encryptionflag=""
 	    fi
 
+#Check if Firewall is enabled
+    if [ "$Firewall" == "Enabled" ];
+  then
+
+#Check if vale interface already exists
+    VALECHECK="$(ifconfig | grep -ci $IPFWinterface)"
+    if [ "$VALECHECK" -lt "1" ];
+     then
+    /usr/share/armorenetmap/vale-ctl -n $IPFWinterface
+      fi
+
+
+    ifconfig $IPFWinterface 127.0.0.90 netmask 255.255.255.0 promisc
+    /usr/share/armorenetmap/vale-ctl -a valeb:$IPFWinterface
+    /usr/share/armorenetmap/vale-ctl -a valea:$Interface
+
+    fi
+
+
+
 }
 ###############################################################################
 # Start Services
@@ -148,9 +171,18 @@ do_start()
   then
     do_proxy
 
-    log_success_msg "Starting ARMORE Proxy on $Interface $Bind:$Port"
     DAEMON_ARGS="$Roleflag $Encryptionflag $Interface $Bind:$Port"
-    start-stop-daemon --start --chdir /etc/armore/ --background --quiet --name $NAME --exec $DAEMON -- $DAEMON_ARGS
+    DAEMON_ARGS_FW="$Roleflag $Encryptionflag $IPFWinterface $Bind:$Port"
+    if [ "$Firewall" == "Enabled" ];
+      then
+	log_success_msg "Starting ARMORE Proxy on IPFW $IPFWinterface from $Interface $Bind:$Port"
+	start-stop-daemon --start --background --quiet --name kipfw --exec "/usr/bin/kipfw" -- $KIPFWinterface
+	start-stop-daemon --start --chdir /etc/armore/ --background --quiet --name $NAME --exec $DAEMON -- $DAEMON_ARGS_FW
+	ifconfig $Interface promisc
+    else
+	log_success_msg "Starting ARMORE Proxy on $Interface $Bind:$Port"
+	start-stop-daemon --start --chdir /etc/armore/ --background --quiet --name $NAME --exec $DAEMON -- $DAEMON_ARGS
+      fi
 
 #Begin Monitoring Services
     do_monitor
@@ -178,6 +210,10 @@ do_stop()
     APROXYCFG="/etc/armore/armoreconfig"
     log_success_msg "Stopping ARMORE Proxy"
     start-stop-daemon --stop --quiet --signal QUIT --name $NAME
+    start-stop-daemon --stop --quiet --signal QUIT --name kipfw
+    /usr/share/armorenetmap/vale-ctl -d valeb:$IPFWinterface
+    /usr/share/armorenetmap/vale-ctl -d valea:$Interface
+    ifconfig $IPFWinterface down
     fi
 
     BROSTAT="$(pgrep -c bro)"

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+Management_IP=$managementIp
+Management_Mask=$managementMask
+Management_Interface=$managementInterface
+Internal_IP=$internalIp
+Internal_Mask=$internalMask
+Internal_Interface=$internalInterface
+External_IP=$externalIp
+External_Mask=$externalMask
+External_Interface=$externalInterface
+Operation=$operationMode

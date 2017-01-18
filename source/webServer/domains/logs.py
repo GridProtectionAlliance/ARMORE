@@ -40,10 +40,12 @@
 #
 # # # # #
 
-from flask import Blueprint, render_template, session, request, flash, redirect
-from .lib.common import secure
-import system as sysLib
-import logs as logsLib
+from flask import Blueprint, render_template, session, request, flash, redirect, send_from_directory, send_file, make_response
+from domains.support.lib.common import secure
+import domains.support.system as sysLib
+import domains.support.logs as logsLib
+from domains.support.lib.common import addToFlash
+from datetime import datetime, timedelta
 
 logDomain = Blueprint('logs', __name__)
 
@@ -64,13 +66,35 @@ def logs():
         common          = sysLib.getCommonInfo({"username": session['username']}, "logs"),
     )
 
-@logDomain.route("/logs/<subsystem>")
+#@logDomain.route("/logs/<subsystem>")
+@logDomain.route("/logs/")
+@logDomain.route("/logs/<path:thePath>")
 @secure(["admin","user"])
-def logsFiltered(subsystem):
+def logsFiltered(thePath=None):
+
+    sort = request.args.get("sort")
+    order = request.args.get("order")
+
+    if sort == "" or sort is None:
+        sort = "mtime"
+    if order == "" or order is None:
+        order = "desc"
+
+    if thePath is None:
+        thePath = "/var/log"
+    else:
+        thePath = "/var/log/{}".format(thePath)
+    if not logsLib.pathIsValid(thePath):
+        addToFlash("Path is invalid: redirecting to {}".format(thePath))
+        return redirect("/logs")
 
     return render_template("logsFiltered.html", 
         common          = sysLib.getCommonInfo({"username": session['username']}, "logs"),
-        logs            = logsLib.getLogsInfo(subsystem)
+        logs            = logsLib.getLogsInfo(thePath, sort, order),
+        headerName      = thePath,
+        path            = thePath,
+        sort            = sort,
+        order           = order
     )
 
 @logDomain.route('/example/viewLog/')
@@ -87,10 +111,14 @@ def example_view_log():
             filename        = filename,
         )
 
-@logDomain.route('/viewLog/')
+@logDomain.route('/viewLog')
 @secure(["admin","user"])
 def view_log():
     filename = request.args.get('filename')
+    if not logsLib.pathIsValid(filename):
+        flash("Invalid file path")
+        return redirect("/logs")
+
     seekTail = request.args.get('seek_tail')
     content = logsLib.getLogContent(filename)
     if content == '':
@@ -115,5 +143,19 @@ def search_log():
     nextSrch = 0 if not nextSrch else nextSrch
     return logsLib.getLogContentFiltered(filename, filterBy, int(nextSrch))
 
+@logDomain.route('/logs/download')
+@secure("user")
+def downloadLog():
 
+    filepath = request.args.get('filepath')
+
+    if not logsLib.pathIsValid(filepath):
+        flash("Invalid file path")
+        return redirect("/logs")
+
+    fDir = "/".join(filepath.split('/')[0:-1])
+    fName = filepath.split('/')[-1]
+    response = make_response(logsLib.getLogContent(filepath))
+    response.headers["Content-Disposition"] = "attachment; filename={}".format(fName)
+    return response
 

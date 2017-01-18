@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+Roletype=$roleType
+Port=$port
+Bind=$bind
+Capture=$capture
+Encryption=$encryption
+Firewall=$firewall
+Interface=$interface
+Firewall=$firewall
+Operation=Proxy

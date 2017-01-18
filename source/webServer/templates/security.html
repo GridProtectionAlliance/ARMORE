@@ -1,20 +1,14 @@
 {% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
 {% block content %}
 <div id="security">
+    {% set next_order = "desc" if order == "asc" else "asc" %}
+    {% if order == "asc" %}
+        {% set order_icon = '<span class="order-icon glyphicon glyphicon-chevron-up"></span>' %}
+    {% else %}
+        {% set order_icon = '<span class="order-icon glyphicon glyphicon-chevron-down"></span>' %}
+    {% endif %}
 	<h1>Security</h1>
-	<div class="box col-md-6 col-xs-12">
-		<div class="box-header">
-			<span>
-				Example Alarms
-			</span>
-		</div>
-		<ul class="states">
-			<li class="warning">Warning: Transporter offline</li>
-			<li class="error">Error: Warp core overloading</li>
-			<li class="error">Error: Warp core ejection system malfunctioning</li>
-		</ul>
-	</div>
-	<div class="box col-md-6 col-xs-12">
+	<div class="box col-md-4 col-xs-6">
 		<div class="box-header">
 			<span>
 				Status
@@ -31,6 +25,77 @@
 			</div>
 			{% endfor %}
 		</ul>
+	</div>
+	<div class="box col-lg-8 col-md-10 col-xs-12">
+		<div class="box-header">
+			<span>
+				Alerts
+			</span>
+		</div>
+		</br>
+		<div class="pull-left">
+            <ul class="nav nav-tabs" role="tablist">
+                <li {% if filter == "all" %}class="active"{% endif %}>
+                    <a href="{{ url_for("security.security", sort=sort, order=order, filter="all") }}">
+                        All <span class="badge all">{{ count.all }}</span>
+                    </a>
+                </li>
+                <li {% if filter == "acked" %}class="active"{% endif %}>
+                    <a href="{{ url_for("security.security", sort=sort, order=order, filter="acked") }}">
+                        Acknowledged <span class="badge">{{ count.acked }}</span>
+                    </a>
+                </li>
+                <li {% if filter == "unacked" %}class="active"{% endif %}>
+                    <a href="{{ url_for("security.security", sort=sort, order=order, filter="unacked") }}">
+                        Unacknowledged <span class="badge">{{ count.unacked }}</span>
+                    </a>
+                </li>
+            </ul>
+		</div>
+		<div class="pull-right">
+			<button id="btnAckSubmit" onclick="submitAcks()">Acknowledge</button>
+		</div>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th style="width: 30%">
+						<a href="{{ url_for("security.security", sort="timestamp", order=next_order, filter=filter) }}">Timestamp</a>
+						{{ order_icon|safe if sort == "timestamp"}}
+					</th>
+					<th style="width: 30%">
+						Flags
+					</th>
+					<th style="width: 20%">
+					    Policy
+					</th>
+					<th style="width: 20%">
+					    Acknowledged By
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for l in logs %}
+				<tr class="bg-{% if l.severity.lower() == 'warning' %}warning{% elif l.severity.lower() == 'alert' %}danger{% endif %}">
+					<td>{{ l.timestamp }}</td>
+					<td>
+						{% for e in l.entry %}
+							{{ e }}
+							{% if loop.index < l.entry|length - 1 %}<br/>{% endif %}
+						{% endfor %}
+					</td>
+					<td>
+					    <a href="/policy/edit/{{ l.polNum }}">{{ l.polName }}</a>
+					</td>
+					<td>
+						<input type="checkbox" data-uid="{{ l.uid }}" name="cbPolicyAck" {% if l.ackBy != "-1" %} checked disabled {% endif %}> {% if l.ackBy != "-1" %}{{ l.ackBy }}{% endif %}</a>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<div class="pull-right">
+			<button id="btnAckSubmit" onclick="submitAcks()">Acknowledge</button>
+		</div>
 	</div>
 </div>
 {% endblock %}

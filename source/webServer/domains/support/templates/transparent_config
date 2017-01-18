@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+Netmask="$netmask"
+BroadcastIp="$broadcastIp"
+BridgeIp="$bridgeIp"
+Interface1="$interface1"
+Interface2="$interface2"
+Gateway="$gateway"
+Route="$route"
+Operation="Transparent"

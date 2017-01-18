@@ -41,8 +41,10 @@
 			</form>
 		</div>
 	</div>
+	{% if session.role == "admin" %}
 	<a href="/admin/addUser"><u>Add User</u></a>
 	<br/>
 	<a href="/admin/users"><u>View Users</u></a>
+	{% endif %}
 </div>
 {% endblock %}

@@ -1,22 +1,210 @@
+
+.tree_node {
+  cursor: pointer;
+}
+
+.tree_node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.tree_node text {
+  font: 10px sans-serif;
+}
+
+.tree_link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
 .node {
-	stroke: #fff;
-	stroke-width: 1.5px;
+  stroke-width: 1px;
+    font: 10px sans-serif;
+}
+
+.node-active{
+  stroke: #a40000;
+  font: 10px sans-serif;
+}
+
+.node-other{
+  stroke: black;
+  font: 10px sans-serif;
 }
 
 .link {
 	stroke: #999;
-	stroke-opacity: .6;
+	stroke-opacity: .15;
+}
+
+.link-active {
+  stroke-width: 2;
+  stroke-opacity: 1;
 }
 
 div.tooltip {
-	position: absolute;	
-	text-align: center;	
-	width: 120px;	
-	height: 60px;		
-	padding: 2px;	
-	font: 12px sans-serif;	
-	background: lightsteelblue;	
-	border: 0px;					
+	position: absolute;
+	text-align: center;
+	width: 120px;
+	height: 60px;
+	padding: 2px;
+	font: 12px sans-serif;
+	background: lightsteelblue;
+	border: 0px;
 	border-radius: 8px;
 	/*  pointer-events: none;	This line needs to be removed */
+}
+
+.popup {
+    position: relative;
+    left: 0;
+    bottom: 0;
+    background-color: #fff;
+    width: 450px;
+    border: 1px #ccc solid;
+    border-radius: 6px;
+    box-shadow: #333 2px 2px 4px;
+    padding: 8px;
+    font-family: arial, helvetica, sans-serif;
+}
+
+.popup h2 {
+    margin: 0 0 1rem 0;
+}
+
+#searchinput {
+    width: 200px;
+}
+.clearable{
+  background: #fff   url(http://bijudesigner.com/blog/wp-content/uploads/2015/06/download.gif) no-repeat right -10px center;
+  padding: 3px 18px 3px 4px; /* Use the same right padding (18) in jQ! */
+  transition: background 0.4s;
+}
+.clearable.x  { background-position: right 5px center; }
+.clearable.onX{ cursor: pointer; }
+.modal-body .form-horizontal .col-sm-2,
+.modal-body .form-horizontal .col-sm-10 {
+    width: 100%
+}
+
+.dropdown-menu {
+max-height: 300px;
+overflow-y: auto;
+overflow-x: hidden;
+}
+.nav>li>a:hover, .nav>li>a:focus, .open>a:focus, .nav .open>a:hover   {
+    background-color: transparent;
+}
+.graph-legend li span{
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+}
+.graph-legend {
+    font-size: 12px;
+}
+.canvas {
+    font-size: 12px;
+}
+
+ul {
+    display: inline-block;
+    list-style: none;
+    vertical-align:top;
+}
+li {
+    vertical-align:top;
+}
+.navbar-nav li a {
+    padding-top: 0px;
+    padding-bottom: 15px;
+}
+.container-fluid {
+    padding-left: 0px;
+}
+.y.axis path {
+  display: none;
+}
+
+.y.axis line {
+  stroke: #fff;
+  stroke-opacity: .2;
+  shape-rendering: crispEdges;
+}
+
+.y.axis .zero line {
+  stroke: #000;
+  stroke-opacity: 1;
+}
+
+.title {
+  font: 300 78px Helvetica Neue;
+  fill: #666;
+}
+
+.birthyear,
+.age {
+  text-anchor: middle;
+}
+
+.birthyear {
+  fill: #fff;
+}
+
+rect {
+  fill-opacity: .6;
+  fill: #e377c2;
+}
+
+rect:first-child {
+  fill: #1f77b4;
+}
+.bar{
+  fill: steelblue;
+}
+
+.bar:hover{
+  fill: brown;
+}
+
+.axis {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.padding{padding:20px;}
+
+.btn.active[data-active-class="primary"] {
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74;
+}
+.btn.active[data-active-class="success"] {
+    color: #fff;
+    background-color: #449d44;
+    border-color: #398439;
+}
+.btn.active[data-active-class="info"] {
+    color: #fff;
+    background-color: #31b0d5;
+    border-color: #269abc;
+}
+.btn.active[data-active-class="warning"] {
+    color: #fff;
+    background-color: #ec971f;
+    border-color: #d58512;
+}
+.btn.active[data-active-class="danger"] {
+    color: #fff;
+    background-color: #c9302c;
+    border-color: #ac2925;
 }

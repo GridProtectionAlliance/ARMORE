@@ -1,10 +1,195 @@
-{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
-{% block content %}
-<div id="visualization" class="col-md-12 col-xs-12">
-	<div class="box">
-		<div id="divVisContent">
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{%
+endif -%} {% block content %}
+<script type='text/javascript' src="/static/js/jquery-ui.min.js"></script>
+<script src="/static/js/angular.js"></script>
+<script src="/static/js/angular-route.js"></script>
+<script src="/static/js/lodash.min.js"></script>
+<script src="/static/js/angularjs-dropdown-multiselect.js"></script>
+<script src="/static/js/jquery.contextmenu.r2.js"></script>
+<script src="/static/js/controllers.js"></script>
+<script src="/static/js/visualization.js"></script>
+<script src="/static/js/visualization_tree.js"></script>
+<script src="/static/js/visualization_graph.js"></script>
+<script src="/static/js/visualization_anomalies.js"></script>
+<script src="/static/js/ip-address.browserified.js"></script>
+<script src="/static/js/bootstrap-multiselect.js"></script>
+<script src="/static/js/bootstrap-switch.js"></script>
+<script src="/static/js/Chart.min.js"></script>
+<script src="/static/js/d3-legend.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrap-multiselect.css" type="text/css"/>
+<link rel="stylesheet" href="/static/css/bootstrap-switch.css" type="text/css"/>
+
+<html ng-app="Visualization">
+
+<div class="container">
+  <div ng-controller="CollectionController"><h2>Visualization</h2>
+    <nav class="navbar" data-spy="affix" data-offset-top="50">
+		  <div class="container-fluid">
+		    <div class="navbar-header">
+		      <a href="#"></a>
+		    </div>
+		    <ul class="nav navbar-nav">
+		      <li>
+						<div id="viewSelector" class="btn-group .btn-group-sm" data-toggle="buttons-checkbox">
+						    <button id="anobtn" type="button" class="btn btn-small btn-default active" data-active-class="success" active>Anomalies</button>
+						    <button id="gbtn" type="button" class="btn btn-small btn-default" data-active-class="success">Graph</button>
+						    <button id="gbtn" type="button" class="btn btn-small btn-default" data-active-class="success">Tree</button>
+						</div>
+					</li>
+		      <li>
+		        <a href="#" ng-dropdown-multiselect="" options="dateListData" selected-model="dateListModel" translation-texts="dateListCustomTexts" extra-settings="dateListSettings" events="dateListEvents"></a>
+		      </li>
+          <li>
+            <a href="#" ng-dropdown-multiselect="" options="compare2DateList" selected-model="compare2DateModel" translation-texts="compare2DateListCustomTexts" extra-settings="compare2DateListSettings" events="compare2DateListEvents"></a>
+          </li>
+          <li>
+            <a href="#" ng-dropdown-multiselect="" options="filterOptions" selected-model="filterListModel" translation-texts="filterListCustomTexts" extra-settings="filterListSettings" events="filterListEvents" group-by="type"></a>
+          </li>
+		      <li><a href="#">
+			      <div class="btn-group">
+	          <input id="searchinput" type="search" placeholder="Search nodes..."
+	            class="form-control input-sm clearable"/>
+	        </div></a></li>
+	        <li>
+	           <canvas id="myChart" width="60" height="60"></canvas>
+	        </li>
+	        <li><div id="js-legend" class="graph-legend"></div></li>
+		      <li><a href="#"><span class="info" current-time="format"></span></a></li> 
+		    </ul>
+		  </div>
+		</nav>
+    <!-- Anomaly Histogram -->
+    <div class="box">
+    <h3>Anomalies</h3>
+      <draw-histo id="histoContent"></draw-histo>
+    </div>
+	  <!-- Graph canvas -->
+		<div class="box" id="graph_box">
+      <h3>Graph View</h3>
+			<div id="canvasState"></div>
+			<draw-graph id="graphContent" ng-model="model.selectedDate" watch-this="model.selectedDate"></draw-graph>
+		</div>
+	  <!-- Tree canvas -->
+		<div class="box" id="tree_box">
+      <h3>Tree View</h3>
+			<draw-tree id="treeContent"></draw-tree>
+	  </div>
+  </div>
+  <div ng-controller="NodeController">
+		<div class="contextMenu" id="cntxtMenu" style="width: 300px;">
+			<ul>
+				<li id="nodeid"></li>
+				<li id="rename">Rename...</li>
+				<li id="changetype">Change type...</li>
+			</ul>
+		</div>
+		<!-- Node Name Modal -->
+		<div class="modal fade" id="nodeNameModal" tabindex="-1" role="dialog"
+			aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span> <span class="sr-only">Close</span>
+						</button>
+						<h4 class="modal-title" id="nodeNameModalTitle"></h4><div id="nodeId"></div>
+					</div>
+					<!-- Modal Body -->
+					<div class="modal-body">
+						<form role="form">
+							<div class="form-group">
+								<label for="currentName">Current name</label> <input type="text"
+									class="form-control" id="currentName"
+									placeholder="Current name" />
+							</div>
+							<div class="form-group">
+								<label for="newName">New name</label> <input type="text"
+									class="form-control" id="newName" placeholder="New name" />
+							</div>
+						</form>
+					</div>
+					<!-- Modal Footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">
+							Close</button>
+	                <button type="submit" class="btn btn-primary" ng-click="graphRenameNode()">Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Node Type Modal -->
+		<div class="modal fade" id="nodeTypeModal" tabindex="-1" role="dialog"
+			aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span aria-hidden="true">&times;</span> <span class="sr-only">Close</span>
+						</button>
+						<h4 class="modal-title" id="nodeTypeModalLabel">Change node
+							type and icon</h4><div id="nodeId"></div><div id="nodeName"></div>
+					</div>
+	
+					<!-- Modal Body -->
+					<div class="modal-body">
+					<!-- 
+					<div class="checkbox" ng-repeat="(key, value) in nodeTypeImage">
+					   <label> <input type="checkbox" /> <span ng-bind=key></span>
+             </label> <span>{{value}}</span>
+					</div>
+					 -->
+					 <div class="btn-group" id="nodeTypeSelector">
+            <div>
+              <label> <input type="radio" name="nodetyperadio" value="default"/> Default
+              </label> <span><img src="static/img/pc_tower.png" height="32" /></span>
+            </div>
+            <div><br>
+            </div>
+						<div>
+							<label> <input type="radio" name="nodetyperadio" value="master"/> Master
+							</label> <span><img src="static/img/breaker.jpg" height="32" /></span>
+						</div>
+						<div><br>
+						</div>
+						<div>
+							<label> <input type="radio" name="nodetyperadio" value="slave"/> Slave
+							</label> <span><img src="static/img/aggregator.png" height="32" /></span>
+						</div>
+            <div><br>
+            </div>
+	        </div>
+					<!-- Modal Footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">
+							Close</button>
+						<button type="button" class="btn btn-primary" ng-click="graphChangeNodeType()">Submit
+						</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
-	<script src="/static/js/visualization.js"></script>
+	  <!-- Node Details Modal -->
+	  <div class="modal fade" id="nodeInfoModal" role="dialog">
+	    <div class="modal-dialog">
+	      <!-- Modal content-->
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal">&times;</button>
+	          <h4 class="modal-title">Node Details</h4>
+	        </div>
+	        <div class="modal-body">
+	          <p></p>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        </div>
+	      </div>
+	    </div>
+	  </div>
+  </div>
 </div>
+</html>
 {% endblock %}

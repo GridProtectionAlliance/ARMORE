@@ -1,1 +1,1 @@
-bpctl_mod.ko lib/modules/3.18.21-armore/kernel/net/bypass
+bpctl_mod.ko lib/modules/4.4.19-armore/kernel/net/bypass

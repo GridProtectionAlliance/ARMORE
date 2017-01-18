@@ -19,6 +19,8 @@ from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
 
 # Modbus Client Libraries
 from pymodbus.client.sync import ModbusTcpClient
+from pymodbus.other_message import * 
+from pymodbus.file_message import * 
 
 ###############################################################################
 # Globals
@@ -28,6 +30,9 @@ config = {}
 tmpserv = []  #remove me later
 tmpclient = []  #remove me later
 tmpclientw = []  #remove me later
+
+tmpclientrw = []  #remove me later
+tmpclientdiag = []  #remove me later
 
 ###############################################################################
 # Modbus Datastore Configuration
@@ -151,7 +156,9 @@ class clientthreads(threading.Thread):
         self.vnicm = ""
         self.runtime= 0
         self.delayr = random.uniform(0,5)
-        self.delayw = random.uniform(0,60)
+        self.delayw = random.uniform(0,30)
+        self.delayrw = random.uniform(0,300)
+        self.delaydiag = random.uniform(0,3600)
         self.firstdelay = 0
         self.pstart= ""
 
@@ -162,6 +169,10 @@ class clientthreads(threading.Thread):
             self.clientintr()
         elif(self.mode=="write"):
             self.clientintw()
+        elif(self.mode=="rw"):
+            self.clientintrw()
+        elif(self.mode=="diag"):
+            self.clientintdiag()
         else:
             print "wrong mode specified"
 
@@ -198,6 +209,40 @@ class clientthreads(threading.Thread):
             print self.dest 
             print time.time() - self.pstart
             print "------------------\n\r"
+    
+    def clientintrw(self):  # instantiate server stuff
+        while(not self.clientstop.is_set()):
+            if(time.time() - self.pstart > self.runtime):
+                print "stopping"
+                break
+            if(self.firstdelay < 1):
+                print "Start RWDelay is: " + str(self.delayrw)
+                time.sleep(self.delayrw)
+                self.firstdelay = 1
+                print "Starting Read Writes"
+
+            self.clientrw()
+            print "\n\r-----Read write----\n\r"
+            print self.dest 
+            print time.time() - self.pstart
+            print "------------------\n\r"
+    
+    def clientintdiag(self):  # instantiate server stuff
+        while(not self.clientstop.is_set()):
+            if(time.time() - self.pstart > self.runtime):
+                print "stopping"
+                break
+            if(self.firstdelay < 1):
+                print "Start Diag is: " + str(self.delaydiag)
+                time.sleep(self.delaydiag)
+                self.firstdelay = 1
+                print "Starting Diag"
+
+            self.clientdiag()
+            print "\n\r-----Diag----\n\r"
+            print self.dest 
+            print time.time() - self.pstart
+            print "------------------\n\r"
 
 
     def clientreads(self):
@@ -212,7 +257,17 @@ class clientthreads(threading.Thread):
         self.client.write_register(1, 3)
         self.client.write_coils(1, [True]*10)
         self.client.write_registers(1, [3]*10)
-        time.sleep(60)
+        time.sleep(30)
+    
+    def clientrw(self):
+        self.client.read_input_registers(1, 10)
+        self.client.write_registers(1, [4]*10)
+        time.sleep(300)
+    
+    def clientdiag(self):
+        rq = ReadExceptionStatusRequest()
+        self.client.execute(rq)
+        time.sleep(3600)
     
     def alloc(self):  # Allocate ip address
         if (validateIP(self.ipaddr, self.vnicm)):
@@ -246,19 +301,18 @@ def signalEvent(signal, frame):
 ###############################################################################
 # Prog
 ###############################################################################
-ipRange = "192.168.5.0/24"
-virtNIC = "eth0"
+ipRange = "192.168.6.0/24"
+virtNIC = "eth2"
 modbusPort = "502"
-runtime = 10800 #time in seconds
+runtime = 18000#time in seconds
 
 def main():
 
 
     enumIP4 = (IPNetwork(ipRange))
     #for ip in range(len(enumIP4)):
-    #for ip in range(8,109):
     for ip in range(8,18):
-        tmpserv.append(serverthreads("eth0:"+str(ip), str(enumIP4[ip]), 502))
+        tmpserv.append(serverthreads("eth2:"+str(ip), str(enumIP4[ip]), 502))
 
     for servinst in range(len(tmpserv)):
         tmpserv[servinst].mode = "server"
@@ -267,7 +321,7 @@ def main():
         print "server at " + tmpserv[servinst].ipaddr
 
     for clientinstr in range(0,len(tmpserv)):  #range(0, numClients)
-        tmpclient.append(clientthreads("eth0:190", "192.168.5.190", 502))
+        tmpclient.append(clientthreads("eth2:190", "192.168.6.190", 502))
         tmpclient[clientinstr].mode = "read"
         tmpclient[clientinstr].pstart= time.time()
         tmpclient[clientinstr].vnicm= virtNIC
@@ -277,7 +331,7 @@ def main():
         tmpclient[clientinstr].start()
     
     for clientinstr in range(0,len(tmpserv)):  #range(0, numClients)
-        tmpclientw.append(clientthreads("eth0:190", "192.168.5.190", 502))
+        tmpclientw.append(clientthreads("eth2:190", "192.168.6.190", 502))
         tmpclientw[clientinstr].mode = "write"
         tmpclientw[clientinstr].pstart= time.time()
         tmpclientw[clientinstr].vnicm= virtNIC
@@ -285,6 +339,28 @@ def main():
         tmpclientw[clientinstr].dest = tmpserv[clientinstr].ipaddr
         tmpclientw[clientinstr].alloc()
         tmpclientw[clientinstr].start()
+    
+    for clientinstr in range(0,len(tmpserv)):  #range(0, numClients)
+        tmpclientrw.append(clientthreads("eth2:190", "192.168.6.190", 502))
+        tmpclientrw[clientinstr].mode = "rw"
+        tmpclientrw[clientinstr].pstart= time.time()
+        tmpclientrw[clientinstr].vnicm= virtNIC
+        tmpclientrw[clientinstr].runtime= runtime
+        tmpclientrw[clientinstr].dest = tmpserv[clientinstr].ipaddr
+        tmpclientrw[clientinstr].alloc()
+        tmpclientrw[clientinstr].start()
+    
+    for clientinstr in range(0,len(tmpserv)):  #range(0, numClients)
+        tmpclientdiag.append(clientthreads("eth2:190", "192.168.6.190", 502))
+        tmpclientdiag[clientinstr].mode = "diag"
+        tmpclientdiag[clientinstr].pstart= time.time()
+        tmpclientdiag[clientinstr].vnicm= virtNIC
+        tmpclientdiag[clientinstr].runtime= runtime
+        tmpclientdiag[clientinstr].dest = tmpserv[clientinstr].ipaddr
+        tmpclientdiag[clientinstr].alloc()
+        tmpclientdiag[clientinstr].start()
+
+
     
 
 

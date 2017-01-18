@@ -13,14 +13,13 @@
 						<th class="col-md-2 col-xs-4">Role</th>
 					</tr>
 				</thead>
-				<tr>
-					<td>
-					</td>
-				</tr>
 				{% for user in users %}
 				<tr>
 					<td class="col-md-2 col-xs-4"><a href="/admin/profile/{{ user.username }}">{{ user.username }}</a></td>
 					<td class="col-md-2 col-xs-4">{{ user.role }}</td>
+					<td class="col-md-2 col-xs-4">
+						<a href="/admin/user/delete/{{ user.username }}" onclick="return deleteUser('{{ user.username }}')">Delete</a>
+					</td>
 				</tr>
 				{% endfor %}
 			</table>

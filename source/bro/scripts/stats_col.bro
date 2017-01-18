@@ -45,8 +45,8 @@ export {
         ## Timestamp when the data is extracted
         ts: time &log;
 
-	## Packet length
-	len: count &log;
+	    ## Packet length
+	    len: count &log;
 
         ## Sender's IP
         sender: addr &log &optional;
@@ -91,6 +91,7 @@ global g_start: time;                           # global variable to store the s
 global g_end: time;                             # global variable to store the end time of the program
 global g_dur: interval;                         # global variable to store the duration of the program
 global g_len: count;				            # global variable to store the length of the packet
+global g_conn: connection;                      # global variable to store the connection
 global g_src: addr;                             # global variable to store the sender's ip address
 global g_dst: addr;                             # global variable to store the receiver's ip address
 global g_pro: string;                           # global variable to store the protocol name
@@ -98,6 +99,7 @@ global g_uid: string;                           # global variable to store the u
 global g_fun: string;                           # global variable to store the function name
 global g_is_response: bool;                     # global variable to indicate whether the packet is a response
 global g_tgt: string;                           # global variable to store all the information about the target
+global g_tgt_table: table[string] of string;    # global variable to store all the information about the target for each connection
 global g_wait = F;                              # global variable to indicate whether the collector is waiting for lower level information
 global g_info: Info;                            # global variable to store the current data item
 
@@ -140,7 +142,7 @@ global g_packet_c2: count = 0;                  # global variable to store the n
 global g_packet_c3: count = 0;                  # global variable to store the number of third item_seen event
 global g_packet_c4: count = 0;                  # global variable to store the number of item_gen event
 
-
+global g_packet_process: interval = 0sec;       # global variable to store the process time of each packet
 
 # Create a vector containing counts from lower to upper
 function range(lower: count, upper: count): vector of count 
@@ -195,6 +197,7 @@ event item_gen(info: Info)
     {
         g_packet_42 += current_time() - g_time_40;
         g_packet_c4 += 1;
+        g_packet_process += current_time() - g_time_10;
     }
     Log::write(StatsCol::LOG, info);
 }
@@ -223,6 +226,8 @@ event new_packet(c: connection, p: pkt_hdr) &priority=5
         g_time_10 = current_time();
     }
 
+    g_conn = c;
+
     if (p?$ip)
     {
 	g_len = p$ip$len;
@@ -244,11 +249,11 @@ event new_packet(c: connection, p: pkt_hdr) &priority=5
 
     if (col_levels <= 1)
     {
-         g_info = [$ts=g_ts, $len=g_len, $sender=g_src, $conn=c];
+         g_info = [$ts=g_ts, $len=g_len, $sender=g_src, $conn=g_conn];
     }
     else
     {
-         g_info = [$ts=g_ts, $len=g_len, $sender=g_src, $receiver=g_dst, $conn=c];
+         g_info = [$ts=g_ts, $len=g_len, $sender=g_src, $receiver=g_dst, $conn=g_conn];
     }
 
     if (col_levels <= 2)
@@ -280,7 +285,7 @@ event new_packet(c: connection, p: pkt_hdr) &priority=5
              g_time_11 = current_time();
              g_packet_11 += g_time_11 - g_time_10;
          }
-         event StatsCol::item_seen([$ts=g_ts, $len=g_len, $sender=g_src, $receiver=g_dst, $conn=c]);
+         event StatsCol::item_seen([$ts=g_ts, $len=g_len, $sender=g_src, $receiver=g_dst, $conn=g_conn]);
          if (measure)
          {
              g_time_12 = current_time();
@@ -358,6 +363,9 @@ event bro_done()
         print fmt("T40: %s", g_packet_40);
         print fmt("T41: %s", g_packet_41);
         print fmt("T42: %s", g_packet_42);
+
+        g_packet_process = g_packet_process/g_packet_c4;
+        print fmt("Process: %s", g_packet_process);
     }
 }
 

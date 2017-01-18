@@ -1,0 +1,239 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="addPolicy">
+	<h1>{% if policy %}Edit Policy '{{ policy.name }}'{% else %}Add Policy{% endif %}</h1>
+	<div class="grid">
+		<div class="row">
+			<div class="col-md-8 col-xs-12">
+				<form id="frmAddPolicy" onchange="addPolicyInit()" class="form-horizontal" method="post" action="/policy/{% if policy %}edit/{{ policy.num }}{% else %}add{% endif %}" accept_charset="utf-8" role="form">
+					<div class="form-group">
+						<div class="box grid">
+							Events logged and notifications sent out when ALL of the following criteria is met.  Blank fields are ignored. 
+							<br/>
+							<br/>
+							<div class="row">
+								<div class="col-md-12 col-xs-12">
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>Policy Name</h4>(tabs not allowed)
+										</div>
+										<div class="panel-body">
+											<input id="inpName" type="text" name="policyName" class="form-control input-lg" placeholder="Name" data-error="Must be filled in.  No tabs allowed." value="{% if policy %}{{policy.name }}{% endif %}" oninvalid="setCustomValidity('Must be filled in. No Tabs Allowed.')" required>
+										</div>
+									</div>
+								</div>
+							</div>
+							<br/>
+							<div class="row">
+								<div class="col-md-12 col-xs-12">
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>IP/Subnet</h4>
+										</div>
+										<div class="panel-body">
+											<div class="col-md-3 col-xs-4">
+												<h4>Source IP/Subnet</h4>
+											</div>
+											<div class="col-md-9 col-xs-4">
+												<input id="inpSrcSub" type="text" name="srcIp" class="form-control input-lg" placeholder="xxx.xxx.xxx.xxx/xx" data-error="Invalid IP/Subnet" value="{% if policy %}{{ policy.src }}{% endif %}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$" oninvalid="setCustomValidity('Invalid IP/Subnet')">
+											</div>
+										</div>
+										<div class="panel-footer">
+											<input id="cbSrcSub" type="checkbox" onchange="updateField('inpSrcSub', this.checked)" {% if not policy %}checked{% endif %}> Any Source</input>
+										</div>
+										<div class="panel-body">
+											<div class="col-md-3 col-xs-6">
+												<h4>Destination IP/Subnet</h4>
+											</div>
+											<div class="col-md-9 col-xs-12">
+												<input id="inpDestSub" type="text" name="destIp" class="form-control input-lg" placeholder="xxx.xxx.xxx.xxx/xx" data-error="Invalid IP/Subnet" value="{% if policy %}{{ policy.src }}{% endif %}" pattern="^(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]).(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(?:\/[0-2]?[0-9]|\/3[0-2])?$" oninvalid="setCustomValidity('Invalid IP/Subnet')">
+											</div>
+										</div>
+										<div class="panel-footer">
+											<input id="cbDestSub" type="checkbox" onchange="updateField('inpDestSub', this.checked)" {% if not policy %}checked{% endif %}> Any Destination</input>
+										</div>
+									</div>
+								</div>
+							</div>
+							<br/>
+							<div class="row">
+								<div class="col-md-12 col-xs-12">
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>Protocol</h4>
+										</div>
+										<div class="panel-body">
+											<select name="proto">
+												<option value="Any" {% if policy %}{% if policy.proto == "any" %}selected{% endif %}{% else %}selected{% endif %}>Any</option>
+												<option value="dnp3" {% if policy %}{% if policy.proto == "dnp3" %}selected{% endif %}{% endif %}>DNP3</option>
+												<option value="modbus" {% if policy %}{% if policy.proto == "modbus" %}selected{% endif %}{% endif %}>Modbus</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12 col-xs-12">
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>Function</h4>(Separate functions with commas, not case sensitive)
+										</div>
+										<div class="panel-body">
+											<input id="inpFunc" type="text" name="func" class="form-control input-lg" placeholder="function1,function2" value="{% if policy %}{{ policy.func }}{% endif %}">
+											<input id="inpFuncRegexCont" type="radio" name="funcRegex" value="contains" {% if policy %}{% if policy.funcRegex == "contains" or policy.funcRegex == "" %}checked{% endif %}{% else %}checked{% endif %} onchange="updateFunction(this.value)"> Contains</input>
+											<input id="inpFuncRegexExact" type="radio" name="funcRegex" value="exact" {% if policy %}{% if policy.funcRegex == "exact" %}checked{% endif %}{% endif %} onchange="updateFunction(this.value)"> Exact Match</input>
+										</div>
+										<div class="panel-footer">
+											<input id="cbFunc" type="checkbox" onchange="updateField('inpFunc', this.checked)" {% if policy.func == "*" %}checked{% endif %}> Any Function</input>
+										</div>
+									</div>
+								</div>
+							</div>
+							<br/>
+							<div class="row">
+								<div class="col-md-12 col-xs-12">
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>Days to Enforce</h4>
+										</div>
+										<div class="panel-body">
+											<input id="inpPerDaily" type="checkbox" name="Daily" onchange="updateTimePeriodCheckBoxes(this)" {% if policy %} {% if policy.daily %}checked{% endif %}{% else %}checked{% endif %}> Daily
+											<input id="inpPerWeekday" type="checkbox" name="Weekday" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.weekday or policy.daily) %}checked{% endif %}> Weekdays
+											<input id="inpPerWeekend" type="checkbox" name="Weekend" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.weekend or policy.daily) %}checked{% endif %}> Weekends
+											<br/>
+											<input id="inpPerSun" type="checkbox" name="Sun" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.sun or policy.weekend or policy.daily) %}checked{% endif %}> Sunday
+											<input id="inpPerMon" type="checkbox" name="Mon" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.mon or policy.weekday or policy.daily) %}checked{% endif %}> Monday
+											<input id="inpPerTue" type="checkbox" name="Tue" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.tue or policy.weekday or policy.daily) %}checked{% endif %}> Tuesday
+											<input id="inpPerWed" type="checkbox" name="Wed" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.wed or policy.weekday or policy.daily) %}checked{% endif %}> Wednesday
+											<input id="inpPerThu" type="checkbox" name="Thu" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.thu or policy.weekday or policy.daily) %}checked{% endif %}> Thursday
+											<input id="inpPerFri" type="checkbox" name="Fri" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.fri or policy.weekday or policy.daily) %}checked{% endif %}> Friday
+											<input id="inpPerSat" type="checkbox" name="Sat" onchange="updateTimePeriodCheckBoxes(this)" {% if policy and (policy.sat or policy.weekend or policy.daily) %}checked{% endif %}> Saturday
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12 col-xs-12">
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>Times to Enforce</h4>
+										</div>
+										<div class="panel-body">
+											<div class="col-md-3 cols-xs-4">
+												Start Time
+											</div>
+											<div class="col-md-9 cols-xs-8">
+												Stop Time
+											</div>
+											<div id="divTimeRows" class="grid">
+												<div id="divTimeRow" name="divTimeRow" class="row" style="display: none">
+													<div class="col-md-3 col-xs-4">
+														<input id="inpTimeStart" type="text" name="timeStart" placeholder="hh:mm:ss" pattern="^(?:[0-1]?[0-9]|2[0-3]):[0-5]?[0-9]:[0-5]?[0-9]$" oninvalid="setCustomValidity('Invalid Format: hh:mm:ss')">
+													</div>
+													<div class="col-md-3 col-xs-4">
+														<input id="inpTimeStop" type="text" name="timeStop" placeholder="hh:mm:ss" pattern="^(?:[0-1]?[0-9]|2[0-3]):[0-5]?[0-9]:[0-5]?[0-9]$" oninvalid="setCustomValidity('Invalid Format: hh:mm:ss')">
+													</div>
+													<div class="col-md-2 col-xs-2">
+														<button id="btnRmTime" onclick="policyRemoveTimeRow(this)" type="button">
+															<span class="fa fa-minus fa-fw"></span> Remove
+														</button>
+													</div>
+												</div>
+												{% if policy and policy.timePer %}
+													{% for pt in policy.timePer %}
+												<div id="divTimeRow{{ loop.index0 }}" name="divTimeRow" class="row">
+													<div class="col-md-3 col-xs-4">
+														<input id="inpTimeStart{{ loop.index0 }}" type="text" name="timeStart{{ loop.index0 }}" value={{ pt.start }} pattern="^(?:[0-1]?[0-9]|2[0-3]):[0-5]?[0-9]:[0-5]?[0-9]$" oninvalid="setCustomValidity('Invalid Format: hh:mm:ss')">
+													</div>
+													<div class="col-md-3 col-xs-4">
+														<input id="inpTimeStop{{ loop.index0 }}" type="text" name="timeStop{{ loop.index0 }}" value={{ pt.stop }} pattern="^(?:[0-1]?[0-9]|2[0-3]):[0-5]?[0-9]:[0-5]?[0-9]$" oninvalid="setCustomValidity('Invalid Format: hh:mm:ss')">
+													</div>
+													<div class="col-md-2 col-xs-4">
+														<input id="cbTimeAny" type="checkbox" onchange="updateField('inpTime0', this.checked)" {% if pt.start == "00:00:00" and pt.stop == "23:59:59" %}checked{% endif %}> Any Time</input>
+													</div>
+													{% if loop.index0 > 0 %}
+													<div class="col-md-2 col-xs-2">
+														<button id="btnRmTime" onclick="policyRemoveTimeRow(this)" type="button">
+															<span class="fa fa-minus fa-fw"></span> Remove
+														</button>
+													</div>
+													<div class="col-md-2 col-xs-4">
+														<input type="checkbox" onchange="updateField('inpTime0', this.checked)"> Any Time</input>
+													</div>
+													{% endif %}
+												</div>
+													{% endfor %}
+												{% else %}
+												<div id="divTimeRow0" name="divTimeRow" class="row">
+													<div class="col-md-3 col-xs-4">
+														<input id="inpTimeStart0" type="text" name="timeStart0" placeholder="hh:mm:ss" pattern="^(?:[0-1]?[0-9]|2[0-3]):[0-5]?[0-9]:[0-5]?[0-9]$" oninvalid="setCustomValidity('Invalid Format: hh:mm:ss')">
+													</div>
+													<div class="col-md-3 col-xs-4">
+														<input id="inpTimeStop0" type="text" name="timeStop0" placeholder="hh:mm:ss" pattern="^(?:[0-1]?[0-9]|2[0-3]):[0-5]?[0-9]:[0-5]?[0-9]$" oninvalid="setCustomValidity('Invalid Format: hh:mm:ss')">
+													</div>
+													<div class="col-md-2 col-xs-4">
+														<input id="cbTimeAny" type="checkbox" onchange="updateField('inpTime0', this.checked)"> Any Time</input>
+													</div>
+												</div>
+												{% endif %}
+											</div>
+										</div>
+										<div class="panel-footer">
+											<button id="btnAddTime" onclick="policyAddTimeRow()" type="button">
+												<span class="fa fa-plus fa-fw"></span> Add Time
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							<br/>
+							<div class="row">
+								<div class="col-md-12 col-xs-12">
+
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>Filtering Mode</h4>
+										</div>
+										<div class="panel-body">
+											<input id="inpIpfw" type="radio" name="filtering" value="passive" {% if policy %}{% if policy.filtering == "passive" %}checked{% endif %}{% else %}checked{% endif %}> Passive: Log traffic that fits this policy's criteria<br/>
+											<input id="inpIpfw" type="radio" name="filtering" value="active" {% if policy and policy.filtering == "active" %}checked{% endif %}> Active: Block and log traffic that fits this policy's source/destination IP, protocol, and enforcement time values
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12 col-xs-12">
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>Severity</h4>
+										</div>
+										<div class="panel-body">
+											<input id="inpNotice" type="radio" name="severity" value="notice" {% if policy %}{% if policy.severity == "notice" %}checked{% endif %}{% else %}checked{% endif %}> Notice
+											<input id="inpNotice" type="radio" name="severity" value="warning" {% if policy and policy.severity == "warning" %}checked{% endif %}> Warning
+											<input id="inpNotice" type="radio" name="severity" value="alert" {% if policy and policy.severity == "alert" %}checked{% endif %}> Alarm
+										</div>
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class = "row">
+								<div class="col-md-1 col-xs-1">
+									<input type="submit"></input>
+								</div>
+								{% if policy %}
+								<div class="col-md-4 col-xs-6">
+									<input type="checkbox" name="submitAsNew"> Create New Policy</input>
+								</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<a href="/policy">Current Policies</a>
+		</div>
+	</div>
+</div>
+{% endblock %}

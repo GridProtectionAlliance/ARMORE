@@ -1,5 +1,6 @@
 #!/bin/bash
 #Needs iperf on source and destination (apt-get install iperf)
+#On server run iperf -s -u -B 192.168.10.90
 #normal ping output
 REMOTEADDR="192.168.1.91"
 echo "-------------------------------------------------------------------------"

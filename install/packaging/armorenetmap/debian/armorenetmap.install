@@ -3,6 +3,6 @@
 #e1000/*.ko  lib/modules/3.18.21-armore/kernel/net/armorenetmap
 #e1000e/*.ko lib/modules/3.18.21-armore/kernel/net/armorenetmap
 #*.ko        lib/modules/3.18.21-armore/kernel/net/armorenetmap
-netmap.ko        lib/modules/3.18.21-armore/kernel/net/armorenetmap
+netmap.ko        lib/modules/4.4.19-armore/kernel/net/armorenetmap
 
 build\-apps/* /usr/share/armorenetmap

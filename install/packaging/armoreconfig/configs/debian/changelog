@@ -1,3 +1,40 @@
+armoreconfig (1.0-1-2.10) stable; urgency=medium
+
+  * Upstream changes to sync backend configurations
+
+ -- sgrand2 <sgrand2@illinois.edu>  Tue, 10 Jan 2017 13:58:05 -0600
+
+armoreconfig (1.0-1-2.9) Stable; urgency=medium
+
+  * Updated PostInstall Scripts
+  * Updated Bro Scripts
+  * Removed support for statsd
+
+ -- sgrand2 <sgrand2@illinois.edu>  Tue, 20 Dec 2016 15:19:04 -0600
+
+armoreconfig (1.0-1-2.8) Stable; urgency=medium
+
+  * Updated Kernel Check
+
+ -- sgrand2 <sgrand2@illinois.edu>  Fri, 02 Sep 2016 13:38:55 -0500
+
+armoreconfig (1.0-1-2.7) stable; urgency=medium
+
+  * Updated configuration files
+
+ -- sgrand2 <sgrand2@illinois.edu>  Mon, 25 Jul 2016 15:25:34 -0500
+
+armoreconfig (1.0-1-2.6) stable; urgency=medium
+
+  * Introduced apparmor configuration to ARMOREProxy
+  * Updated Bro Scripts
+  * Added additional dependencies
+  * Created armore system account
+  * Updated web visualizations and interface
+  * Base Netmap-ipfw configurations
+
+ -- sgrand2 <sgrand2@illinois.edu>  Tue, 21 Jun 2016 16:09:40 -0500
+
 armoreconfig (1.0-1-2.5) stable; urgency=medium
   
   * Updating statistics scripts for bro and renaming armoreconfiguration files
@@ -12,7 +49,7 @@ armoreconfig (1.0-1-2.4) stable; urgency=medium
 
 armoreconfig (1.0-1-2.3) stable; urgency=medium
 
-  *Passive and Transparent mode update.
+  * Passive and Transparent mode update.
 
  -- sgrand2 <sgrand2@illinois.edu>  Tue, 12 Jan 2016 02:55:35 -0600
 
@@ -36,6 +73,6 @@ armoreconfig (1.0-1-2) stable; urgency=medium
 
 armoreconfig (1.0-1-1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release. Internal Build
 
- -- armore <armore@packetbricks>  Tue, 02 Jun 2015 14:27:12 -0500
+ -- Steve Granda <sgrand2@illinois.edu>  Tue, 02 Jun 2015 14:27:12 -0500

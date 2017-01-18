@@ -1,0 +1,56 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+<div id="showPolicies">
+	<h1>Active Policies</h1>
+	<div class="box col-lg-12 col-md-12 col-xs-12">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Policy #</th>
+					<th>IP</th>
+					<th>Protocols</th>
+					<th>Functions</th>
+					<th>Time</th>
+					<th>Severity</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for p in policies %}
+				<tr class="bg-{% if p.severity == 'Warning' %}warning{% elif p.severity == 'Alert' %}danger{% endif %}">
+					<td>{{ p.num }}</td>
+					<td>
+						{% for i in p.ip %}
+						{{ i or "-" }}<br/>
+						{% endfor %}
+					</td>
+					<td>
+						{% for i in p.proto %}
+						{{ i }}
+							{% if i == "*" %}unknown{% else %}{{ i }}{% endif %}<br/>
+						{% endfor %}
+					</td>
+					<td>
+						{% for i in p.func %}
+							{% if i == "*" %}unknown{% else %}{{ i }}{% endif %}<br/>
+						{% endfor %}
+					</td>
+					<td>
+						{% for i in p.time %}
+						{{ i }}<br/>
+						{% endfor %}
+					</td>
+					<td>{{ p.severity }}</td>
+					<td>
+						<a href="/policy/edit/{{ p.num }}">Edit</a>
+						<br>
+						<a href="/policy/delete/{{ p.num }}" onclick="return deletePolicy({{ p.num }})">Delete</a>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<a href="/policy/add">Add Policy</a>
+</div>
+{% endblock %}

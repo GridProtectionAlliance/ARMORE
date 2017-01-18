@@ -49,8 +49,8 @@ export {
     {
         ## Count of the node.
         num: count;
-	    ## Total bytes of the node.
-	    bytes: count;
+	    ## Average bytes of the node.
+	    bytes: double;
         ## Only active for the function-level: Whether the function is a request.
         is_request: bool &optional;
         ## Only active for the function-level: Num of the responded requests.
@@ -118,10 +118,10 @@ export {
     ## Three potential sampling intervals
     global sa1 = 1min &redef;
     global sa2 = 5min &redef;
-    global sa3 = 20min &redef;
+    global sa3 = 10min &redef;
 
     ## The sampling interval of the analyzer.
-    global sample_interval = sa1 &redef;
+    global sample_interval = sa3 &redef;
 
     ## The lower threshold to control the sample interval.
     global low_thre = 20 &redef;
@@ -137,6 +137,8 @@ export {
 
     ## Record used for the logging framework which contains the information of a node in the tree sturcture.
     type Info: record {
+        ## Period ID.
+        period_id: count &log;
         ## Timestamp when the data is written.
         ts: time &log;
         ## Length of the last period
@@ -153,10 +155,10 @@ export {
         func: string &log &optional;
         ## Target name
         target: string &log &optional;
-        ## Number of instances seen in the period
+        ## Number of packets seen in the period
         num: count &log &default=0;
-	    ## Total length of instances in bytes seen in the period
-	    bytes: count &log &default=0;
+	    ## Average length of instances in bytes seen in the period
+	    bytes: double &log &default=0;
         ## Whether this is a request
         is_request: bool &log &optional;
         ## Number of responded requests
@@ -186,6 +188,9 @@ global g_ss: SumStats::SumStat;
 
 # global variable to store the number of total packets in this period
 global g_total = 0;
+
+# global variable to store the current period id
+global g_period = 0;
 
 # Log the statistics for the previous period
 global log_stats: function();
@@ -306,7 +311,7 @@ function after_process(ts: time)
         update_interval(current_tree$info$num);
     }
 
-    current_tree = [$info=[$num=0,$bytes=0]];
+    current_tree = [$info=[$num=0,$bytes=0.0]];
 
     if (StatsCol::measure)
     {
@@ -353,7 +358,7 @@ function process_result(ts: time, key: SumStats::Key, result: SumStats::Result)
         r1 = result["total_count"];
         r2 = result["total_byte"];
         current_tree$info$num = double_to_count(r1$sum);
-        current_tree$info$bytes = double_to_count(r2$sum);
+        current_tree$info$bytes = r2$sum/r1$sum;
     }
 
     if(levels >= 1 && "senders_count" in result)
@@ -377,10 +382,10 @@ function process_result(ts: time, key: SumStats::Key, result: SumStats::Result)
             }
             if(src !in current_tree$children)
             {
-                current_tree$children[src] = [$info=[$num=0,$bytes=0]];
+                current_tree$children[src] = [$info=[$num=0,$bytes=0.0]];
             }
             current_tree$children[src]$info$num = count_table[i];
-            current_tree$children[src]$info$bytes = byte_table[i];
+            current_tree$children[src]$info$bytes = byte_table[i]/count_table[i];
         }
     }
 
@@ -408,10 +413,10 @@ function process_result(ts: time, key: SumStats::Key, result: SumStats::Result)
             }
             if(dst !in l1_node$children)
             {
-                l1_node$children[dst] = [$info=[$num=0,$bytes=0]];
+                l1_node$children[dst] = [$info=[$num=0,$bytes=0.0]];
             }
             l1_node$children[dst]$info$num = count_table[i];
-            l1_node$children[dst]$info$bytes = byte_table[i];
+            l1_node$children[dst]$info$bytes = byte_table[i]/count_table[i];
         }
     }
 
@@ -440,10 +445,10 @@ function process_result(ts: time, key: SumStats::Key, result: SumStats::Result)
             }
             if(pro !in l2_node$children)
             {
-                l2_node$children[pro] = [$info=[$num=0,$bytes=0]];
+                l2_node$children[pro] = [$info=[$num=0,$bytes=0.0]];
             }
             l2_node$children[pro]$info$num = count_table[i];
-            l2_node$children[pro]$info$bytes = byte_table[i];
+            l2_node$children[pro]$info$bytes = byte_table[i]/count_table[i];
         }
     }
 
@@ -473,10 +478,10 @@ function process_result(ts: time, key: SumStats::Key, result: SumStats::Result)
             }
             if(uid !in l3_node$children)
             {
-                l3_node$children[uid] = [$info=[$num=0,$bytes=0]];
+                l3_node$children[uid] = [$info=[$num=0,$bytes=0.0]];
             }
             l3_node$children[uid]$info$num = count_table[i];
-            l3_node$children[uid]$info$bytes = byte_table[i];
+            l3_node$children[uid]$info$bytes = byte_table[i]/count_table[i];
         }
     }
 
@@ -510,10 +515,10 @@ function process_result(ts: time, key: SumStats::Key, result: SumStats::Result)
                 }
                 if(fun_info[0] !in l4_node$children)
                 {
-                    l4_node$children[fun_info[0]] = [$info=[$num=0,$bytes=0]];
+                    l4_node$children[fun_info[0]] = [$info=[$num=0,$bytes=0.0]];
                 }
                 l4_node$children[fun_info[0]]$info$num = count_table[i];
-                l4_node$children[fun_info[0]]$info$bytes = byte_table[i];
+                l4_node$children[fun_info[0]]$info$bytes = byte_table[i]/count_table[i];
                 if(fun_info[1] == "T")
                 {
                     l4_node$children[fun_info[0]]$info$is_request = T;
@@ -598,10 +603,10 @@ function process_result(ts: time, key: SumStats::Key, result: SumStats::Result)
             }
             if(tgt_string !in l5_node$children)
             {
-                l5_node$children[tgt_string] = [$num=0,$bytes=0];
+                l5_node$children[tgt_string] = [$num=0,$bytes=0.0];
             }
             l5_node$children[tgt_string]$num = count_table[i];
-            l5_node$children[tgt_string]$bytes = byte_table[i];
+            l5_node$children[tgt_string]$bytes = byte_table[i]/count_table[i];
             l5_node$children[tgt_string]$tgt = tgt;
         }
     }
@@ -739,7 +744,9 @@ function log_stats()
     local l3_node: Level3_Node;
     local l4_node: Level4_Node;
     local l5_node: Level5_Node;
-    info = Info($ts=ts, $period=sample_interval, $num=current_tree$info$num, $bytes=current_tree$info$bytes);
+
+    g_period = g_period+1;
+    info = Info($period_id=g_period, $ts=ts, $period=sample_interval, $num=current_tree$info$num, $bytes=current_tree$info$bytes);
     Log::write(StatsCount::LOG, info);
 
     if(current_tree?$children)
@@ -747,14 +754,14 @@ function log_stats()
         for ( i in current_tree$children )
         {
             l1_node = current_tree$children[i];
-            info = Info($ts=ts, $period=sample_interval, $sender=i, $num=l1_node$info$num, $bytes=l1_node$info$bytes);
+            info = Info($period_id=g_period, $ts=ts, $period=sample_interval, $sender=i, $num=l1_node$info$num, $bytes=l1_node$info$bytes);
             Log::write(StatsCount::LOG, info);
             if(l1_node?$children)
             {
                 for (j in l1_node$children)
                 {
                     l2_node = l1_node$children[j];
-                    info = Info($ts=ts, $period=sample_interval, $sender=i, $receiver=j, 
+                    info = Info($period_id=g_period, $ts=ts, $period=sample_interval, $sender=i, $receiver=j, 
                                 $num=l2_node$info$num, $bytes=l2_node$info$bytes);
                     Log::write(StatsCount::LOG, info);
                     if(l2_node?$children)
@@ -762,7 +769,7 @@ function log_stats()
                         for (k in l2_node$children)
                         {
                             l3_node = l2_node$children[k];
-                            info = Info($ts=ts, $period=sample_interval, $sender=i, $receiver=j, 
+                            info = Info($period_id=g_period, $ts=ts, $period=sample_interval, $sender=i, $receiver=j, 
                                         $protocol=k, $num=l3_node$info$num, $bytes=l3_node$info$bytes);
                             Log::write(StatsCount::LOG, info);
                             if(l3_node?$children)
@@ -770,7 +777,7 @@ function log_stats()
                                 for (l in l3_node$children)
                                 {
                                     l4_node = l3_node$children[l];
-                                    info = Info($ts=ts, $period=sample_interval, $sender=i, $receiver=j, $protocol=k, 
+                                    info = Info($period_id=g_period, $ts=ts, $period=sample_interval, $sender=i, $receiver=j, $protocol=k, 
                                                 $uid=l, $num=l4_node$info$num, $bytes=l4_node$info$bytes);
                                     Log::write(StatsCount::LOG, info);
                                     if(l4_node?$children)
@@ -778,7 +785,7 @@ function log_stats()
                                         for (m in l4_node$children)
                                         {
                                             l5_node = l4_node$children[m];
-                                            info = Info($ts=ts, $period=sample_interval, $sender=i, $receiver=j, $protocol=k, 
+                                            info = Info($period_id=g_period, $ts=ts, $period=sample_interval, $sender=i, $receiver=j, $protocol=k, 
                                                         $uid=l, $func=m, $num=l5_node$info$num, $bytes=l5_node$info$bytes);
                                             if(l5_node$info?$is_request)
                                             {
@@ -797,7 +804,7 @@ function log_stats()
                                             {
                                                 for (n in l5_node$children)
                                                 {
-                                                    info = Info($ts=ts, $period=sample_interval, $sender=i, $receiver=j, $protocol=k,
+                                                    info = Info($period_id=g_period, $ts=ts, $period=sample_interval, $sender=i, $receiver=j, $protocol=k,
                                                                 $uid=l, $func=m, $target=n, $num=l5_node$children[n]$num, 
                                                                 $bytes=l5_node$children[n]$bytes);
                                                     Log::write(StatsCount::LOG, info);

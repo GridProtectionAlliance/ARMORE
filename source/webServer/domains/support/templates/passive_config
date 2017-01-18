@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+Monitored_Interface=$monitored_interface
+Operation=Passive

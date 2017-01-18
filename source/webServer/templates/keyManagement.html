@@ -1,0 +1,64 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
+{% block content %}
+{% set next_order = "desc" if order == "asc" else "asc" %}
+{% if order == "asc" %}
+{% set order_icon = '<span class="order-icon glyphicon glyphicon-chevron-up"></span>' %}
+{% else %}
+{% set order_icon = '<span class="order-icon glyphicon glyphicon-chevron-down"></span>' %}
+{% endif %}
+<div id="keys">
+	<div class="col-lg-6 col-md-9 col-xs-12">
+		<div class="panel">
+			<div class="panel-heading">
+				<h1>Keys</h1>
+			</div>
+			<div class="panel-body">
+				<table id="{{ headerName }}" class="table table-hover">
+					<tr>
+						<th style="width: 40%">
+								<a href="/admin/keys?sort=name&order={{ next_order }}">Name</a>
+								{{ order_icon|safe if sort == "name"}}
+						</th>
+						<th style="width: 20%">
+								<a href="/admin/keys?sort=type&order={{ next_order }}">Type</a>
+								{{ order_icon|safe if sort == "type"}}
+						</th>
+						<th style="width: 30%">
+								<a href="/admin/keys?sort=mtime&order={{ next_order }}">Modified Last</a>
+								{{ order_icon|safe if sort == "mtime"}}
+						</th>
+						<th style="width: 10%">
+						</th>
+					</tr>
+			{% for k in keys %}
+					<tr>
+						<td>
+							<a href="/admin/keys/download?name={{ k.name }}&type={{ k.type }}" title="Download">
+								<i class="fa fa-download" > {{ k.name|capitalize }}</i>
+							</a>
+						</td>
+						<td>{{ k.type or "-" }}</td>
+						<td>{{ k.mtime or "-"}}</td>
+						<td>
+							<a href="/admin/keys/delete/{{ k.type }}/{{ k.name }}">
+								<i class="fa fa-trash-o fa-lg" aria-hidden="true" onclick="return deleteKey('{{ k.name }}', '{{ k.type }}')"></i>
+							</a>
+						</td>
+					</tr>
+			{% endfor %}
+				</table>
+			</div>
+			<div class="panel-footer">
+				<form action="/admin/keys/upload" method="POST" enctype="multipart/form-data">
+					<input type=file name="keyFile" accept="*">
+					<input type="radio" name="keyType" value="remote" checked> Remote</input>
+					<input type="radio" name="keyType" value="local"> Local</input>
+					<br/>
+					<br/>
+					<input type="submit"></input>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

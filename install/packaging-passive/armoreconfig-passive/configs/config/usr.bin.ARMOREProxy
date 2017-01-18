@@ -1,0 +1,18 @@
+# Last Modified: Thu Mar 31 16:24:38 2016
+#include <tunables/global>
+
+/usr/bin/ARMOREProxy flags=(audit) {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+
+  /usr/bin/ARMOREProxy mr,
+  /etc/armore/** lrw,
+  /etc/localtime r,
+  /sys/devices/system/cpu r,
+  /etc/nsswitch.conf r,
+  /etc/protocols r,
+  /dev/netmap rw,
+
+  network inet,
+}

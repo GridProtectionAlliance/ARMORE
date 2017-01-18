@@ -8,6 +8,6 @@ Homepage: http://iti.illinois.edu
 
 Package: armoreconfig
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: apparmor, apparmor-profiles, apparmor-utils, etckeeper, armorenetmap-ipfw, armoreweb
 Description: Armore Configuration
  Bundled tools and default configurations for an ARMORENode.

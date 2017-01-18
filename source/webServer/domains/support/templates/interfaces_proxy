@@ -1,0 +1,27 @@
+# Proxy mode
+auto lo eth0
+iface lo inet loopback
+
+#Management interface
+allow-hotplug $managementInterface
+iface $managementInterface inet static
+address $managementIp
+netmask $managementMask
+up sleep 5;
+
+#Proxy Mode Configuration
+auto $externalInterface $internalInterface
+
+#External Interface
+allow-hotplug $externalInterface
+iface $externalInterface inet static
+address $externalIp
+netmask $externalMask
+up sleep 5;
+
+#Internal Interface
+allow-hotplug $internalIp
+iface $internalInterface inet static
+address $internalIp
+netmask $internalMask
+up sleep 5; $internalInterface promisc

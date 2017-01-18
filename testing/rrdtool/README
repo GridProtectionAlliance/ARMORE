@@ -1,0 +1,20 @@
+To get RRDtool working within ARMORE, you will first need to install the dependencies:
+
+#apt-get install collectd
+#apt-get install collectd-dev
+#apt-get install rrdtool
+#apt-get install python-rrdtool
+
+The javascript library is from: https://github.com/manuelluis/jsrrdgraph
+All the required scripts are located in the js folder
+
+Collectd stores system stats over in /var/lib/collectd/rrd/<HOSTNAME> which can be plotted either
+by the RRDtool, python-rrdtool, or the javascript library.
+
+Example python and shell scripts are provided.
+
+The test folder has the example javascript for the system load which can be dropped into a webserver.
+To execute the library first put a symbolic link in the test folder to the rrd files
+(i.e ln -s /var/lib/collectd/rrd/<HostName> rrd) 
+
+Also make sure this is executing in a webserver (i.e. nginx/apache/etc) as file:\\\ extensions won't directly load from the js. 

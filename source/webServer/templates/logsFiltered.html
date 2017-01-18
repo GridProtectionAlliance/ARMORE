@@ -1,28 +1,70 @@
 {% if not is_xhr|default(false) %}{% extends "common/base.html" %}{% endif -%}
 {% block content %}
+{% set next_order = "desc" if order == "asc" else "asc" %}
+{% if order == "asc" %}
+{% set order_icon = '<span class="order-icon glyphicon glyphicon-chevron-up"></span>' %}
+{% else %}
+{% set order_icon = '<span class="order-icon glyphicon glyphicon-chevron-down"></span>' %}
+{% endif %}
 <div id="logs">
 	<h1>Logs</h1>
-	{% for log in logs %}
 		<div class="box col-md-12 col-xs-12">
 			<div class="box-header">
-				<span>{{ log.headerName }}</span>
+				<span>{{ "/".join(path.split("/")[3:]) }}</span>
 			</div>
-			<table id={{ log.name }} class="table">
-				{% for l in log.logList %}
+			<table id={{ headerName }} class="table table-hover">
+				<tr>
+						<th style="width: 50%">
+								<a href="/logs/{{ path }}?sort=path&order={{ next_order }}">Path</a>
+								{{ order_icon|safe if sort == "path"}}
+						</th>
+						<th style="width: 20%">
+								<a href="/logs/{{ path }}?sort=type&order={{ next_order }}">Type</a>
+								{{ order_icon|safe if sort == "type"}}
+						</th>
+						<th style="width: 10%">
+								<a href="/logs/{{ path }}?sort=size&order={{ next_order }}">Size</a>
+								{{ order_icon|safe if sort == "size"}}
+						</th>
+						<th style="width: 10%">
+								<a href="/logs/{{ path }}?sort=atime&order={{ next_order }}">Accessed Last</a>
+								{{ order_icon|safe if sort == "atime"}}
+						</th>
+						<th style="width: 10%">
+								<a href="/logs/{{ path }}?sort=mtime&order={{ next_order }}">Modified Last</a>
+								{{ order_icon|safe if sort == "mtime"}}
+						</th>
+				</tr>
+				{% if path != "/var/log" %}
+				<tr onclick="window.document.location='/logs/{{ "/".join(path.split('/')[3:-1]) }}'" onmouseover="this.style.cursor='pointer'">
+					<td colspan=5>
+						<a href="/logs/{{ "/".join(path.split('/')[3:-1]) }}">..</a>
+					</td>
+				</tr>
+				{% endif %}
+		{% for log in logs %}
 				<tr>
 					<td>
-						<a href="{{ url_for(".view_log", filename=l.path) }}">
-							{{ l.path }}
+				{% if log.isFile %}
+						<a href="{{ url_for(".downloadLog", filepath=log.path) }}" title="Download">
+							<i class="fa fa-download" ></i>
+						</a>
+						|
+						<a href="{{ url_for(".view_log", filename=log.path) }}" title="Open in Browser">
+				{% else %}
+						<a href="/logs/{{ "/".join(log.path.split('/')[3:]) }}">
+				{% endif %}
+							{{ log.path.split('/')[-1] }}
 						</a>
 					</td>
-					<td>{{ l.size|filesizeformat }}</td>
-					<td>{{ l.atime }}</td>
-					<td>{{ l.mtime }}</td>
+					<td>{{ log.type or "-" }}</td>
+					<td>{{ log.size|filesizeformat or "-"}}</td>
+					<td>{{ log.atime or "-"}}</td>
+					<td>{{ log.mtime or "-"}}</td>
 				</tr>
-				{% endfor %}
+		{% endfor %}
 			</table>
 		</div>
-		{% endfor %}
 	</div>
 </div>
 {% endblock %}

@@ -1,0 +1,81 @@
+diff --git a/src/logging/writers/sqlite/SQLite.cc b/src/logging/writers/sqlite/SQLite.cc
+index 0908100..bb1d3de 100644
+--- a/src/logging/writers/sqlite/SQLite.cc
++++ b/src/logging/writers/sqlite/SQLite.cc
+@@ -16,6 +16,34 @@ using namespace writer;
+ using threading::Value;
+ using threading::Field;
+ 
++
++#define SQLITE_BUSY_WAIT 1000
++#define EXEC_SQLITE( _f )                                                     \
++    {                                                                         \
++        int _retry = 1;                                                       \
++        do                                                                    \
++        {                                                                     \
++            switch (_f)                                                       \
++            {                                                                 \
++                case SQLITE_OK:                                               \
++                case SQLITE_DONE:                                             \
++                    _retry = 0;                                               \
++                    break;                                                    \
++                case SQLITE_BUSY:                                             \
++                    usleep(SQLITE_BUSY_WAIT);                                 \
++                    continue;                                                 \
++                case SQLITE_LOCKED:                                           \
++                    sqlite3_reset(st);                                        \
++                    continue;                                                 \
++                default:                                                      \
++                    Error(Fmt("SQLite call failed: %s", sqlite3_errmsg(db))); \
++                    return false;                                             \
++            }                                                                 \
++                                                                              \
++        } while (_retry);                                                     \
++    }
++
++
+ SQLite::SQLite(WriterFrontend* frontend)
+ 	: WriterBackend(frontend),
+ 	  fields(), num_fields(), db(), st()
+@@ -184,13 +212,8 @@ bool SQLite::DoInit(const WriterInfo& info, int arg_num_fields,
+ 	create += "\n);";
+ 
+ 	char *errorMsg = 0;
+-	int res = sqlite3_exec(db, create.c_str(), NULL, NULL, &errorMsg);
+-	if ( res != SQLITE_OK )
+-		{
+-		Error(Fmt("Error executing table creation statement: %s", errorMsg));
+-		sqlite3_free(errorMsg);
+-		return false;
+-		}
++
++    EXEC_SQLITE(sqlite3_exec(db, create.c_str(), NULL, NULL, NULL));
+ 
+ 	// create the prepared statement that will be re-used forever...
+ 	string insert = "VALUES (";
+@@ -349,20 +372,16 @@ bool SQLite::DoWrite(int num_fields, const Field* const * fields, Value** vals)
+ 	// bind parameters
+ 	for ( int i = 0; i < num_fields; i++ )
+ 		{
+-		if ( checkError(AddParams(vals[i], i+1)) )
+-			return false;
++            EXEC_SQLITE(checkError(AddParams(vals[i], i+1)));
+ 		}
+ 
+-	// execute query
+-	if ( checkError(sqlite3_step(st)) )
+-		return false;
++    EXEC_SQLITE(sqlite3_step(st));
+ 
+ 	// clean up and make ready for next query execution
+-	if ( checkError(sqlite3_clear_bindings(st)) )
+-		return false;
+ 
+-	if ( checkError(sqlite3_reset(st)) )
+-		return false;
++    EXEC_SQLITE(checkError(sqlite3_clear_bindings(st)));
++
++    EXEC_SQLITE(checkError(sqlite3_reset(st)));
+ 
+ 	return true;
+ 	}

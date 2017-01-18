@@ -1,0 +1,16 @@
+Source: armorenetmap-ipfw
+Section: misc
+Priority: optional
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: http://iti.illinois.edu
+#Vcs-Git: git://anonscm.debian.org/collab-maint/armorenetmap-ipfw.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/armorenetmap-ipfw.git;a=summary
+
+Package: armorenetmap-ipfw
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, armorenetmap
+Description: ARMORE Firewall
+  Bundled Netmap enabled IPFW for ARMORE x64 kernel.
+  Please download original source from https://github.com/luigirizzo/netmap-ipfw

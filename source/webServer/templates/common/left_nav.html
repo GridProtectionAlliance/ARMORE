@@ -55,12 +55,21 @@
 				<span class="option-text">Processes</span>
 			</a>
 		</li>
-		<li {% if common.page == "admin" %}class="active"{% endif %} style="display:{% if session.role != "admin" %}none{% else %}initial{% endif %}" >
+		{% if session.role == "admin" %}
+		<li {% if common.page == "admin" %}class="active"{% endif %}>
 			<a href="/admin">
 				<span class="fa fa-briefcase fa-2x fa-fw"></span>
 				<span class="option-text">Admin</span>
 			</a>
 		</li>
+		{% else %}
+		<li {% if common.page == "admin" %}class="active"{% endif %}>
+			<a href="/admin/profile/{{ session.username }}">
+				<span class="fa fa-briefcase fa-2x fa-fw"></span>
+				<span class="option-text">Admin</span>
+			</a>
+		</li>
+		{% endif %}
 	</ul>
 	{% endif %}
 </div>

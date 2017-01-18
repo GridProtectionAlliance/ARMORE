@@ -1,3 +1,21 @@
+armorenetmap (1.0-1-1.8) stable; urgency=medium
+
+  * Updated binary to 4.4.19 kernel 
+
+ -- sgrand2 <sgrand2@illinois.edu>  Mon, 29 Aug 2016 20:46:16 -0500
+
+armorenetmap (1.0-1-1.7) stable; urgency=medium
+
+  * Upstream updates 
+
+ -- sgrand2 <sgrand2@illinois.edu>  Mon, 06 Jun 2016 13:03:18 -0500
+
+armorenetmap (1.0-1-1.6) stable; urgency=medium
+
+  * Upstream updates 
+
+ -- sgrand2 <sgrand2@illinois.edu>  Fri, 18 Dec 2015 14:13:26 -0600
+
 armorenetmap (1.0-1-1.5) stable; urgency=medium
 
   * updated python bindings, build, apps, vale, monitor, and install
