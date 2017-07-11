@@ -2,6 +2,7 @@
 
 
 *Testing released January 18, 2017*
+*Final project deliverable release (DOE OE CEDS) July 11, 2017*
 
 ## ARMORE
 
