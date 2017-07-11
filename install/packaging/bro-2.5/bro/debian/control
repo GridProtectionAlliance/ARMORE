@@ -1,0 +1,51 @@
+Source: bro
+Section: net
+Priority: optional
+Maintainer: Hilko Bengen <bengen@debian.org>
+Uploaders: Raúl Benencia <rul@kalgan.cc>
+Build-Depends: debhelper (>= 9),
+ cmake,
+ binpac (>= 0.43),
+ btest,
+ bison,
+ flex,
+ rsync,
+ libbind-dev,
+ libcurl4-openssl-dev | libcurl-dev,
+ libreadline-dev,
+ libgeoip-dev,
+ libgoogle-perftools-dev,
+ libpcap0.8-dev | libpcap-dev,
+ libsqlite3-dev,
+ libssl-dev,
+ libxml2-dev,
+ zlib1g-dev,
+Standards-Version: 3.9.6
+Homepage: http://www.bro.org
+Vcs-Git: git://anonscm.debian.org/collab-maint/bro.git
+Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/bro.git;a=summary
+
+Package: bro
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ bro-common
+Built-Using: ${misc:Built-Using},
+Description: passive network traffic analyzer
+ Bro is primarily a security monitor that inspects all traffic on a link in
+ depth for signs of suspicious activity. More generally, however, Bro
+ supports a wide range of traffic analysis tasks even outside of the
+ security domain, including performance measurements and helping with
+ trouble-shooting.
+ .
+ Bro comes with built-in functionality for a range of analysis and
+ detection tasks, including detecting malware by interfacing to external
+ registries, reporting vulnerable versions of software seen on the network,
+ identifying popular web applications, detecting SSH brute-forcing,
+ validating SSL certificate chains, among others.
+
+Package: bro-common
+Architecture: all
+Depends: ${misc:Depends}
+Description: passive network traffic analyzer -- architecture-independent parts
+ This package contains the architecture-independent parts for the Bro
+ network security monitor.

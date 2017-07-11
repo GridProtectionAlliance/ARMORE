@@ -26,7 +26,6 @@ ANOMALY_COLLECTION = 'stats_anomalies'
 dbclient = None
 
 def connect_to_db(c = JLOGS_COLLECTION):
-    print('Connecting to mongoDB collection '+c)
     dbclient = MongoClient('mongodb://localhost')
     db = dbclient[DB_NAME]
     collection = db[c]
@@ -49,13 +48,13 @@ def remove_from_db(ts, coll=JLOGS_COLLECTION):
     if not ts:
         return reset_db()
     try:  
-        db, stats_collection = connect_to_db(coll)
+        db, collection = connect_to_db(coll)
 
-        print('removing logs created on: '+ts+' from '+str(get_times()))
-        if ts in get_times():
-            return stats_collection.delete_one({'created_at':ts})
+        print('removing from collection '+coll+' all data created on: '+ts+' from '+str(get_times(coll)))
+        if ts in get_times(coll):
+            return collection.delete_one({'created_at':ts})
         else:
-            print('unknown logs created on: '+ts)
+            print('unknown logs created on: '+ts+' in collection '+coll)
     except Exception as e:  
         print('ERROR> Deleting collection '+str(e))
         return False
@@ -318,6 +317,8 @@ def process_stats_baseline_log(in_path):
     targets = []
     functions = []
 
+    jtree = {'name':'baseline','children':[]}
+
     if not os.path.exists(in_path):
         return
     print('Computing - '+in_path+' at '+datetime.datetime.now().time().isoformat()+'...')
@@ -331,8 +332,9 @@ def process_stats_baseline_log(in_path):
             data = line.split()
             if data[PROTO] == '-': 
                 links_missing_proto += 1
-                continue
+
             send, recv = data[SENDER], data[RECEIVER]
+
             nodes.add(send)
             nodes.add(recv)
 
@@ -356,39 +358,72 @@ def process_stats_baseline_log(in_path):
         for link in links:
             links_spec[link] = {}
             links_spec[link]['cnt'] = 0
-            links_spec[link]['proto'] = set()
-            links_spec[link]['func'] = set()
-            links_spec[link]['target'] = set()
+            links_spec[link]['proto'] = []
+            links_spec[link]['func'] = []
+            links_spec[link]['target'] = []
+            links_spec[link]['uid'] = []
+            links_spec[link]['navg'] = []
+            links_spec[link]['nstd'] = []
+            links_spec[link]['bavg'] = []
+            links_spec[link]['bstd'] = []
+            links_spec[link]['ravg'] = []
+            links_spec[link]['rstd'] = []
+            links_spec[link]['davg'] = []
+            links_spec[link]['dstd'] = []
 
         for line in lines:
-            if line.startswith('#'): continue
-            data = line.split()
-            send, recv, proto, uid, func, target = data[SENDER:TARGET+1]
-
-            if not protocol_filter(proto): continue
-            nodes_spec[send]['s_cnt'] += 1
-            nodes_spec[recv]['r_cnt'] += 1
-            links_spec[(send, recv)]['cnt'] += 1
-            if proto != '-':
-                links_spec[(send, recv)]['proto'].add(proto)
-                if proto not in protocols:
-                    protocols.append(proto)
-                nodes_spec[send]['protocols'].add(proto)
-            if func != '-':
+            try:
+                if line.startswith('#'): continue
+                data = line.split()
+                #NUM_AVG, NUM_STD, BYTES_AVG, BYTES_STD, RATIO_AVG, RATIO_STD, DELAY_AVG, DELAY_STD
+                send, recv, proto, uid, func, target, navg, nstd, bavg, bstd, ravg, rstd, davg, dstd = data[SENDER:DELAY_STD+1]
+                    
+#                 print('\n'+send+'-'+recv)
+                    
+                nodes_spec[send]['s_cnt'] += 1
+                nodes_spec[recv]['r_cnt'] += 1
+                links_spec[(send, recv)]['cnt'] += 1
+                    
+                    
+                links_spec[(send, recv)]['proto'].append(proto)
+                if proto != '-':
+                    nodes_spec[send]['protocols'].add(proto)
+                    if proto not in protocols:
+                        protocols.append(proto)
+                
                 func = proto+':'+func
-                links_spec[(send, recv)]['func'].add(func)
-                nodes_spec[send]['funcsrc'].add(func)
-                nodes_spec[recv]['funcdst'].add(func)
-                if func not in functions:
-                    functions.append(func)
-            if target != '-':
+                links_spec[(send, recv)]['func'].append(func)
+                if func != '-':
+                    nodes_spec[send]['funcsrc'].add(func)
+                    nodes_spec[recv]['funcdst'].add(func)
+                    if func not in functions:
+                        functions.append(func)
+                        
+
                 target = proto+':'+target
-                links_spec[(send, recv)]['target'].add(target)
-                if target not in targets:
-                    targets.append(target)
-                nodes_spec[send]['sourceof'].add(recv)
-                nodes_spec[recv]['targetof'].add(send)
-                nodes_spec[send]['targets'].add(proto+':'+target)
+                links_spec[(send, recv)]['target'].append(target)
+                if target != '-':
+                    if target not in targets:
+                            targets.append(target)
+                    nodes_spec[send]['sourceof'].add(recv)
+                    nodes_spec[recv]['targetof'].add(send)
+                    nodes_spec[send]['targets'].add(proto+':'+target)
+
+#                 print (send, recv, navg, nstd, bavg, bstd, ravg, rstd, davg, dstd )
+                
+                links_spec[(send, recv)]['uid'].append(uid if uid else '-')
+                links_spec[(send, recv)]['navg'].append(navg if navg else '-')
+                links_spec[(send, recv)]['nstd'].append(nstd if nstd else '-')
+                links_spec[(send, recv)]['bavg'].append(bavg if bavg else '-')
+                links_spec[(send, recv)]['bstd'].append(bstd if bstd else '-')
+                links_spec[(send, recv)]['ravg'].append(ravg if ravg else '-')
+                links_spec[(send, recv)]['rstd'].append(rstd if rstd else '-')
+                links_spec[(send, recv)]['davg'].append(davg if davg else '-')
+                links_spec[(send, recv)]['dstd'].append(dstd if dstd else '-')
+                
+                pprint.pprint(links_spec[(send, recv)])
+            except:
+                traceback.print_exc()
 
     j_nodes = []
     j_links = []
@@ -403,29 +438,47 @@ def process_stats_baseline_log(in_path):
             'size': nodes_spec[node]['s_cnt'] + nodes_spec[node]['r_cnt'],
             's_cnt' : nodes_spec[node]['s_cnt'],
             'r_cnt' : nodes_spec[node]['r_cnt'],
-            'protocols' : sorted(list(nodes_spec[node]['protocols'])),
-            'sourceof' : sorted(list(nodes_spec[node]['sourceof'])),
-            'targetof' : sorted(list(nodes_spec[node]['targetof'])),
-            'funcsrc' : sorted(list(nodes_spec[node]['funcsrc'])),
-            'funcdst' : sorted(list(nodes_spec[node]['funcdst'])),
-            'targets' : sorted(list(nodes_spec[node]['targets']))
+            'protocols' : sorted(nodes_spec[node]['protocols']),
+            'sourceof' : sorted(nodes_spec[node]['sourceof']),
+            'targetof' : sorted(nodes_spec[node]['targetof']),
+            'funcsrc' : sorted(nodes_spec[node]['funcsrc']),
+            'funcdst' : sorted(nodes_spec[node]['funcdst']),
+            'targets' : sorted(nodes_spec[node]['targets'])
         })
         i += 1
 
     j = 0
     for link in links:
-        j_links.append({
-            'id': j,
-            'source': nodes.index(link[0]),
-            'target': nodes.index(link[1]),
-            'source_name': link[0],
-            'target_name': link[1],
-            'value': links_spec[link]['cnt'],
-            'PROTOCOL': [ {'name': proto} for proto in links_spec[link]['proto'] ],
-            'FUNCTION': [ {'name': func} for func in links_spec[link]['func'] ],
-            'TARGET': [ {'name': target} for target in links_spec[link]['target'] ],
-        })
-        j += 1
+        try:
+            print(links_spec[link])
+            src = nodes.index(link[0])
+            dst = nodes.index(link[1])
+            # For node graph
+            j_links.append({
+                'id': j,
+                'source': src,
+                'target': dst,
+                'source_name': link[0],
+                'target_name': link[1],
+                'value': links_spec[link]['cnt'],
+                'PROTOCOL': [{'name': proto} for proto in links_spec[link]['proto'] ],
+                'FUNCTION': [ {'name': func} for func in links_spec[link]['func'] ],
+                'TARGET': [ {'name': target} for target in links_spec[link]['target'] ],
+                'uid': [ {'name': uid} for uid in links_spec[link]['uid'] ],
+                'navg': [ {'name': navg} for navg in links_spec[link]['navg'] ],
+                'nstd': [ {'name': nstd} for nstd in links_spec[link]['nstd'] ],
+                'bavg': [ {'name': bavg} for bavg in links_spec[link]['bavg'] ],
+                'bstd': [ {'name': bstd} for bstd in links_spec[link]['bstd'] ],
+                'ravg': [ {'name': ravg} for ravg in links_spec[link]['ravg'] ],
+                'rstd': [ {'name': rstd} for rstd in links_spec[link]['rstd'] ],
+                'davg': [ {'name': davg} for davg in links_spec[link]['davg'] ],
+                'dstd': [ {'name': dstd} for dstd in links_spec[link]['dstd'] ]
+            })
+            # For tree
+            jtree['children'].append({'name':link[0]})
+            j += 1
+        except:
+            traceback.print_exc()
 
     print('Processed ' 
           + locale.format('%d',len(lines), grouping=True) 
@@ -444,8 +497,9 @@ def process_stats_baseline_log(in_path):
                                'targets':targets}}
 
     json_dict = {'created_at' : 'baseline',
-                 'count_log' : [],
+                 'count_log' : jtree,
                  'col_log' : jgraph}
+#     pprint.pprint (j_links)
     # Remove from DB any existing baseline
     remove_from_db('baseline')
     # Store baseline in database
@@ -501,6 +555,7 @@ def process_stats_col_log(in_path=STATS_COL_FILENAME):
             nodes_spec[node] = {}
             nodes_spec[node]['s_cnt'] = 0
             nodes_spec[node]['r_cnt'] = 0
+            nodes_spec[node]['uids'] = set()
             nodes_spec[node]['protocols'] = set()
             nodes_spec[node]['sourceof'] = set()
             nodes_spec[node]['targetof'] = set()
@@ -512,41 +567,51 @@ def process_stats_col_log(in_path=STATS_COL_FILENAME):
         for link in links:
             links_spec[link] = {}
             links_spec[link]['cnt'] = 0
+            links_spec[link]['proto_func_target'] = ''
+            links_spec[link]['uid'] = ''
             links_spec[link]['proto'] = set()
             links_spec[link]['func'] = set()
             links_spec[link]['target'] = set()
 
         for line in lines:
-            if line.startswith('#'): continue
-            data = line.split()
-            send, recv, proto, uid, func, target, is_response = data[SENDER_L:TARGET_L+2]
-
-            if not protocol_filter(proto): continue
-            nodes_spec[send]['s_cnt'] += 1
-            nodes_spec[recv]['r_cnt'] += 1
-            links_spec[(send, recv)]['cnt'] += 1
-            if proto != '-':
-                links_spec[(send, recv)]['proto'].add(proto)
-                if proto not in protocols:
-                    protocols.append(proto)
-                nodes_spec[send]['protocols'].add(proto)
-            if func != '-':
-                func = proto+':'+func
-                links_spec[(send, recv)]['func'].add(func)
-                nodes_spec[send]['funcsrc'].add(func)
-                nodes_spec[recv]['funcdst'].add(func)
-                if func not in functions:
-                    functions.append(func)
-            if target != '-':
-                target = proto+':'+target
-                links_spec[(send, recv)]['target'].add(target)
-                if target not in targets:
-                    targets.append(target)
-                nodes_spec[send]['sourceof'].add(recv)
-                nodes_spec[recv]['targetof'].add(send)
-                if is_response == 'T':
-                    nodes_spec[send]['nodetype'] = 'slave'
-                nodes_spec[send]['targets'].add(proto+':'+target)
+            try:
+                if line.startswith('#'): continue
+                data = line.split()
+                send, recv, proto, uid, func, target, is_response = data[SENDER_L:TARGET_L+2]
+    
+                if not protocol_filter(proto): continue
+                nodes_spec[send]['s_cnt'] += 1
+                nodes_spec[recv]['r_cnt'] += 1
+                links_spec[(send, recv)]['cnt'] += 1
+                links_spec[(send, recv)]['proto_func_target'] = proto + ':' + func + ':' + target
+                links_spec[(send, recv)]['uid'] = uid
+                if proto != '-':
+                    links_spec[(send, recv)]['proto'].add(proto)
+                    if proto not in protocols:
+                        protocols.append(proto)
+                    nodes_spec[send]['protocols'].add(proto)
+                
+                if func != '-':
+                    func = proto+':'+func
+                    links_spec[(send, recv)]['func'].add(func)
+                    nodes_spec[send]['funcsrc'].add(func)
+                    nodes_spec[recv]['funcdst'].add(func)
+                    if func not in functions:
+                        functions.append(func)
+                if target != '-':
+                    target = proto+':'+target
+                    links_spec[(send, recv)]['target'].add(target)
+                    if target not in targets:
+                        targets.append(target)
+                    nodes_spec[send]['sourceof'].add(recv)
+                    nodes_spec[recv]['targetof'].add(send)
+                    if is_response == 'T':
+                        nodes_spec[send]['nodetype'] = 'slave'
+                        if uid:
+                            nodes_spec[send]['uids'].add(str(uid))
+                    nodes_spec[send]['targets'].add(proto+':'+target)
+            except Exception as e:  
+                print_exc()
 
     j_nodes = []
     j_links = []
@@ -558,6 +623,7 @@ def process_stats_col_log(in_path=STATS_COL_FILENAME):
             'name': node,
             'group': 1,
             'node_type' : nodes_spec[node]['nodetype'],
+            'uids' : sorted(list(nodes_spec[node]['uids'])),
             'size': nodes_spec[node]['s_cnt'] + nodes_spec[node]['r_cnt'],
             's_cnt' : nodes_spec[node]['s_cnt'],
             'r_cnt' : nodes_spec[node]['r_cnt'],
@@ -572,18 +638,23 @@ def process_stats_col_log(in_path=STATS_COL_FILENAME):
 
     j = 0
     for link in links:
-        j_links.append({
-            'id': j,
-            'source': nodes.index(link[0]),
-            'target': nodes.index(link[1]),
-            'source_name': link[0],
-            'target_name': link[1],
-            'value': links_spec[link]['cnt'],
-            'PROTOCOL': [ {'name': proto} for proto in links_spec[link]['proto'] ],
-            'FUNCTION': [ {'name': func} for func in links_spec[link]['func'] ],
-            'TARGET': [ {'name': target} for target in links_spec[link]['target'] ],
-        })
-        j += 1
+        try:
+            j_links.append({
+                'id': j,
+                'source': nodes.index(link[0]),
+                'target': nodes.index(link[1]),
+                'source_name': link[0],
+                'target_name': link[1],
+                'proto_func_target': links_spec[link]['proto_func_target'],
+                'uid': links_spec[link]['uid'],
+                'value': links_spec[link]['cnt'],
+                'PROTOCOL': [ {'name': proto} for proto in links_spec[link]['proto'] ],
+                'FUNCTION': [ {'name': func} for func in links_spec[link]['func'] ],
+                'TARGET': [ {'name': target} for target in links_spec[link]['target'] ],
+            })
+            j += 1
+        except Exception as e:  
+            print_exc()
 
     print('Processed ' 
           + locale.format('%d',len(lines), grouping=True) 
@@ -646,7 +717,7 @@ def process_stats_logs(stats_dir, statscol=None, statscount=None, timestamp=None
             print('ERROR> '+STATS_COL_FILENAME+' is missing')
             return False
         jcol_dict = process_stats_col_log(colf)
-#     print('jcol = ' + jcol_dict)
+#     print('jcol = ' + str(jcol_dict))
     
     if countf and not jcount_dict:
         print('ERROR> Failed to produce stats_count.json')
@@ -662,7 +733,7 @@ def process_stats_logs(stats_dir, statscol=None, statscount=None, timestamp=None
     json_dict = {'created_at' : stats_dir if not timestamp else timestamp,
                  'count_log' : jcount_dict,
                  'col_log' : jcol_dict}
-    
+#     print (json_dict)
     # Store in database
     return add_to_db(json_dict)
 

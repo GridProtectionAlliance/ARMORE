@@ -3,6 +3,12 @@
 #e1000/*.ko  lib/modules/3.18.21-armore/kernel/net/armorenetmap
 #e1000e/*.ko lib/modules/3.18.21-armore/kernel/net/armorenetmap
 #*.ko        lib/modules/3.18.21-armore/kernel/net/armorenetmap
-netmap.ko        lib/modules/4.4.19-armore/kernel/net/armorenetmap
+netmap.ko   lib/modules/4.4.19-armore/kernel/net/armorenetmap
 
-build\-apps/* /usr/share/armorenetmap
+build\-apps/bridge/bridge* /usr/share/armorenetmap
+build\-apps/lb/lb* /usr/share/armorenetmap
+build\-apps/lb/pkt_hash* /usr/share/armorenetmap
+build\-apps/nmreplay/nmreplay /usr/share/armorenetmap
+build\-apps/pkt-gen/pkt* /usr/share/armorenetmap
+build\-apps/tlem/tlem /usr/share/armorenetmap
+build\-apps/vale-ctl/vale-ctl /usr/share/armorenetmap

@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
+export SWIG_DIR=/usr/share/swig3.0
+export SWIG_EXECUTABLE=/usr/share/swig3.0
+
+%:
+	dh $@  --buildsystem=cmake --builddir=build --parallel
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+	-DBRO_ETC_INSTALL_DIR=/etc/bro -DBRO_SCRIPT_INSTALL_PATH=/usr/share/bro \
+	-DBRO_SPOOL_DIR=/var/spool/bro -DBRO_LOG_DIR=/var/log/bro \
+	-DDISABLE_PYBROKER=False -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+	-DSWIG_DIR=/usr/share/swig3.0
+
+#override_dh_install:
+#	dh_install --fail-missing

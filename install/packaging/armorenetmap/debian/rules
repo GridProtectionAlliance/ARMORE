@@ -13,6 +13,6 @@
 	dh $@
 
 override_dh_auto_configure:
-	dh_auto_configure -- --kernel-dir=/usr/src/linux --enable-vale --enable-pipe --enable-monitor; $(MAKE) apps
+	dh_auto_configure -- --kernel-dir=/usr/src/linux --kernel-sources=/usr/src/linux-src --enable-vale --enable-pipe --enable-monitor; $(MAKE) apps
 
 override_dh_auto_install:

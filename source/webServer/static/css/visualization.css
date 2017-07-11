@@ -57,6 +57,9 @@ div.tooltip {
 	/*  pointer-events: none;	This line needs to be removed */
 }
 
+#histo_box {  
+  padding: 30px !important;  
+}  
 .popup {
     position: relative;
     left: 0;
@@ -69,7 +72,14 @@ div.tooltip {
     padding: 8px;
     font-family: arial, helvetica, sans-serif;
 }
-
+#graph_box {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    min-height: 100px;
+}
 .popup h2 {
     margin: 0 0 1rem 0;
 }
@@ -88,7 +98,9 @@ div.tooltip {
 .modal-body .form-horizontal .col-sm-10 {
     width: 100%
 }
-
+.modal .modal-dialog .modal-open .modal-content .modal-header .modal-body{
+  width: 800px;
+}
 .dropdown-menu {
 max-height: 300px;
 overflow-y: auto;
@@ -154,22 +166,48 @@ li {
   fill: #fff;
 }
 
+.d3-tip {
+  line-height: 1;
+  padding: 12px;
+  background: white;
+  color: black;
+  border-radius: 2px;
+}
+
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+/*
 rect {
   fill-opacity: .6;
   fill: #e377c2;
 }
-
 rect:first-child {
   fill: #1f77b4;
 }
+*/
 .bar{
   fill: steelblue;
+  pointer-events: all;
 }
-
 .bar:hover{
   fill: brown;
 }
-
 .axis {
   font: 10px sans-serif;
 }
@@ -207,4 +245,21 @@ rect:first-child {
     color: #fff;
     background-color: #c9302c;
     border-color: #ac2925;
+}
+.back-to-top {
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display:none;
+}
+/* change border radius for the tab , apply corners on top*/
+
+#tab-panel .nav-pills > li > a {
+  border-radius: 4px 4px 0 0 ;
+}
+
+#tab-panel .tab-content {
+  background-color: white;
+  padding : 5px 15px;
 }

@@ -62,6 +62,8 @@ from domains.security import securityDomain
 from domains.settings import settingsDomain
 from domains.statistics import statsDomain
 from domains.visualization import visualDomain
+from domains.baseline import baselineDomain
+from domains.anomalies import anomalyDomain
 from domains.support.lib.common import *
 import logging
 if sys.platform == 'darwin':
@@ -84,6 +86,8 @@ app.register_blueprint(securityDomain)
 app.register_blueprint(settingsDomain)
 app.register_blueprint(statsDomain)
 app.register_blueprint(visualDomain)
+app.register_blueprint(baselineDomain)
+app.register_blueprint(anomalyDomain)
 db.init_app(app)
 app.debug = True
 

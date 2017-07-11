@@ -1,3 +1,9 @@
+armoreconfig (1.0-1-2.11) stable; urgency=medium
+
+  * Bug Fixes
+
+ -- sgrand2 <sgrand2@illinois.edu>  Thu, 08 Jun 2017 14:10:13 -0500
+
 armoreconfig (1.0-1-2.10) stable; urgency=medium
 
   * Upstream changes to sync backend configurations

@@ -53,7 +53,7 @@ function update_tree(source) {
 
   // Set widths between levels based on maxLabelLength.
   t_nodes.forEach(function(d) {
-      d.y = (d.depth * (maxLabelLength * 7)); //maxLabelLength * 10px
+      d.y = (d.depth * (maxLabelLength * 4)); //maxLabelLength * 10px
       // alternatively to keep a fixed scale one can set a fixed depth per level
       // Normalize for fixed-depth by commenting out below line
       // d.y = (d.depth * 500); //500px per level.
@@ -165,16 +165,40 @@ function buildTree(flare) {
   t_root.x0 = t_height / 2;
   t_root.y0 = 0;
 
-  function collapse(d) {
-    if (d.children) {
-      d._children = d.children;
-      d._children.forEach(collapse);
-      d.children = null;
-    }
-  }
   if (t_root.children) {
     t_root.children.forEach(collapse);
     update_tree(t_root);
   }
 //	d3.select(self.frameElement).style("t_height", "800px");
+}
+
+function collapse(d) {
+  if (d.children) {
+    d._children = d.children;
+    d._children.forEach(collapse);
+    d.children = null;
+  }
+}
+
+function expand(d){   
+  var children = (d.children)?d.children:d._children;
+  if (d._children) {        
+      d.children = d._children;
+      d._children = null;       
+  }
+  if(children)
+    children.forEach(expand);
+}
+
+function expandAll(){
+  expand(t_root); 
+  update_tree(t_root);
+}
+
+function collapseAll(){
+	if (t_root.children) {
+		t_root.children.forEach(collapse);
+	  collapse(t_root);
+	  update_tree(t_root);	
+	}
 }

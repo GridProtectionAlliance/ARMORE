@@ -1,0 +1,73 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{%
+endif -%} {% block content %}
+<script type='text/javascript' src="/static/js/jquery-ui.min.js"></script>
+<script src="/static/js/angular.min.js"></script>
+<script src="/static/js/angular-route.min.js"></script>
+<script src="/static/js/angular-sanitize.min.js"></script>
+<script src="/static/js/lodash.min.js"></script>
+<script src="/static/js/angularjs-dropdown-multiselect.js"></script>
+<script src="/static/js/jquery.contextmenu.r2.js"></script>
+<script src="/static/js/ip-address.browserified.js"></script>
+<script src="/static/js/bootstrap-multiselect.js"></script>
+<script src="/static/js/bootstrap-switch.js"></script>
+<script src="/static/js/Chart.min.js"></script>
+<script src="/static/js/d3-legend.js"></script>
+<script src="/static/js/controllers.js"></script>
+<script src="/static/js/visualization.js"></script>
+<script src="/static/js/visualization_tree.js"></script>
+<script src="/static/js/visualization_graph.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrap-multiselect.css"
+  type="text/css" />
+<link rel="stylesheet" href="/static/css/bootstrap-switch.css"
+  type="text/css" />
+
+<html ng-app="Visualization">
+	<div class="container">
+    <!-- Node Details -->
+    <div ng-controller="NodeDetailsController" class="tab-pane"">
+      <h2><span ng-bind="selectedNode"></span> - Communication details</h2>
+      <form>
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-search"></i></div>
+            <input type="text" class="form-control" placeholder="Search table" ng-model="linkSearch">
+          </div>      
+        </div>
+      </form>
+      <table id="nodeCommunicationDetails"
+        class="table table-bordered table-hover table-condensed"
+        cellspacing="2" width="100%">
+        <thead>
+          <tr>
+            <th><a href="#nodeCommunicationDetails"
+              ng-click="linkSortType='source_name'; linkSortReverse = !linkSortReverse">
+                Sender <span ng-show="linkSortType == 'source_name'"
+                class="fa fa-caret-down"></span>
+            </a></th>
+            <th><a href="#nodeCommunicationDetails"
+              ng-click="linkSortType='target_name'; linkSortReverse = !linkSortReverse">
+                Receiver <span ng-show="linkSortType == 'target_name'"
+                class="fa fa-caret-down"></span>
+            </a></th>
+            <th><a href="#nodeCommunicationDetails"
+              ng-click="linkSortType='proto_func_target'; linkSortReverse = !linkSortReverse">
+                Proto:Func:Target <span ng-show="linkSortType == 'proto_func_target'"
+                class="fa fa-caret-down"></span>
+            </a></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat-end
+            ng-repeat="linkRec in nodeLinks | linksForNode:selectedNode:linkSearch | orderBy:linkSortType:linkSortReverse">
+            <td>{{ '{{linkRec["source_name"]}}' }}</td>
+            <td>{{ '{{linkRec["target_name"]}}' }}</td>
+            <td>{{ '{{linkRec["proto_func_target"]}}' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+	
+	</div>
+
+</html>
+{% endblock %}

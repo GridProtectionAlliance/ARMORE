@@ -1,0 +1,28 @@
+Source: broker
+Section: net
+Priority: optional
+Maintainer: Steve Granda <sgrand2@illinois.edu>
+Build-Depends: cmake, debhelper (>= 9),
+ dh-python, python, python-subnettree,
+ bro, swig3.0,
+ exim4 | mail-transport-agent,
+Standards-Version: 3.9.6
+Homepage: http://www.bro.org
+
+Package: broker
+Architecture: all
+Depends: bro, caf, python-dev,
+ exim4 | mail-transport-agent, python-subnettree
+ ${misc:Depends},
+ ${python:Depends},
+ ${shlibs:Depends},
+Recommends: python-broccoli
+Description: event interface for managing Bro installations
+ Bro is primarily a security monitor that inspects all traffic on a
+ link in depth for signs of suspicious activity. More generally,
+ however, Bro supports a wide range of traffic analysis tasks even
+ outside of the security domain, including performance measurements
+ and helping with trouble-shooting.
+ .
+ This package contains broker, an event interface for bro
+ installations.

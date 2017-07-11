@@ -1,0 +1,31 @@
+Source: broctl
+Section: net
+Priority: optional
+Maintainer: Hilko Bengen <bengen@debian.org>
+Uploaders: Raúl Benencia <rul@kalgan.cc>
+Build-Depends: cmake, debhelper (>= 9),
+ dh-python, python, python-subnettree,
+ bro,
+ exim4 | mail-transport-agent,
+Standards-Version: 3.9.6
+Homepage: http://www.bro.org
+Vcs-Git: git://anonscm.debian.org/collab-maint/broctl.git
+Vcs-Browser: http://anonscm.debian.org/cgit/collab-maint/broctl.git/
+
+Package: broctl
+Architecture: all
+Depends: bro,
+ exim4 | mail-transport-agent, python-subnettree
+ ${misc:Depends},
+ ${python:Depends},
+ ${shlibs:Depends},
+Recommends: python-broccoli
+Description: interactive shell for managing Bro installations
+ Bro is primarily a security monitor that inspects all traffic on a
+ link in depth for signs of suspicious activity. More generally,
+ however, Bro supports a wide range of traffic analysis tasks even
+ outside of the security domain, including performance measurements
+ and helping with trouble-shooting.
+ .
+ This package contains broctl, an interactive shell for managing Bro
+ installations.

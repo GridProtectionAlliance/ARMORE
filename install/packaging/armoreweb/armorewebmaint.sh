@@ -69,9 +69,9 @@ for statlogs in `ls -1 $BRODIR/$CURRENTDATE \
     cp $BRODIR/$CURRENTDATE/stats_count.$statlogs.log.gz \
       "$ARMORELOG/$CURRENTDATE"_"$statlogs"/stats_count.log.gz
 
-    gzip -d -f "$ARMORELOG/$CURRENTDATE"_"$statlogs"/*
+    #gzip -d -f "$ARMORELOG/$CURRENTDATE"_"$statlogs"/*
     
-    python3 $CREATEJSON/create_json_graph.py -t "$CURRENTDATE"_"$statlogs" directory -i \
+    python3 $CREATEJSON/create_json_graph.py -v -t "$CURRENTDATE"_"$statlogs" -i \
       "$ARMORELOG/$CURRENTDATE"_"$statlogs"
 
   fi

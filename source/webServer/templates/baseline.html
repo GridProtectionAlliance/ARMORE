@@ -1,0 +1,210 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{%
+endif -%} {% block content %}
+<script type='text/javascript' src="/static/js/jquery-ui.min.js"></script>
+<script src="/static/js/angular.min.js"></script>
+<script src="/static/js/angular-route.min.js"></script>
+<script src="/static/js/angular-sanitize.min.js"></script>
+<script src="/static/js/lodash.min.js"></script>
+<script src="/static/js/angularjs-dropdown-multiselect.js"></script>
+<script src="/static/js/jquery.contextmenu.r2.js"></script>
+<script src="/static/js/ip-address.browserified.js"></script>
+<script src="/static/js/bootstrap-multiselect.js"></script>
+<script src="/static/js/bootstrap-switch.js"></script>
+<script src="/static/js/Chart.min.js"></script>
+<script src="/static/js/d3-legend.js"></script>
+<script src="/static/js/controllers.js"></script>
+<script src="/static/js/visualization.js"></script>
+<script src="/static/js/visualization_tree.js"></script>
+<script src="/static/js/visualization_graph.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrap-multiselect.css"
+	type="text/css" />
+<link rel="stylesheet" href="/static/css/bootstrap-switch.css"
+	type="text/css" />
+
+<html ng-app="Visualization">
+
+<div class="container">
+	<div ng-controller="CollectionController">
+		<div id="tab-panel" class="container" width="1300px">
+			<nav class="navbar" data-spy="affix" data-offset-top="50">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<a href="#"></a>
+					</div>
+					<div class="collapse navbar-collapse" style="padding-left: 0px;">
+						<ul class="nav navbar-nav">
+							<li><h2 style="margin-top: 0px;">Baseline</h2></li>
+							<li role="separator" class="divider"></li>
+						</ul>
+
+						<ul class="nav navbar-nav navbar-right">
+							<li><a href="#" ng-dropdown-multiselect=""
+								options="filterOptions" selected-model="filterListModel"
+								translation-texts="filterListCustomTexts"
+								extra-settings="filterListSettings" events="filterListEvents"
+								group-by="type"></a></li>
+							<li><a href="#">
+									<div class="btn-group">
+										<input id="searchinput" type="search"
+											placeholder="Search nodes..."
+											class="form-control input-sm clearable" />
+									</div>
+							</a></li>
+							<li>
+								<canvas id="myChart" width="60" height="60"></canvas>
+							</li>
+							<li><div id="js-legend" class="graph-legend"></div></li>
+							<li><a href="#"><span class="info" current-time="format"></span></a></li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+			<ul class="nav nav-pills">
+				<li class="active"><a href="#ngraph" data-toggle="tab">Graph</a>
+				</li>
+				<li><a href="#tgraph" data-toggle="tab">Tree</a></li>
+				<li><a href="#baselineDetails" data-toggle="tab">Details</a></li>
+			</ul>
+
+			<div class="tab-content clearfix">
+				<div class="tab-pane active" id="ngraph">
+					<!-- Graph canvas -->
+					<div class="graph_box" id="graph_box">
+						<div id="canvasState"></div>
+						<draw-graph id="graphContent" ng-init="init('{{ selDate }}')"
+							ng-model="model.selectedDate" watch-this="model.selectedDate">
+						</draw-graph>
+					</div>
+				</div>
+				<div class="tab-pane" id="tgraph">
+					<div class="graph_box" id="tree_box">
+						<nav class="navbar" data-spy="affix" data-offset-top="50">
+							<ul class="nav navbar-nav navbar-right" style="margin-right: 0px">
+								<button type="button" class="btn btn-small btn-default"
+									data-active-class="muted" onclick="expandAll()"">Expand
+									All</button>
+								<button type="button" class="btn btn-small btn-default"
+									data-active-class="muted" onclick="collapseAll()"">Collapse
+									All</button>
+							</ul>
+						</nav>
+						<draw-tree id="treeContent"></draw-tree>
+					</div>
+				</div>
+				<div class="tab-pane" id="baselineDetails">
+		      <form>
+		        <div class="form-group">
+		          <div class="input-group">
+		            <div class="input-group-addon"><i class="fa fa-search"></i></div>
+		            <input type="text" class="form-control" placeholder="Search table" ng-model="baselineSearch">
+		          </div>      
+		        </div>
+		      </form>
+					<table id="baselineTable"
+						class="table table-bordered table-hover table-condensed"
+						cellspacing="2" width="100%">
+						<thead>
+							<tr>
+								<th><a href="#baselineTable"
+									ng-click="baselineSortType='sender'; baselineSortReverse = !baselineSortReverse">
+										Sender <span ng-show="baselineSortType == 'sender'"
+										class="fa fa-caret-down"></span>
+								</a></th>
+								<th><a href="#baselineTable"
+									ng-click="baselineSortType='receiver'; baselineSortReverse = !baselineSortReverse">
+										Receiver <span ng-show="baselineSortType == 'receiver'"
+										class="fa fa-caret-down"></span>
+								</a></th>
+								<th><a href="#baselineTable"
+									ng-click="baselineSortType='proto'; baselineSortReverse = !baselineSortReverse">
+										Protocols <span ng-show="baselineSortType == 'proto'"
+										class="fa fa-caret-down"></span>
+								</a></th>
+								<th><a href="#baselineTable"
+									ng-click="baselineSortType='func'; baselineSortReverse = !baselineSortReverse">
+										Functions <span ng-show="baselineSortType == 'func'"
+										class="fa fa-caret-down"></span>
+								</a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='target'; baselineSortReverse = !baselineSortReverse">
+                    Targets <span ng-show="baselineSortType == 'target'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='uid'; baselineSortReverse = !baselineSortReverse">
+                    UID <span ng-show="baselineSortType == 'uid'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='navg'; baselineSortReverse = !baselineSortReverse">
+                    Avg Num <span ng-show="baselineSortType == 'navg'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='nstd'; baselineSortReverse = !baselineSortReverse">
+                    Std Num <span ng-show="baselineSortType == 'nstd'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='bavg'; baselineSortReverse = !baselineSortReverse">
+                    Avg Bytes <span ng-show="baselineSortType == 'bavg'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='bstd'; baselineSortReverse = !baselineSortReverse">
+                    Std Bytes <span ng-show="baselineSortType == 'bstd'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='ravg'; baselineSortReverse = !baselineSortReverse">
+                    Avg Ratio <span ng-show="baselineSortType == 'ravg'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='rstd'; baselineSortReverse = !baselineSortReverse">
+                    Std Ratio <span ng-show="baselineSortType == 'rstd'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='davg'; baselineSortReverse = !baselineSortReverse">
+                    Avg Delay <span ng-show="baselineSortType == 'davg'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+                <th><a href="#baselineTable"
+                  ng-click="baselineSortType='dstd'; baselineSortReverse = !baselineSortReverse">
+                    Std Delay <span ng-show="baselineSortType == 'dstd'"
+                    class="fa fa-caret-down"></span>
+                </a></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat-end
+								ng-repeat="baselinerec in baselineLinks | orderBy:baselineSortType:baselineSortReverse| filter:baselineSearch">
+								<td>{{ '{{baselinerec["sender"]}}' }}</td>
+								<td>{{ '{{baselinerec["receiver"]}}' }}</td>
+                <td ng-bind-html="baselinerec['protocol'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['function'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['target'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['uid'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['navg'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['nstd'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['bavg'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['bstd'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['ravg'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['rstd'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['davg'] | trustedHtml"></td>
+                <td ng-bind-html="baselinerec['dstd'] | trustedHtml"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top"
+		role="button" title="Click to return on the top page"
+		data-toggle="tooltip" data-placement="left"><span
+		class="glyphicon glyphicon-chevron-up"></span></a>
+</div>
+</html>
+{% endblock %}

@@ -37,6 +37,18 @@
 				<span class="option-text">Visualization</span>
 			</a>
 		</li>
+    <li {% if common.page == "baseline" %}class="active"{% endif %}>
+      <a href="/baseline">
+        <span class="fa fa-area-chart fa-2x fa-fw"></span>
+        <span class="option-text">Baseline</span>
+      </a>
+    </li>
+    <li {% if common.page == "anomalies" %}class="active"{% endif %}>
+      <a href="/anomalies">
+        <span class="fa fa-heartbeat fa-2x fa-fw"></span>
+        <span class="option-text">Anomalies</span>
+      </a>
+    </li>
 		<li {% if common.page == "logs" %}class="active"{% endif %}>
 			<a href="/logs">
 				<span class="fa fa-book fa-2x fa-fw"></span>

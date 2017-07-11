@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: armorenetmap-ipfw
-Source: <https://github.com/luigirizzo/netmap>
+Source: <https://github.com/luigirizzo/netmap-ipfw>
 Maintainer: <https://iti.illinois.edu>
 
 University of Illinois/NCSA Open Source License

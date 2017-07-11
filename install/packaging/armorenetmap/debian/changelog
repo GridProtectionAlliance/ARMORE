@@ -1,3 +1,15 @@
+armorenetmap (1.0-1-1.10) stable; urgency=medium
+
+  * 4.4.19 kernel build and upstream changes
+
+ -- sgrand2 <sgrand2@llinois.edu>  Mon, 05 Jun 2017 11:48:05 -0500
+
+armorenetmap (1.0-1-1.9) stable; urgency=medium
+
+  * Upstream Changes
+
+ -- sgrand2 <sgrand2@illinois.edu>  Tue, 03 Jan 2017 14:05:45 -0500
+
 armorenetmap (1.0-1-1.8) stable; urgency=medium
 
   * Updated binary to 4.4.19 kernel 

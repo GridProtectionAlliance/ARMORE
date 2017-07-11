@@ -31,33 +31,209 @@ angular.module('d3', []).factory('d3Service',
 			};
 		} ]);
 
-var vizApp = angular.module('Visualization', [ 'd3', 'ngRoute', 'angularjs-dropdown-multiselect' ]);
+// The main application
+var vizApp = angular.module('Visualization', [ 'd3', 'ngRoute', 'ngSanitize', 'angularjs-dropdown-multiselect' ]);
 
+// Add a 'debug' filter to check whether an angular-computed string is empty
+vizApp.filter('debug', function() {
+  return function(input) {
+    if (input === '') return 'empty string';
+    return input ? input : ('' + input);
+  };
+});
+vizApp.filter('trustedHtml', function($sce) { return $sce.trustAsHtml; });
+
+vizApp.filter('namedValues', 
+		function() {
+		return function(d) {
+			return getNamedValues(d).sort().join("<br>");
+		};
+	})
+	
+vizApp.filter('linksForNode', 
+		function() {
+		return function(links, selNode, searchWord) {
+			filteredLinks = []
+			for (i = 0; i< links.length; i++) {
+				link = links[i];
+				if (link.source_name == selNode | link.target_name == selNode) {
+					if (!searchWord)
+						filteredLinks.push(link);
+					else if (link.proto_func_target.toUpperCase().includes(searchWord.toUpperCase()) ||
+							link.source_name.toUpperCase().includes(searchWord.toUpperCase()) ||
+							link.target_name.toUpperCase().includes(searchWord.toUpperCase())) {
+						filteredLinks.push(link);
+					}
+				}
+			}
+			return filteredLinks;
+		};
+	})
+
+// Define all directives and controllers
 vizApp.factory('SharedData', SharedData);
-vizApp.controller('CollectionController', ['$scope', '$http', 'SharedData', CollectionController]);
-vizApp.controller('NodeController', ['$scope', '$http', 'SharedData', NodeController]);
-vizApp.directive('drawHisto',	['d3Service', 'SharedData', drawHisto]);
+vizApp.controller('CollectionController', ['$scope', '$sce', '$http', 'SharedData', CollectionController]);
+vizApp.controller('NodeController', ['$scope', '$sce', '$http', 'SharedData', NodeController]);
+vizApp.controller('NodeDetailsController', ['$scope', NodeDetailsController]);
+vizApp.directive('drawHistoAnomalies',	['d3Service', 'SharedData', drawHistoAnomalies]);
 vizApp.directive('drawGraph',	['d3Service', 'SharedData', drawGraph]);
 vizApp.directive('currentTime', [ '$interval', 'dateFilter', currentTime]);
 
-// Draw histogram of changes
-function drawHisto (d3Service, SharedData) {
+vizApp.directive('contextMenu', function(){
+  return {
+      restrict: 'A',
+      scope: {
+          target: '@'
+      },
+      link: function(scope, element){
+          console.log('contextmenu: '+scope);
+      }
+  };
+});
+
+// Draw histogram of anomalies
+function drawHistoAnomalies (d3Service, SharedData) {
 	return {
 		restrict : 'EA',
 		transclude : true,
-		scope : false,
+		scope : '&',
 		link : function($scope, element, attrs) {
       $scope.model = SharedData.sharedObject;
 			// Query list of anomalies
 			console.log("retrieving anomalies from database...");
-			console.log("/stats_anomalies");
 			d3.json("/stats_anomalies",
 					function(error, jdocs) {
-				if (error)
-					throw error;
-				if (jdocs.length > 0) {
-					$scope.anomalyModel = buildAnomalyHistogram(jdocs);
+					if (error)
+						throw error;
+					if (jdocs.length > 0) {
+						$scope.model.anomalies = jdocs;
+
+						for (i = 0; i< $scope.model.anomalies.length; i++) {
+							for (j = 0; j< $scope.model.anomalies[i].anomalies.length; j++) {
+								anom = $scope.model.anomalies[i].anomalies[j]
+								sr = anom['sender-receiver'].split("-");
+								anom['sender'] = sr[0];
+								anom['receiver'] = sr[1];
+							}
+						}
+					  $scope.model.anoSelected  = jdocs[jdocs.length-1]['created_at'];  // the
+																																							// bar/created_at
+																																							// selected
+																																							// in
+																																							// the
+																																							// histogram
+					  $scope.anoSortType     = 'desc'; // set the default sort type
+					  $scope.anoSortReverse  = false;  // set the default sort order
+					  $scope.anoSearch  = '';  // set the default search term
+						buildAnomalyHistogram($scope.model);
+						$scope.$watch("model.anoSelected", function(){
+							console.log('Selected anomalies for date '+$scope.model.anoSelected);
+							$scope.model.selectedDate = $scope.model.anoSelected;
+						})
+						node = d3.select('#graph_svg').selectAll('link')
+				    .attr("class", "mouna")
+
+						node
+						.append('defs')
+							.append('anomalies')
+								.attr('count', function(d) {console.log('here')})
+					
 				}
+					
+					function buildAnomalyHistogram(model_ano){
+						console.log('Parse anomalies...');
+
+						console.log(JSON.stringify(model_ano.anomalies));
+					// Set the dimensions of the canvas
+						var margin = {top: 20, right: 20, bottom: 70, left: 40},
+						    width = 600 - margin.left - margin.right,
+						    height = 300 - margin.top - margin.bottom;
+						
+						var tip = d3.tip()
+					  .attr('class', 'd3-tip')
+					  .offset([-10, 0])
+					  .html(function(d) { return d; })
+					  
+						// Set the ranges
+						var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+
+						var y = d3.scale.linear().range([height, 0]);
+
+						// Define the axis
+						var xAxis = d3.svg.axis()
+						    .scale(x)
+						    .orient("bottom")
+
+
+						var yAxis = d3.svg.axis()
+						    .scale(y)
+						    .orient("left")
+						    .ticks(10);
+
+						// Add the SVG element
+						var svg = d3.select("#histoContent").append("svg")
+						    .attr("width", width + margin.left + margin.right)
+						    .attr("height", height + margin.top + margin.bottom)
+						  .append("g")
+						    .attr("transform", 
+						          "translate(" + margin.left + "," + margin.top + ")");
+
+						svg.call(tip);
+						
+					  // Scale the range of the data
+					  x.domain(model_ano.anomalies.map(function(d) { return d.created_at; }));
+					  y.domain([0, d3.max(model_ano.anomalies, function(d) { return d.anomalies.length; })]);
+
+					  // add axis
+					  svg.append("g")
+					      .attr("class", "x axis")
+					      .attr("transform", "translate(0," + height + ")")
+					      .call(xAxis)
+					    .selectAll("text")
+					      .style("text-anchor", "end")
+					      .attr("dx", "-.8em")
+					      .attr("dy", "-.55em")
+					      .attr("transform", "rotate(-90)" );
+
+					  svg.append("g")
+					      .attr("class", "y axis")
+					      .call(yAxis)
+					    .append("text")
+					      .attr("transform", "rotate(-90)")
+					      .attr("y", 5)
+					      .attr("dy", ".71em")
+					      .style("text-anchor", "end")
+					      .text("Anomalies");
+
+					  // Add bar chart
+					  svg.selectAll("bar")
+					      .data(model_ano.anomalies)
+					    .enter().append("rect")
+					      .attr("class", "bar")
+					      .attr("x", function(d) { return x(d.created_at); })
+					      .attr("width", x.rangeBand())
+					      .attr("y", function(d) { return y(d.anomalies.length); })
+					      .attr("height", function(d) { return height - y(d.anomalies.length); })
+					  		.on('mouseover', function(d, i) {
+// console.log(JSON.stringify(d));
+					  			tip_msg = d.anomalies.length;
+					  			if (d.anomalies.length > 1) {
+					  				tip_msg += ' anomalies'
+						  		}
+						  		else {
+										tip_msg += ' anomaly'
+						  		}
+					  		  tip.show(tip_msg, this)
+					  		})
+					      .on('mouseout', tip.hide)
+					      .on('click', function(d, i) {
+					      	d3.selectAll("rect.bar").style("fill","steelblue");
+					      	d3.select(this).style("fill","brown");
+					  			$scope.$apply(function() {
+					  		    $scope.model.anoSelected = d.created_at;
+					  			});
+					  		});
+					}
 			});
 		}
 	}
@@ -68,12 +244,13 @@ function drawGraph (d3Service, SharedData) {
 					return {
 						restrict : 'EA',
 						transclude : true,
-						scope : false,
+						scope : false, // use parent scope
 						link : function($scope, element, attrs) {
 							$scope.showLabels = true;
 				      $scope.model = SharedData.sharedObject;
-				      
-							//-- Function to update graph and tree based on user selection in timestamps list
+
+							// -- Function to update graph and tree based on user selection in
+							// timestamps list
 							$scope.$watch('model.selectedDate', function() {
 								d3Service.d3()
 								.then(
@@ -82,7 +259,7 @@ function drawGraph (d3Service, SharedData) {
 											d3.select("#treeContent").selectAll("*").remove();
 											
 											// Initialize canvas
-											//- Graph canvas
+											// - Graph canvas
 											canvas = d3.select("#graphContent").append("svg")
 											.attr("id","graph_svg")
 											// .attr("width", width).attr("height", height)
@@ -92,55 +269,57 @@ function drawGraph (d3Service, SharedData) {
 													d3.behavior.zoom().scaleExtent([ 1, 5 ]).on("zoom",
 															zoomer)).on("dblclick.zoom", null).append('svg:g');
 											  
-											//- Tree canvas
-											t_svg = d3.select("#treeContent")
-											.append("svg")
-											.attr("id","tree_svg")
-											.attr("width", t_width + margin.right + margin.left)
-											.attr("height",
-															t_height + margin.top + margin.bottom).append(
-															"g")
-											.attr("transform",
-															"translate(" + margin.left + "," + margin.top
-																	+ ")");
-											
-											// Query json graph data from database
-											console.log("retrieving json logs from database...");
-											console.log("/stats_jlogs?collectionTime="+$scope.model.selectedDate);
-											d3.json("/stats_jlogs?collectionTime="+$scope.model.selectedDate,
-													function(error, jdocs) {
-												if (error)
-													throw error;
-												if (jdocs.length > 0) {
-													data_col = jdocs[0]['col_log']
-													data_count = jdocs[0]['count_log']
-													
-													$scope.graphModel = buildGraph(data_col);
-													updateGraphFilters($scope);
-													
-													buildTree(data_count);
-												}
-											});
-//											var ordinal = d3.scale.ordinal()
-//										  .domain(["a", "b", "c", "d", "e"])
-//										  .range([ "rgb(153, 107, 195)", "rgb(56, 106, 197)", "rgb(93, 199, 76)", "rgb(223, 199, 31)", "rgb(234, 118, 47)"]);
+												// Query json graph data from database
+												console.log("retrieving json logs from database...");
+												console.log("/stats_jlogs?collectionTime="+$scope.model.selectedDate);
+												d3.json("/stats_jlogs?collectionTime="+$scope.model.selectedDate,
+														function(error, jdocs) {
+													if (error)
+														throw error;
+													if (jdocs.length > 0) {
+														data_col = jdocs[0]['col_log']
+														data_count = jdocs[0]['count_log']
+														
+														$scope.graphModel = buildGraph($scope, data_col);
+														updateGraphFilters($scope);
+														updateLinksSummary($scope);
+														// - Tree canvas
+														if (document.getElementById("treeContent")) {
+															t_svg = d3.select("#treeContent")
+															.append("svg")
+															.attr("id","tree_svg")
+															.attr("width", t_width + margin.right + margin.left)
+															.attr("height",
+																			t_height + margin.top + margin.bottom).append(
+																			"g")
+															.attr("transform",
+																			"translate(" + margin.left + "," + margin.top
+																					+ ")");														
+															buildTree(data_count);
+													}
+													}
+												});
+// var ordinal = d3.scale.ordinal()
+// .domain(["a", "b", "c", "d", "e"])
+// .range([ "rgb(153, 107, 195)", "rgb(56, 106, 197)", "rgb(93, 199, 76)",
+// "rgb(223, 199, 31)", "rgb(234, 118, 47)"]);
 
-//										var svg = d3.select("svg");
+// var svg = d3.select("svg");
 
-//										canvas.append("g")
-//										  .attr("class", "legendOrdinal")
-//										  .attr("transform", "translate(20,20)");
+// canvas.append("g")
+// .attr("class", "legendOrdinal")
+// .attr("transform", "translate(20,20)");
 //
-//										var legendOrdinal = d3.legend.color()
-//										  //d3 symbol creates a path-string, for example
-//										  //"M0,-8.059274488676564L9.306048591020996,
-//										  //8.059274488676564 -9.306048591020996,8.059274488676564Z"
-//										  .shape("path", d3.svg.symbol().type("triangle-up").size(150)())
-//										  .shapePadding(10)
-//										  .scale(ordinal);
+// var legendOrdinal = d3.legend.color()
+// //d3 symbol creates a path-string, for example
+// //"M0,-8.059274488676564L9.306048591020996,
+// //8.059274488676564 -9.306048591020996,8.059274488676564Z"
+// .shape("path", d3.svg.symbol().type("triangle-up").size(150)())
+// .shapePadding(10)
+// .scale(ordinal);
 //
-//										canvas.select(".legendOrdinal")
-//										  .call(legendOrdinal);
+// canvas.select(".legendOrdinal")
+// .call(legendOrdinal);
 										}
 									);
 							});
@@ -175,9 +354,71 @@ function updateGraphFilters ($scope) {
 			}
 	  }
 	}
-//	console.log('$scope.filterOptions = '+JSON.stringify($scope.filterOptions));
+// console.log('$scope.filterOptions = '+JSON.stringify($scope.filterOptions));
 }
 
+//Update links with the attributes found in the json graph
+function updateLinksSummary ($scope, $sce) {
+if ($scope.graphModel == null) {
+	return;
+}
+
+// Sort links by source name first and target second
+function sortLinks(ob1,ob2) {
+  if (ob1.source_name > ob2.source_name) {
+      return 1;
+  } else if (ob1.source_name < ob2.source_name) { 
+      return -1;
+  }
+
+  // Else go to the 2nd item
+  if (ob1.target_name < ob2.target_name) { 
+      return -1;
+  } else if (ob1.target_name > ob2.target_name) {
+      return 1
+  } else { // nothing to split them
+      return 0;
+  }
+}
+
+sortedLinks = $scope.graphModel['links'].sort(sortLinks);
+for (var i = 0; i < sortedLinks.length; i++) {
+	lnk = $scope.graphModel['links'][i];
+	
+//	console.log('link '+JSON.stringify(dictValues(lnk['target_name'])));
+	if (lnk['target_name'] == '-' | lnk['source_name'] == '-') {
+		continue;
+	}
+	
+	$scope.baselineLinks.push({'sender':lnk['source_name'],
+		'receiver':lnk['target_name'],
+		'target': getNamedValues(lnk['TARGET']).join("<br>"),
+		'protocol': getNamedValues(lnk['PROTOCOL']).join("<br>"),
+		'function': getNamedValues(lnk['FUNCTION']).join("<br>"),
+		'uid': getNamedValues(lnk['uid']).join("<br>"),
+		'proto_func_target': lnk['proto_func_target'],
+		'navg': getNamedValues(lnk['navg']).join("<br>"),
+		'nstd': getNamedValues(lnk['nstd']).join("<br>"),
+		'bavg': getNamedValues(lnk['bavg']).join("<br>"),
+		'bstd': getNamedValues(lnk['bstd']).join("<br>"),
+		'ravg': getNamedValues(lnk['ravg']).join("<br>"),
+		'rstd': getNamedValues(lnk['rstd']).join("<br>"),
+		'davg': getNamedValues(lnk['davg']).join("<br>"),
+		'dstd': getNamedValues(lnk['dstd']).join("<br>")});
+	}
+}
+
+function getNamedValues (d) {
+	var named_vals = [];
+	if (d) {
+		for (var i = 0; i < dictValues(d).length; i++) {
+			named_vals.push(d[i]['name']);
+		}
+	}
+	return named_vals;
+}
+
+// Function showing the current time
 function currentTime ($interval, dateFilter) {
 			function link(scope, element, attrs) {
 				var format = 'M/d/yy h:mm:ss a';
@@ -202,10 +443,12 @@ function currentTime ($interval, dateFilter) {
 			};
 		};
 
+// Data shared by controllers
 function SharedData () {
   return {
     sharedObject: {
       selectedDate: 'n/a',
+      baseline: 'baseline',
       dateList:'',
       compare2Date: 'n/a'
     }
@@ -220,9 +463,19 @@ Object.toparams = function ObjecttoParams(obj) {
   return p.join('&');
 };
 
-function NodeController ($scope, $http, SharedData) {
+
+function NodeDetailsController ($scope) {
+	$scope.nodeLinks = window.nodeLinks;
+	$scope.selectedNode = window.selectedNode;
+  $scope.linkSortType     = 'source_name'; // set the default sort type
+  $scope.linkSortReverse  = false;  // set the default sort order
+}
+
+function NodeController ($scope, $sce, $http, SharedData) {
 	$scope.model = SharedData.sharedObject;
 	$scope.nodeTypeImage = nodeTypeImage;
+
+//	$scope.selectedNode = null;
 	// Function used to rename a node in the graph
 	$scope.graphRenameNode = function graphRenameNode () {
 		// Update node label in the graph and in DB
@@ -242,12 +495,12 @@ function NodeController ($scope, $http, SharedData) {
 			});
 		}
 		// Update displayed node label
-		selectedNode = d3.select('#node_'+document.getElementById('nodeId').value)
+		$scope.selectedNode = d3.select('#node_'+document.getElementById('nodeId').value)
 		if (newName){
-			selectedNode.text(newName);
+			$scope.selectedNode.text(newName);
 		}
 		else {
-			selectedNode.text(oldName);
+			$scope.selectedNode.text(oldName);
 		}
 		// Hide modal
 		$('#nodeNameModal').modal('hide'); 
@@ -279,21 +532,32 @@ function NodeController ($scope, $http, SharedData) {
 	}
 };
 
-function CollectionController($scope, $http, SharedData) {
+function CollectionController($scope, $sce, $http, SharedData) {
 	$scope.model = SharedData.sharedObject;
 	$scope.nodeName="N/A";
 	$scope.model.comparison_mode = false;
-
+	$scope.baselineLinks = [];
+	$scope.nodeLinks = [];
+	$scope.selectedNode = null;
+	$scope.baselineSortType = 'sender';
+	
+  $scope.init = function(selDate) {
+  	$scope.model.selectedDate = selDate;
+  }
 	$('#viewSelector button.btn').click(function() {
 	  $(this).addClass('active').siblings().removeClass('active');
 	  $(this).addClass('active').siblings().removeClass('btn-success');
 	  $(this).addClass('btn-success');
 	  
 	  if ($(this).html() == 'Graph') {
-	  	scrollToElement(document.getElementById("graph_box"), undefined, undefined, undefined, undefined);//() => alert('done'))
+	  	scrollToElement(document.getElementById("graph_box"), undefined, undefined, undefined, undefined);// ()
+																																																				// =>
+																																																				// alert('done'))
 	  }
 	  else if ($(this).html() == 'Tree') {
-	  	scrollToElement(document.getElementById("tree_box"), undefined, undefined, undefined, undefined);//() => alert('done'))
+	  	scrollToElement(document.getElementById("tree_box"), undefined, undefined, undefined, undefined);// ()
+																																																				// =>
+																																																				// alert('done'))
 	  }
 	  else {
 	  	document.getElementById("armore").scrollIntoView();	  	
@@ -375,7 +639,7 @@ function CollectionController($scope, $http, SharedData) {
 							data_col = jdocs[0]['col_log']
 							data_count = jdocs[0]['count_log']
 							
-							$scope.graphModel = buildGraph(data_col);
+							$scope.graphModel = buildGraph($scope, data_col);
 							updateGraphFilters($scope);
 							
 							buildTree(data_count);
@@ -389,13 +653,15 @@ function CollectionController($scope, $http, SharedData) {
 	};
 		
 	console.log("retrieving json logs creation times from database...");
-	$http.get('/stats_jlogs_times').success(function(data) {
-		$scope.dates = data;
-		$scope.model.selectedDate = data[0];
-		$scope.dateListModel = [{'id':data[0]}];
+	$http.get('/stats_jlogs_times').then(function(data) {
+		$scope.dates = data['data'];
+		if ($scope.model.selectedDate == "") {
+			$scope.model.selectedDate = $scope.dates[0];
+		}
+		$scope.dateListModel = [{'id':$scope.dates[0]}];
 		for (i = 0; i < $scope.dates.length; i++) {
-			$scope.dateListData.push({'id':i+1, 'label':data[i]});
-			$scope.compare2DateList.push({'id':i+1, 'label':data[i]});
+			$scope.dateListData.push({'id':i+1, 'label':$scope.dates[i]});
+			$scope.compare2DateList.push({'id':i+1, 'label':$scope.dates[i]});
 		}
 	});
 	
@@ -445,7 +711,10 @@ function CollectionController($scope, $http, SharedData) {
 
 			link_protos = dictValues(lnk.PROTOCOL[0]);
 			link_funcs = dictValues(lnk.FUNCTION[0]);
-//			console.log("\nlink "+lnk.id+":"+JSON.stringify(lnk.source.name)+">"+JSON.stringify(lnk.target.name)+", "+lnk.visible+" has protos/funcs "+JSON.stringify(link_protos)+", "+JSON.stringify(link_funcs)+" comes as visible: "+lnk.visible);
+// console.log("\nlink
+// "+lnk.id+":"+JSON.stringify(lnk.source.name)+">"+JSON.stringify(lnk.target.name)+",
+// "+lnk.visible+" has protos/funcs "+JSON.stringify(link_protos)+",
+// "+JSON.stringify(link_funcs)+" comes as visible: "+lnk.visible);
 
 			// Selected filter protocols
 			if (item.type == 'protocols') {
@@ -493,7 +762,7 @@ function CollectionController($scope, $http, SharedData) {
 				// Show matching links
 				f = scope.filterOptionsByIndex[item.id];
 				filterLinks(f, true);
-				// If filter is protocol, automatically check all corresponding 
+				// If filter is protocol, automatically check all corresponding
 				// functions and targets options in filter list box
 				if (f.type == "protocols") {
 					filtered_proto = f.label
@@ -538,7 +807,7 @@ function CollectionController($scope, $http, SharedData) {
 				// Hide matching links
 				f = scope.filterOptionsByIndex[item.id];
 				filterLinks(f, false);
-				// If filter is protocol, automatically deselect all corresponding 
+				// If filter is protocol, automatically deselect all corresponding
 				// functions and targets options in filter list box
 				if (f.type == "protocols") {
 					filtered_proto = f.label
@@ -556,7 +825,7 @@ function CollectionController($scope, $http, SharedData) {
 					}
 				}
 				else if (f.type == "functions" || f.type == "targets") {
-//					console.log(JSON.stringify(scope.filterListModel));
+// console.log(JSON.stringify(scope.filterListModel));
 					filtered_proto = f.label.split(':')[0];
 					uncheck_proto = true;
 					for (var k=0; k < scope.filterListModel.length; k++) {
@@ -618,7 +887,27 @@ function scrollToElement(element, duration = 400, delay = 0, easing = 'cubic-in-
     })(offsetTop + element.getBoundingClientRect().top));
 }
 
-// -- Utility Methods 
+// -- Utility Methods
 function dictValues(dict) {
+	if (typeof(dict) === 'string')
+		return [];
 	return $.map(dict, function(value, key) { return value });
 }
+
+$(document).ready(function(){
+  $(window).scroll(function () {
+         if ($(this).scrollTop() > 50) {
+             $('#back-to-top').fadeIn();
+         } else {
+             $('#back-to-top').fadeOut();
+         }
+     });
+     // scroll body to 0px on click
+     $('#back-to-top').click(function () {
+         $('#back-to-top').tooltip('hide');
+         $('body,html').animate({
+             scrollTop: 0
+         }, 800);
+         return false;
+     });
+});

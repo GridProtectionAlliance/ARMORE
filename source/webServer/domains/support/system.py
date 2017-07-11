@@ -113,7 +113,7 @@ def getArmoreStatus():
     with open('/etc/network/interfaces') as f:
         modeLines = [x.strip() for x in f.readlines()]
 
-    ret = {}
+    ret = {"name":"Proxy"}
     for l in modeLines:
         if re.match(".*Proxy Mode.*", l, re.I):
             ret["name"] = "Proxy"

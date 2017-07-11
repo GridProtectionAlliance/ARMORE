@@ -64,6 +64,13 @@ def visualizePage():
     return render_template("visualization.html",
         common = sysLib.getCommonInfo({"username": session["username"]}, "visualization"),
     )
+    
+@visualDomain.route("/nodeDetails")
+@secure(["admin","user"])
+def visualizeNodeDetails():
+    return render_template("nodeDetails.html",
+        common = sysLib.getCommonInfo({"username": session["username"]}, "nodeDetails"),
+    )
 
 @visualDomain.route("/stats_anomalies")
 def stats_anomalies(collectionTime=None):

@@ -242,10 +242,26 @@ connaddr()
     then
         extip=$(whiptail --inputbox "Enter external interface address" 8 78 \
             --title "External Interface IP address" 3>&1 1>&2 2>&3)
+        
+        extipif=$extip
 
     else
         extip=$(whiptail --inputbox "Enter server address" 8 78 \
-            --title "External Interface IP address" 3>&1 1>&2 2>&3)
+            --title "ARMORE Server IP address" 3>&1 1>&2 2>&3)
+        
+    fi
+    if [ "$?" -ne 0 ];
+    then
+        echo "User cancelled operation"
+        exit 0
+    fi
+    
+    #Specify the IPv4 address will use for the external network
+
+    if [ "$roletype" == "Client" ];
+    then    
+        extipif=$(whiptail --inputbox "Enter external interface address" 8 78 \
+            --title "External Interface IP Address" 3>&1 1>&2 2>&3)
     fi
     if [ "$?" -ne 0 ];
     then
@@ -555,7 +571,7 @@ writeinterfaces ()
         printf '#External Interface\n' >> $ifacefile
         printf "allow-hotplug $extiface\n" >> $ifacefile
         printf "iface $extiface inet static\n" >> $ifacefile
-        printf "address $extip\n" >> $ifacefile
+        printf "address $extipif\n" >> $ifacefile
         printf "netmask $extmask\n" >> $ifacefile
         printf 'up sleep 5;\n\n' >> $ifacefile
 
@@ -686,7 +702,8 @@ environment_check
 
 #Proxy Mode external network values
     extiface='eth1'
-    extip='192.168.1.2'
+    extip='192.168.1.3'
+    extipif='192.168.1.2'
     extmask='255.255.255.0'
 
     encryptdata='Enabled'

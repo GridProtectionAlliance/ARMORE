@@ -1,4 +1,5 @@
 var width = 960, height = 800, node, link, root, canvas;
+var graphModel = null;
 var force = d3.layout.force()
 	.linkDistance(200)
 	.size([ width, height ])
@@ -7,6 +8,9 @@ var fill = d3.scale.category10();
 var currently_selected_node = null;
 var linkedByIndex = {};
 var imageLocation = 'static/img/';
+var selnode = null;
+var ctrlScope = null;
+
 // 1x1 mapping of node type to associated icon
 var nodeTypeImage = {
 		'master'  : 'aggregator.png',
@@ -122,7 +126,13 @@ function isVisible(d) {
 }
 
 function parse_json_col(jdict) {
-		var gModel = { 'protocols':[], 'functions':[], 'targets':[], 'protocolCnt':{'_total':0}};
+		var gModel = {
+				'nodes':[],
+				'links':[],
+				'protocols':[],
+				'functions':[],
+				'targets':[],
+				'protocolCnt':{'_total':0}};
 		root = jdict;
 		root.fixed = true;
 		root.x = width / 2;
@@ -136,16 +146,14 @@ function parse_json_col(jdict) {
 		// Add node search feature
 		var optArray = [];
 		for (var i = 0; i < root.nodes.length - 1; i++) {
-			optArray.push(root.nodes[i]['name']);
+			if (root.nodes[i]['name'] != '-')
+				optArray.push(root.nodes[i]['name']);
 		}
 		optArray = optArray.sort();
 		$(function() {
 			autocompletesearch(optArray);
 		});
-
-		console.log(root.nodes.length + ' nodes and ' + root.links.length
-				+ ' links and globals '+JSON.stringify(root.globals));
-		
+	
 		if (root.globals.hasOwnProperty('changes')) {
 			gModel['changes'] = root.globals['changes'];
 		}
@@ -158,25 +166,49 @@ function parse_json_col(jdict) {
 		if (root.globals.hasOwnProperty('targets')) {
 			gModel['targets'] = root.globals['targets'];
 		}
+		
+		console.log(root.nodes.length + ' nodes and ' + root.links.length
+				+ ' links and globals '+JSON.stringify(root.globals));
+		gModel['links'] = [];
+		gModel['nodes'] = [];
+		
 		// Give nodes ids and initialize variables
 		for (var i = 0; i < root.nodes.length; i++) {
 			var node = root.nodes[i];
+			if (node.name == '-') {
+				continue;
+			}
+			gModel['nodes'].push(node)
 			node.visible = true;
 		}
 		// Give links ids and initialize variables
 		for (var i = 0; i < root.links.length; i++) {
 			var link = root.links[i];
-			link.snode = root.nodes[link.source];
-			link.tnode = root.nodes[link.target];
-			link.visible = true;
-			lnk_proto = link.PROTOCOL[0]['name']
-			if (lnk_proto in gModel['protocolCnt']) {
-				gModel['protocolCnt'][lnk_proto] = gModel['protocolCnt'][lnk_proto] + link.value;
+			if (link.source_name == '-' | link.target_name == '-') {
+				continue;
 			}
-			else {
-				gModel['protocolCnt'][lnk_proto] = link.value;
+			gModel['links'].push(link);
+			if (link.PROTOCOL.length > 0) {
+				link.snode = root.nodes[link.source];
+				link.tnode = root.nodes[link.target];
+				link.visible = true;
+				// Find first non empty protocol (baseline might have '-')
+				lnk_proto = link.PROTOCOL[0]['name']
+				for (var j = 0; j < link.PROTOCOL.length; j++) {
+					if (link.PROTOCOL[j]['name'] != '-') {
+						lnk_proto = link.PROTOCOL[j]['name'];
+						break;
+					}
+				}
+				if (lnk_proto in gModel['protocolCnt']) {
+					gModel['protocolCnt'][lnk_proto] = gModel['protocolCnt'][lnk_proto] + link.value;
+				}
+				else {
+					gModel['protocolCnt'][lnk_proto] = link.value;
+				}
+				gModel['protocolCnt']['_total'] += link.value;
+				
 			}
-			gModel['protocolCnt']['_total'] += link.value;
 		}
 		return gModel;
 }
@@ -198,14 +230,22 @@ function graphSwitchLabelDisplay(show) {
 	}
 }
 
-function buildGraph(json_col_dict) {
+function buildGraph($scope, json_col_dict) {
 	console.log('Building graph...');
-
+	ctrlScope = $scope;
+//	$scope.$watch('selectedNode', function(newValue, oldValue) {
+//		if ($scope.selectedNode != null) {
+//	    console.log('selected node is: '+$scope.selectedNode);}
+//		});
 	// Extract nodes and links info from json dict
-	var graphModel = parse_json_col(json_col_dict);
+	graphModel = parse_json_col(json_col_dict);
 	if (graphModel == null) {
 		return;
 	}
+	// Build a dictionary with all links to/from every node
+	// Will be used to display node details
+	$scope.nodeLinks = graphModel['links']
+
 	var protocolColors = {};
 	var legend_data = {labels: [], datasets: [{data:[], backgroundColor: [], hoverBackgroundColor: []}]};
 	for (var i = 0; i < graphModel.protocols.length; i++) {
@@ -248,13 +288,16 @@ function buildGraph(json_col_dict) {
       }
     } 
 	};
-	var ctx = document.getElementById("myChart").getContext("2d");
-	var myDoughnutChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: legend_data,
-    options: legend_options
-	});
-	document.getElementById('js-legend').innerHTML = myDoughnutChart.generateLegend();
+	if (document.getElementById("myChart")) {
+		console.log(JSON.stringify(legend_data));
+		var ctx = document.getElementById("myChart").getContext("2d");
+		var myDoughnutChart = new Chart(ctx, {
+	    type: 'doughnut',
+	    data: legend_data,
+	    options: legend_options
+		});
+		document.getElementById('js-legend').innerHTML = myDoughnutChart.generateLegend();		
+	}
 
 	// Show all nodes and links
 	clearCanvas();
@@ -275,9 +318,11 @@ function buildGraph(json_col_dict) {
 		.start()
 
 	// Update the links
-	link = canvas
+		link = canvas
 			.selectAll('link')
-			.data(root.links)
+			.data(root.links.filter(function(d) {
+				return d.source_name != '-' && d.target_name != '-';
+			}))
 			.enter()
 			.insert("svg:line", ".node")
 	    .attr("class", "link")
@@ -289,8 +334,10 @@ function buildGraph(json_col_dict) {
 			.attr('visible', true)
 			.style('stroke', function(d) {
 				// Color link by protocol
-				lnk_color = protocolColors[d['PROTOCOL'][0]['name']];
-				return lnk_color;
+				if (d['PROTOCOL'].length > 0) {
+					lnk_color = protocolColors[d['PROTOCOL'][0]['name']];
+					return lnk_color;					
+				}
 			})
 			.style('stroke-width', function(d) {
 				// Link width depending on bandwidth
@@ -298,6 +345,9 @@ function buildGraph(json_col_dict) {
 				 return lnk_width;
 			});
 	
+	link.append("title").text("link");
+	link.on('contextmenu',linkpopup)
+
 	var labelText = canvas.selectAll('.labelText')
   .data(root.links)
 .enter().append('text')
@@ -312,7 +362,9 @@ function buildGraph(json_col_dict) {
 	// Update the nodes
 	node = canvas
 	.selectAll('circle.node')
-	.data(root.nodes)
+	.data(root.nodes.filter(function(d) {
+				return d.name != '-';
+			}))
 
 	node.transition()
     .attr("r", function(d) { return d.children ? 3.5 : Math.pow(d.size, 2/5) || 1; });
@@ -338,7 +390,7 @@ function buildGraph(json_col_dict) {
 				.attr('height', 1)
 				.attr('width', 1)
 				.attr("preserveAspectRatio", "xMinYMin slice");
-	
+
 	 var vertex = node.enter()
 	 	.append('g')
 	 	.attr('class', 'draggable node')
@@ -347,7 +399,7 @@ function buildGraph(json_col_dict) {
 		.on('dblclick', releasenode)
 		.on('mouseover', mouseovered)
 		.on('mouseout', mouseouted)
-		.on('contextmenu',thecontext);
+		.on('contextmenu',nodepopup);
 	 
 	// Add circle around node
  	vertex.append('svg:circle')
@@ -371,7 +423,7 @@ function buildGraph(json_col_dict) {
 	 		if (d.size == 1) {
 	 			orig_size = 100;
 	 		}
-	 		size = d.children ? 3.5 : Math.pow(orig_size, 2/5) || 1;
+	 		size = d.children ? 3.5 : Math.pow(orig_size, 2/10) || 1;
 //	 		console.log(d.name+' has size '+size + ' and orig size '+orig_size);
 	 		d.node_size = size
 	 		return size;
@@ -434,8 +486,62 @@ function syntaxHighlight(json) {
   });
 }
 
+//this function displays a context menu on right click over a link
+function linkpopup (d,i) {
+	console.log('in linkpopup')
+	$('g.link').contextMenu('cntxtMenu',
+			{
+    menuStyle: {
+      listStyle: '',
+      padding: '1px',
+      margin: '0px',
+      backgroundColor: '#fff',
+      border: '1px solid #999',
+      width: '300px'
+    },
+		itemStyle:
+		{
+			fontFamily : 'Arial',
+			fontSize: '13px',
+      width: '300px'
+		},
+		bindings:
+		{
+			'linkid': function(t) {
+				linkinfo = JSON.stringify(t.__data__, null, '<br>');
+				$('#linkInfoModal .modal-body').html(nodeinfo);
+				$('#linkInfoModal').modal('show'); 
+			}
+		},
+		onShowMenu: function(e, menu) {
+			s = '<b>Node:</b> ' + d.name
+			if (d.node_type) {
+				s = s + '<br><b>Node type:</b> ' + d.node_type; 
+			}
+			if (d.protocols) {
+				s = s + '<br><b>Protocols:</b> ' + d.protocols; 
+			}
+			if (d.s_cnt) {
+				s = s + '<br><b>Packets sent:</b> ' + d.s_cnt; 
+			}
+			if (d.r_cnt) {
+				s = s + '<br><b>Packets received:</b> ' + d.r_cnt; 
+			}
+			if (d.sourceof) {
+				s = s + '<br><b>Destinations:</b> ' + d.sourceof.length; 
+			}
+			if (d.targetof) {
+				s = s + '<br><b>Sources:</b> ' + d.targetof.length; 
+			}
+				
+			$('#linkid', menu).html(s);
+			return menu;
+		}
+			});
+}
+			
 //this function displays a context menu on right click
-function thecontext (d,i) {
+function nodepopup (d,i) {
 	$('g.node').contextMenu('cntxtMenu',
 			{
     menuStyle: {
@@ -455,9 +561,13 @@ function thecontext (d,i) {
 		bindings:
 		{
 			'nodeid': function(t) {
-				nodeinfo = JSON.stringify(t.__data__, null, '<br>');
-				$('#nodeInfoModal .modal-body').html(nodeinfo);
-				$('#nodeInfoModal').modal('show'); 
+				ctrlScope.$apply(function() {
+					ctrlScope.selectedNode = t.__data__.name;
+				});
+				document.getElementById('nodeId').value = t.__data__.id;
+				newTab = window.open('/nodeDetails?selectedNode="'+ctrlScope.selectedNode+'"');
+				newTab.selectedNode=ctrlScope.selectedNode;
+				newTab.nodeLinks=ctrlScope.nodeLinks;
 			},
 			'action': function(t) {
 				alert('Perform action X -to be determined- on node '+t.__data__.name);
@@ -483,6 +593,9 @@ function thecontext (d,i) {
 		},
 		onShowMenu: function(e, menu) {
 			s = '<b>Node:</b> ' + d.name
+			if (d.uids) {
+				s = s + '<br><b>UIDs:</b> ' + d.uids; 
+			}
 			if (d.node_type) {
 				s = s + '<br><b>Node type:</b> ' + d.node_type; 
 			}

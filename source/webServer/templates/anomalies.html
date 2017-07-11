@@ -1,0 +1,151 @@
+{% if not is_xhr|default(false) %}{% extends "common/base.html" %}{%
+endif -%} {% block content %}
+<script type='text/javascript' src="/static/js/jquery-ui.min.js"></script>
+<script src="/static/js/angular.min.js"></script>
+<script src="/static/js/angular-route.min.js"></script>
+<script src="/static/js/angular-sanitize.min.js"></script>
+<script src="/static/js/lodash.min.js"></script>
+<script src="/static/js/angularjs-dropdown-multiselect.js"></script>
+<script src="/static/js/controllers.js"></script>
+<script src="/static/js/visualization.js"></script>
+<script src="/static/js/visualization_graph.js"></script>
+<script src="/static/js/d3.tip.v0.6.3.js"></script>
+
+<html ng-app="Visualization">
+
+<div class="container">
+	<div ng-controller="CollectionController">
+		<h1>Anomalies</h1>
+		<!-- Anomaly Histogram -->
+		<div class="box" id="histo_box">
+			<draw-histo-anomalies id="histoContent"></draw-histo-anomalies>
+		</div>
+		<!-- Anomaly Accordion -->
+		<div class="box panel-group" id="accordion"
+			ng-repeat="ano in model.anomalies|filter:model.anoSelected" role="tablist"
+			aria-multiselectable="true">
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingOne">
+					<h4 class="panel-title">
+						<li class='list-group-item'>
+							<div class='row'>
+								<div class='col-md8'>
+									<a role="button" data-toggle="collapse" ng-click="ano.isOpen=!ano.isOpen" style="margin-right:40px"
+										data-parent="#accordion" href="#collapse-{{ '{{$index}}' }}"
+										aria-expanded="false" aria-controls="collapseOne"><i
+										class="glyphicon"
+										ng-class="{'glyphicon-chevron-down': ano.isOpen, 'glyphicon-chevron-right': !ano.isOpen }"></i>
+										Anomalies reported on {{ '{{ano.created_at}}' }}</a>
+								  <span class="pull-right" style="margin-right:10px"">{{ '{{ano.anomalies.length}}' }} issue(s)</span>
+								</div>
+							</div>
+						</li>
+					</h4>
+				</div>
+				<div id="collapse-{{ '{{$index}}' }}" class="panel-collapse collapse in"
+					role="tabpanel" aria-labelledby="headingOne">
+					<div class="panel-body">
+					  <form>
+					    <div class="form-group">
+					      <div class="input-group">
+					        <div class="input-group-addon"><i class="fa fa-search"></i></div>
+					        <input type="text" class="form-control" placeholder="Search anomalies" ng-model="anoSearch">
+					      </div>      
+					    </div>
+					  </form>
+						<table id="anoTable-{{ '{{$index}}' }}" class="table table-bordered table-hover table-condensed" cellspacing="2" width="100%">
+							<thead>
+								<tr>
+									<th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='sender'; anoSortReverse = !anoSortReverse">
+                    Sender
+                      <span ng-show="anoSortType == 'sender'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+                  <th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='receiver'; anoSortReverse = !anoSortReverse">
+                    Receiver
+                      <span ng-show="anoSortType == 'receiver'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+                  <th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='score'; anoSortReverse = !anoSortReverse">
+                    Score
+                      <span ng-show="anoSortType == 'score'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+									<th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='proto'; anoSortReverse = !anoSortReverse">
+                    Protocol
+                      <span ng-show="anoSortType == 'proto'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+									<th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='func'; anoSortReverse = !anoSortReverse">
+                    Function
+                      <span ng-show="anoSortType == 'func'" class="fa fa-caret-down"></span>
+                    </a>
+                  
+                  </th>
+                  <th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='field'; anoSortReverse = !anoSortReverse">
+                    Field
+                      <span ng-show="anoSortType == 'field'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+									<th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='desc'; anoSortReverse = !anoSortReverse">
+                    Anomaly
+                      <span ng-show="anoSortType == 'desc'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+                  <th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='cur'; anoSortReverse = !anoSortReverse">
+                    Current
+                      <span ng-show="anoSortType == 'cur'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+                  <th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='avg'; anoSortReverse = !anoSortReverse">
+                    Avg
+                      <span ng-show="anoSortType == 'avg'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+                  <th>
+                    <a href="#anoTable-{{ '{{$index}}' }}" ng-click="anoSortType='std'; anoSortReverse = !anoSortReverse">
+                    Std
+                      <span ng-show="anoSortType == 'std'" class="fa fa-caret-down"></span>
+                    </a>
+                  </th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat-end ng-repeat="anorec in ano.anomalies| orderBy:anoSortType:anoSortReverse| filter:anoSearch">
+									<td>{{ '{{anorec["sender"]}}' }}</td>
+                  <td>{{ '{{anorec["receiver"]}}' }}</td>
+                  <td>{{ '{{anorec.score}}' }}</td>
+									<td>{{ '{{anorec.proto}}' }}</td>
+									<td>{{ '{{anorec.func}}' }}</td>
+                  <td>{{ '{{anorec.field}}' }}</td>
+									<td>{{ '{{anorec.desc}}' }}</td>
+                  <td>{{ '{{anorec.current}}' }}</td>
+                  <td>{{ '{{anorec.avg}}' }}</td>
+                  <td>{{ '{{anorec.std}}' }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+	      <!-- Graph canvas -->
+	      <div id="graph_box">
+	        <div id="canvasState"></div>
+	        <draw-graph id="graphContent" ng-model="model.selectedDate" watch-this="model.selectedDate"></draw-graph>
+	      </div>
+			</div>
+			
+		</div>
+	</div>
+	<a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-chevron-up"></span></a>
+</div>
+</html>
+{% endblock %}
