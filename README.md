@@ -3,6 +3,8 @@
 
 *Testing released January 18, 2017*
 
+*Final project deliverable release (DOE OE CEDS) July 11, 2017*
+
 ## ARMORE
 
 ARMORE is being developed to be an open-source software solution that will aid asset owners by increasing visibility, securing communications, and inspecting ICS communications for behavior that is not intended.
