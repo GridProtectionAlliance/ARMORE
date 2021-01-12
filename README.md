@@ -1,5 +1,5 @@
-# Applied Resiliency for More Trustworthy Grid Operation (ARMORE)
-
+![Logo](https://gridprotectionalliance.org/images/products/ProductTitles75/ARMORE.png)
+# Applied Resiliency for More Trustworthy Grid Operation
 
 *Testing released January 18, 2017*
 
