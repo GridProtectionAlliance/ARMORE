@@ -1,8 +1,5 @@
 # Applied Resiliency for More Trustworthy Grid Operation (ARMORE)
 
-
-*(Scheduled for beta release Fall 2015)*
-
 ## ARMORE
 
 ARMORE is being developed to be an open-source software solution that will aid asset owners by increasing visibility, securing communications, and inspecting ICS communications for behavior that is not intended.
