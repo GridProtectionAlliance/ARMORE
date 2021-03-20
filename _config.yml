@@ -1,0 +1,8 @@
+title: ARMORE
+description: Applied Resiliency for More Trustworthy Grid Operation
+google_analytics: UA-55857624-1
+show_downloads: true
+theme: jekyll-theme-slate
+
+gems:
+  - jekyll-mentions
